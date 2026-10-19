@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Room Estimator Pro — v0.2</title>
+<title>Room Estimator Pro — v0.2.1</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
@@ -38,12 +38,8 @@
   .control-group label { display: flex; justify-content: space-between; font-size: 13px; font-weight: 500; color: var(--text-muted); }
   .control-group label span { color: var(--accent); font-weight: 600; }
   
-  input[type=range] { 
-    -webkit-appearance: none; width: 100%; background: transparent; 
-  }
-  input[type=range]::-webkit-slider-runnable-track { 
-    height: 6px; background: var(--border); border-radius: 3px; 
-  }
+  input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+  input[type=range]::-webkit-slider-runnable-track { height: 6px; background: var(--border); border-radius: 3px; }
   input[type=range]::-webkit-slider-thumb { 
     -webkit-appearance: none; height: 18px; width: 18px; border-radius: 50%; 
     background: var(--accent); cursor: pointer; margin-top: -6px; 
@@ -82,7 +78,7 @@
 <div id="panel">
   <div class="header">
     <h1>Room Estimator</h1>
-    <p>Interactive 3D Building Estimator v0.2</p>
+    <p>Interactive 3D Building Estimator v0.2.1</p>
   </div>
 
   <div class="control-group">
@@ -143,12 +139,11 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 // ---------- SCENE SETUP ----------
 const wrap = document.getElementById('canvas-wrap');
 const scene = new THREE.Scene();
-// Add a subtle gradient background
 scene.background = new THREE.Color(0x0f1115);
-scene.fog = new THREE.Fog(0x0f1115, 20, 60);
+scene.fog = new THREE.Fog(0x0f1115, 25, 70);
 
 const camera = new THREE.PerspectiveCamera(40, wrap.clientWidth / wrap.clientHeight, 0.1, 1000);
-camera.position.set(10, 10, 12);
+camera.position.set(12, 10, 14);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
@@ -157,28 +152,28 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 wrap.appendChild(renderer.domElement);
 
-// ---------- CONTROLS (FIXED) ----------
+// ---------- CONTROLS ----------
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.05;
-controls.maxPolarAngle = Math.PI / 2 - 0.05; // Stay above ground
+controls.maxPolarAngle = Math.PI / 2 - 0.05; 
 controls.minDistance = 3;
-controls.maxDistance = 40;
-controls.target.set(0, 1.4, 0);
+controls.maxDistance = 50;
+controls.target.set(0, 1.5, 0);
 
-// ---------- LIGHTING (PROFESSIONAL LOOK) ----------
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+// ---------- LIGHTING ----------
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
 scene.add(ambientLight);
 
 const dirLight = new THREE.DirectionalLight(0xffffff, 1.5);
-dirLight.position.set(10, 20, 10);
+dirLight.position.set(15, 25, 15);
 dirLight.castShadow = true;
 dirLight.shadow.mapSize.width = 2048;
 dirLight.shadow.mapSize.height = 2048;
-dirLight.shadow.camera.left = -20;
-dirLight.shadow.camera.right = 20;
-dirLight.shadow.camera.top = 20;
-dirLight.shadow.camera.bottom = -20;
+dirLight.shadow.camera.left = -25;
+dirLight.shadow.camera.right = 25;
+dirLight.shadow.camera.top = 25;
+dirLight.shadow.camera.bottom = -25;
 scene.add(dirLight);
 
 const fillLight = new THREE.DirectionalLight(0xffffff, 0.4);
@@ -210,15 +205,9 @@ const roofGroup = new THREE.Group();
 scene.add(wallsGroup, roofGroup);
 
 // Materials
-const blockMat = new THREE.MeshStandardMaterial({ 
-  color: 0xd4cbb8, roughness: 0.9, metalness: 0.1 
-});
-const roofMat = new THREE.MeshStandardMaterial({ 
-  color: 0x991b1b, roughness: 0.7, metalness: 0.2, side: THREE.DoubleSide 
-});
-const gableMat = new THREE.MeshStandardMaterial({ 
-  color: 0xd4cbb8, roughness: 0.9, metalness: 0.1, side: THREE.DoubleSide 
-});
+const blockMat = new THREE.MeshStandardMaterial({ color: 0xd4cbb8, roughness: 0.9, metalness: 0.1 });
+const roofMat = new THREE.MeshStandardMaterial({ color: 0x991b1b, roughness: 0.7, metalness: 0.2, side: THREE.DoubleSide });
+const gableMat = new THREE.MeshStandardMaterial({ color: 0xd4cbb8, roughness: 0.9, metalness: 0.1 });
 
 // ---------- BUILD WALLS ----------
 function buildWalls() {
@@ -242,15 +231,12 @@ function buildWalls() {
         const alongPos = c * BLOCK_W + BLOCK_W / 2 - w.span / 2;
         const yPos = r * BLOCK_H + BLOCK_H / 2;
 
-        // Skip for Door
         if (w.door) {
           const { w: dw, h: dh } = OPENINGS.door;
           if (Math.abs(alongPos) < dw / 2 && yPos < dh) continue;
         }
-        // Skip for Windows
         if (w.win) {
           const { w: ww, h: wh, sillY } = OPENINGS.window;
-          // Cut two windows per wall
           if ((Math.abs(alongPos - w.span/4) < ww/2 || Math.abs(alongPos + w.span/4) < ww/2) 
               && yPos > sillY && yPos < sillY + wh) continue;
         }
@@ -270,63 +256,85 @@ function buildWalls() {
   });
 }
 
-// ---------- BUILD PERFECT ROOF ----------
+// ---------- PERFECT ROOF GEOMETRY (VECTOR MATH) ----------
 function buildRoof() {
   roofGroup.clear();
   const { len, wid, hgt, pitch } = P;
+  
   const rad = (pitch * Math.PI) / 180;
   const halfW = wid / 2;
-  const rise = Math.tan(rad) * halfW;
+  const rise = Math.tan(rad) * halfW; // Peak height
+  const overhang = 0.4; // Extend roof past walls
   const yBase = hgt;
-  const overhang = 0.4; // Roof extends past walls
 
-  // 1. Build the two slanted roof planes
-  const slopeLen = Math.sqrt((halfW + overhang) * (halfW + overhang) + rise * rise);
-  const roofLen = len + (overhang * 2);
-  const roofGeo = new THREE.PlaneGeometry(roofLen, slopeLen);
+  // We use BufferGeometry to manually plot the 3D vertices
+  const geometry = new THREE.BufferGeometry();
 
-  const frontSlope = new THREE.Mesh(roofGeo, roofMat);
-  frontSlope.rotation.x = -rad;
-  // Calculate exact positioning to sit on the wall edge
-  frontSlope.position.set(0, yBase + rise/2 - Math.sin(rad)*overhang/2, (halfW + overhang)/2);
-  frontSlope.castShadow = true;
-  frontSlope.receiveShadow = true;
-  roofGroup.add(frontSlope);
+  // 1. Define the 6 points of the roof prism (Triangular Prism)
+  // Front Face
+  const v0 = new THREE.Vector3(-halfW - overhang, yBase,  len/2 + overhang); // Bottom Left
+  const v1 = new THREE.Vector3( halfW + overhang, yBase,  len/2 + overhang); // Bottom Right
+  const v2 = new THREE.Vector3( 0,              yBase + rise, len/2 + overhang); // Peak
 
-  const backSlope = new THREE.Mesh(roofGeo.clone(), roofMat);
-  backSlope.rotation.x = rad;
-  backSlope.position.set(0, yBase + rise/2 - Math.sin(rad)*overhang/2, -(halfW + overhang)/2);
-  backSlope.castShadow = true;
-  backSlope.receiveShadow = true;
-  roofGroup.add(backSlope);
+  // Back Face
+  const v3 = new THREE.Vector3(-halfW - overhang, yBase, -len/2 - overhang); // Bottom Left
+  const v4 = new THREE.Vector3( halfW + overhang, yBase, -len/2 - overhang); // Bottom Right
+  const v5 = new THREE.Vector3( 0,              yBase + rise, -len/2 - overhang); // Peak
 
-  // 2. Build the Gable Ends (the triangles)
-  const triShape = new THREE.Shape();
-  triShape.moveTo(-halfW, 0);
-  triShape.lineTo(halfW, 0);
-  triShape.lineTo(0, rise);
-  triShape.lineTo(-halfW, 0);
+  // 2. Define the Triangles (Indices map to vertices above)
+  const indices = [
+    // Left Slope (v0, v2, v5) and (v0, v5, v3)
+    0, 2, 5,  0, 5, 3,
+    // Right Slope (v1, v4, v5) and (v1, v5, v2)
+    1, 4, 5,  1, 5, 2,
+    // Front Triangle (v0, v1, v2)
+    0, 1, 2,
+    // Back Triangle (v3, v5, v4)
+    3, 5, 4
+  ];
+
+  // 3. Compile Vertices
+  const vertices = new Float32Array([
+    v0.x, v0.y, v0.z,  v1.x, v1.y, v1.z,  v2.x, v2.y, v2.z,
+    v3.x, v3.y, v3.z,  v4.x, v4.y, v4.z,  v5.x, v5.y, v5.z
+  ]);
+
+  geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+  geometry.setIndex(indices);
+  geometry.computeVertexNormals(); // Makes lighting hit it correctly
+
+  // 4. Create Mesh
+  const roofMesh = new THREE.Mesh(geometry, roofMat);
+  roofMesh.castShadow = true;
+  roofMesh.receiveShadow = true;
   
-  // Extrude the triangle slightly so it has thickness
-  const extrudeSettings = { depth: 0.1, bevelEnabled: false };
-  const triGeo = new THREE.ExtrudeGeometry(triShape, extrudeSettings);
+  // The front and back triangles need the wall material
+  const gableMesh = new THREE.Mesh(geometry, gableMat);
+  
+  // Since BufferGeometry applies material to the whole mesh, we do a trick:
+  // We create two meshes. One for the roof slabs (slopes), one for the walls (gables).
+  // Actually, it's easier to just use groups if we want multiple materials, 
+  // but for simplicity, let's just make the roof material double-sided so it renders both.
+  
+  roofGroup.add(roofMesh);
 
-  const gableFront = new THREE.Mesh(triGeo, gableMat);
-  gableFront.position.set(0, yBase, len/2 - 0.05);
-  gableFront.castShadow = true;
-  roofGroup.add(gableFront);
+  // 5. Add Fascia Boards (the trim at the bottom edge) to hide the gap
+  const fasciaGeo = new THREE.BoxGeometry(len + overhang*2, 0.1, 0.1);
+  const fasciaMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.5 });
+  
+  const frontFascia = new THREE.Mesh(fasciaGeo, fasciaMat);
+  frontFascia.position.set(0, yBase, len/2 + overhang);
+  roofGroup.add(frontFascia);
 
-  const gableBack = new THREE.Mesh(triGeo, gableMat);
-  gableBack.position.set(0, yBase, -len/2 - 0.05);
-  gableBack.castShadow = true;
-  roofGroup.add(gableBack);
+  const backFascia = new THREE.Mesh(fasciaGeo, fasciaMat);
+  backFascia.position.set(0, yBase, -len/2 - overhang);
+  roofGroup.add(backFascia);
 }
 
 // ---------- CAMERA AUTO-FIT ----------
 function autoFitCamera() {
   const maxDim = Math.max(P.len, P.wid, P.hgt);
   const dist = maxDim * 2.2;
-  // Only zoom out if the user hasn't manually zoomed yet
   if (camera.position.length() < dist - 2) {
     camera.position.set(dist * 0.8, dist * 0.7, dist * 0.9);
     controls.target.set(0, P.hgt / 2, 0);
@@ -336,12 +344,8 @@ function autoFitCamera() {
 // ---------- ESTIMATION MATH ----------
 function calcEstimates() {
   const { len, wid, hgt, hasDoor, hasWin } = P;
-  
-  let doorArea = 0;
-  if (hasDoor) doorArea = OPENINGS.door.w * OPENINGS.door.h;
-  
-  let winArea = 0;
-  if (hasWin) winArea = 2 * OPENINGS.window.w * OPENINGS.window.h; // 2 windows total
+  let doorArea = hasDoor ? OPENINGS.door.w * OPENINGS.door.h : 0;
+  let winArea = hasWin ? (2 * OPENINGS.window.w * OPENINGS.window.h) : 0;
 
   const grossWallArea = 2 * (len + wid) * hgt;
   const netWallArea = grossWallArea - doorArea - winArea;
@@ -382,7 +386,6 @@ document.getElementById('wid').oninput = e => { P.wid = +e.target.value; update(
 document.getElementById('hgt').oninput = e => { P.hgt = +e.target.value; update(); };
 document.getElementById('pit').oninput = e => { P.pitch = +e.target.value; update(); };
 
-// Toggles
 document.getElementById('toggleDoor').onclick = (e) => {
   P.hasDoor = !P.hasDoor;
   e.target.classList.toggle('active', P.hasDoor);
@@ -476,7 +479,7 @@ function downloadPDF() {
 
   doc.setFontSize(8);
   doc.setTextColor(120, 120, 120);
-  doc.text('Generated by Room Estimator v0.2 — sample build for validation only.', 14, 285);
+  doc.text('Generated by Room Estimator v0.2.1 — sample build for validation only.', 14, 285);
 
   doc.save(`BOQ-${ref}.pdf`);
 }
