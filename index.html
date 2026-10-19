@@ -161,9 +161,9 @@
 
         <div style="margin-top: 24px;">
           <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 12px;">Estimate assumptions</h3>
-          <div class="checkbox-group"><input type="checkbox" checked> Include internal and external wall plaster</div>
-          <div class="checkbox-group"><input type="checkbox" checked> Include floor tiles and tile adhesive</div>
-          <div class="checkbox-group"><input type="checkbox" checked> Include gable roof covering area</div>
+          <div class="checkbox-group"><input type="checkbox" id="chkPlaster" checked> Include internal and external wall plaster</div>
+          <div class="checkbox-group"><input type="checkbox" id="chkTiles" checked> Include floor tiles and tile adhesive</div>
+          <div class="checkbox-group"><input type="checkbox" id="chkRoof" checked> Include gable roof covering area</div>
           <p style="font-size: 12px; color: var(--text-muted); margin-top: 12px;">The preview is a concept model, not a structural design. Roof pitch is fixed for this first version.</p>
         </div>
       </div>
@@ -449,9 +449,9 @@ function build3D() {
 // ---------- CALCULATE MATH ----------
 function updateCalculations() {
   const { len, wid, hgt, waste } = P;
-  const hasPlaster = document.querySelectorAll('input[type=checkbox]')[0].checked;
-  const hasTiles = document.querySelectorAll('input[type=checkbox]')[1].checked;
-  const hasRoof = document.querySelectorAll('input[type=checkbox]')[2].checked;
+  const hasPlaster = document.getElementById('chkPlaster').checked;
+  const hasTiles = document.getElementById('chkTiles').checked;
+  const hasRoof = document.getElementById('chkRoof').checked;
 
   // Areas
   const floorArea = len * wid;
@@ -463,39 +463,39 @@ function updateCalculations() {
   document.getElementById('outFloorArea').textContent = floorArea.toFixed(2) + ' m²';
   document.getElementById('outWallArea').textContent = netWall.toFixed(2) + ' m²';
 
-  // 1. Blocks (0.08 m2 per block)
+  // 1. Blocks
   const blocksRaw = netWall / 0.08;
   document.getElementById('outBlocks').textContent = Math.ceil(blocksRaw * (1 + waste)).toLocaleString() + ' blocks';
 
-  // 2. Mortar (1 bag per ~10 m2 wall)
+  // 2. Mortar
   const mortarBags = netWall * 0.12;
   document.getElementById('outCementMortar').textContent = Math.ceil(mortarBags * (1 + waste)) + ' bags';
   
-  // 3. Sand for mortar
+  // 3. Sand mortar
   const sandMortarVol = netWall * 0.012;
   document.getElementById('outSandMortar').textContent = (sandMortarVol * (1 + waste)).toFixed(2) + ' m³';
 
-  // 4. Plaster Cement (0.3 bags/m2 per face * 2 faces)
+  // 4. Plaster Cement
   const plasterBags = hasPlaster ? netWall * 0.6 : 0;
   document.getElementById('outCementPlaster').textContent = Math.ceil(plasterBags * (1 + waste)) + ' bags';
 
-  // 5. Plaster Sand (0.025 m3/m2 per face * 2 faces)
+  // 5. Plaster Sand
   const sandPlasterVol = hasPlaster ? netWall * 0.05 : 0;
   document.getElementById('outSandPlaster').textContent = (sandPlasterVol * (1 + waste)).toFixed(2) + ' m³';
 
-  // 6. Paint (2 coats @ 8.3 m2/L)
+  // 6. Paint
   const paintL = (netWall / 8.3) * 2;
   document.getElementById('outPaint').textContent = (paintL * (1 + waste)).toFixed(1) + ' litres';
 
-  // 7. Tiles (600x600mm = 0.36m2)
+  // 7. Tiles
   const tiles = hasTiles ? Math.ceil((floorArea / 0.36) * (1 + waste)) : 0;
   document.getElementById('outTiles').textContent = tiles + ' tiles';
 
-  // 8. Adhesive (4 m2 per bag)
+  // 8. Adhesive
   const adhesive = hasTiles ? Math.ceil((floorArea / 4) * (1 + waste)) : 0;
   document.getElementById('outAdhesive').textContent = adhesive + ' bags';
 
-  // 9. Grout (0.1kg per m2)
+  // 9. Grout
   const grout = hasTiles ? (floorArea * 0.1 * (1 + waste)) : 0;
   document.getElementById('outGrout').textContent = grout.toFixed(1) + ' kg';
 
@@ -504,8 +504,6 @@ function updateCalculations() {
   const slopeLen = Math.sqrt(halfW*halfW + rise*rise);
   const roofArea = len * slopeLen * 2;
   document.getElementById('outRoofArea').textContent = hasRoof ? (roofArea * (1 + waste)).toFixed(2) + ' m²' : '—';
-
-  window.__data = { blocksRaw, netWall, floorArea, roofArea };
 }
 
 // ---------- UI LISTENERS ----------
@@ -532,24 +530,24 @@ document.querySelectorAll('input').forEach(el => {
 // ---------- ACTIONS ----------
 document.getElementById('buyBtn').onclick = () => {
   const btn = document.getElementById('buyBtn');
-  btn.textContent = 'Processing...';
+  btn.textContent = 'Processing Payment...';
   setTimeout(() => {
-    btn.textContent = '✓ Download PDF report';
+    btn.textContent = '✓ Download PDF Report';
     btn.classList.add('unlocked');
     btn.onclick = downloadPDF;
-  }, 600);
+  }, 800);
 };
 
 document.getElementById('btnCSV').onclick = () => {
   let csv = "Material,Quantity\n";
-  csv += `Sandcrete blocks,${document.getElementById('outBlocks').textContent}\n`;
-  csv += `Cement (mortar),${document.getElementById('outCementMortar').textContent}\n`;
-  csv += `Cement (plaster),${document.getElementById('outCementPlaster').textContent}\n`;
-  csv += `Floor tiles,${document.getElementById('outTiles').textContent}\n`;
+  csv += `"Sandcrete blocks","${document.getElementById('outBlocks').textContent}"\n`;
+  csv += `"Cement (mortar)","${document.getElementById('outCementMortar').textContent}"\n`;
+  csv += `"Cement (plaster)","${document.getElementById('outCementPlaster').textContent}"\n`;
+  csv += `"Floor tiles","${document.getElementById('outTiles').textContent}"\n`;
   
   const blob = new Blob([csv], { type: 'text/csv' });
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-  a.download = 'Estimate.csv'; a.click();
+  a.download = 'Calculate2Build_Estimate.csv'; a.click();
 };
 
 document.getElementById('btnReset').onclick = () => {
@@ -559,13 +557,89 @@ document.getElementById('btnReset').onclick = () => {
   syncInputs();
 };
 
+// ---------- FULL PDF GENERATION ----------
 function downloadPDF() {
   const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-  doc.text("Bill of Quantities", 10, 10);
-  doc.text(`Room Length: ${P.len}m`, 10, 20);
-  doc.text(`Total Blocks: ${document.getElementById('outBlocks').textContent}`, 10, 30);
-  doc.save('BOQ.pdf');
+  const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+  const today = new Date().toLocaleDateString('en-GB');
+  const ref = 'RE-' + Date.now().toString(36).toUpperCase();
+
+  // Header Bar
+  doc.setFillColor(245, 158, 11); // C2B Orange
+  doc.rect(0, 0, 210, 22, 'F');
+  doc.setTextColor(0, 0, 0);
+  doc.setFontSize(16); doc.setFont('helvetica', 'bold');
+  doc.text("BUILDER'S PROTECTION PACKET", 14, 14);
+
+  // Meta info
+  doc.setFontSize(10); doc.setFont('helvetica', 'normal');
+  doc.text(`Ref: ${ref}   |   Date: ${today}   |   Watermark: sample@buyer.com`, 14, 32);
+
+  // Section 1: BOQ
+  doc.setFontSize(13); doc.setFont('helvetica', 'bold');
+  doc.text('1. Bill of Quantities', 14, 44);
+
+  doc.setFontSize(10); doc.setFont('helvetica', 'normal');
+  const rows = [
+    ['Room length', `${P.len.toFixed(2)} m`],
+    ['Room width', `${P.wid.toFixed(2)} m`],
+    ['Wall height', `${P.hgt.toFixed(2)} m`],
+    ['Net wall area', document.getElementById('outWallArea').textContent],
+    ['Floor area', document.getElementById('outFloorArea').textContent],
+    ['Sandcrete blocks (9")', document.getElementById('outBlocks').textContent],
+    ['Cement for mortar', document.getElementById('outCementMortar').textContent],
+    ['Mortar sand', document.getElementById('outSandMortar').textContent],
+    ['Cement for plaster', document.getElementById('outCementPlaster').textContent],
+    ['Plastering sand', document.getElementById('outSandPlaster').textContent],
+    ['Paint (2 coats)', document.getElementById('outPaint').textContent],
+    ['Floor tiles (600x600)', document.getElementById('outTiles').textContent],
+    ['Tile adhesive', document.getElementById('outAdhesive').textContent],
+    ['Grout', document.getElementById('outGrout').textContent],
+    ['Gable roof covering', document.getElementById('outRoofArea').textContent],
+  ];
+  
+  let y = 54;
+  rows.forEach(([k, v]) => {
+    doc.text(k, 18, y);
+    doc.text(v, 120, y);
+    y += 7;
+  });
+
+  // Section 2: Checklist
+  y += 6;
+  doc.setFont('helvetica', 'bold');
+  doc.text("2. Site Supervisor's Audit Checklist", 14, y); y += 7;
+  doc.setFont('helvetica', 'normal');
+  const checklist = [
+    '- Verify block count on delivery against the BOQ above.',
+    '- Confirm 1 bag of cement yields ~25-30 blocks during laying.',
+    '- Measure plaster thickness; reject work above 15mm.',
+    '- Photograph tile boxes before and after installation.',
+  ];
+  checklist.forEach(t => { doc.text(t, 18, y); y += 6; });
+
+  // Section 3: Contract
+  y += 6;
+  doc.setFont('helvetica', 'bold');
+  doc.text('3. Standard Artisan Work Agreement', 14, y); y += 7;
+  doc.setFont('helvetica', 'normal');
+  const contract = [
+    'The artisan agrees to deliver the structure within the agreed timeline.',
+    'Wages are payable per milestones defined below and signed by both parties.',
+    'Material wastage beyond 10% is the artisan\'s financial responsibility.',
+    'Disputes are resolved through the local trade association before litigation.',
+    '',
+    'Artisan signature: ______________________   Date: ____________',
+    'Owner signature:   ______________________   Date: ____________',
+  ];
+  contract.forEach(t => { doc.text(t, 18, y); y += 6; });
+
+  // Footer
+  doc.setFontSize(8);
+  doc.setTextColor(120, 120, 120);
+  doc.text('Generated by Calculate2Build — Professional Estimation Tool.', 14, 285);
+
+  doc.save(`C2B_BOQ_${ref}.pdf`);
 }
 
 // Init
