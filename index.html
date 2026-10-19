@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Room Estimator — v0.1 Sample</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, -apple-system, sans-serif; display: flex; height: 100vh; overflow: hidden; background: #0f1115; color: #e6e6e6; }
+  #canvas-wrap { flex: 1; position: relative; }
+  canvas { display: block; }
+  #panel { width: 340px; background: #181b22; padding: 20px; overflow-y: auto; border-left: 1px solid #2a2f3a; }
+  h1 { font-size: 16px; margin-bottom: 4px; }
+  .sub { font-size: 11px; color: #7a8494; margin-bottom: 18px; }
+  label { display: block; font-size: 12px; color: #a7b0be; margin: 14px 0 6px; }
+  input[type=range] { width: 100%; accent-color: #f0a500; }
+  .val { float: right; color: #f0a500; font-weight: 600; }
+  .stat { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #232833; font-size: 13px; }
+  .stat span:last-child { color: #f0a500; font-weight: 600; }
+  .locked { margin-top: 20px; padding: 14px; background: #1f2430; border: 1px dashed #f0a500; border-radius: 8px; font-size: 12px; text-align: center; }
+  button { width: 100%; margin-top: 10px; padding: 12px; background: #f0a500; color: #0f1115; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 13px; }
+  button:hover { background: #ffb733; }
+  button.unlocked { background: #2ecc71; }
+  #pdf-status { font-size: 11px; color: #7a8494; margin-top: 8px; text-align: center; }
+  select { width: 100%; padding: 8px; background: #232833; color: #e6e6e6; border: 1px solid #2a2f3a; border-radius: 6px; }
+</style>
+</head>
+<body>
+
+<div id="canvas-wrap"></div>
+
+<div id="panel">
+  <h1>🏠 Room Estimator</h1>
+  <div class="sub">v0.1 sample — drag to estimate instantly</div>
+
+  <label>Room Length <span class="val" id="lenV">5.0 m</span></label>
+  <input type="range" id="len" min="2.5" max="8" step="0.1" value="5" />
+
+  <label>Room Width <span class="val" id="widV">4.0 m</span></label>
+  <input type="range" id="wid" min="2.5" max="8" step="0.1" value="4" />
+
+  <label>Wall Height <span class="val" id="hgtV">2.8 m</span></label>
+  <input type="range" id="hgt" min="2.2" max="3.5" step="0.1" value="2.8" />
+
+  <label>Roof Type</label>
+  <select id="roof">
+    <option value="flat">Flat</option>
+    <option value="gable" selected>Gable</option>
+    <option value="hip">Hip</option>
+  </select>
+
+  <label>Roof Pitch <span class="val" id="pitV">25°</span></label>
+  <input type="range" id="pit" min="10" max="45" step="1" value="25" />
+
+  <div style="margin-top:20px">
+    <div class="stat"><span>Sandcrete blocks (9")</span><span id="blocks">—</span></div>
+    <div class="stat"><span>Cement bags</span><span id="cement">—</span></div>
+    <div class="stat"><span>Floor tiles</span><span id="tiles">—</span></div>
+    <div class="stat"><span>Paint (litres)</span><span id="paint">—</span></div>
+  </div>
+
+  <div class="locked" id="lockBox">
+    🔒 Full Bill of Quantities + Supervisor Checklist + Artisan Agreement
+    <button id="buyBtn">Unlock for GHS 30 (Mock)</button>
+    <div id="pdf-status"></div>
+  </div>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+// ---------- SCENE ----------
+const wrap = document.getElementById('canvas-wrap');
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0f1115);
+
+const camera = new THREE.PerspectiveCamera(50, wrap.clientWidth / wrap.clientHeight, 0.1, 200);
+camera.position.set(9, 7, 10);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(wrap.clientWidth, wrap.clientHeight);
+wrap.appendChild(renderer.domElement);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.target.set(0, 1.4, 0);
+
+scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+const dir = new THREE.DirectionalLight(0xffffff, 1.2);
+dir.position.set(8, 12, 6);
+scene.add(dir);
+
+// ---------- GROUPS ----------
+const wallsGroup = new THREE.Group();
+const roofGroup = new THREE.Group();
+scene.add(wallsGroup, roofGroup);
+
+// Ground
+const ground = new THREE.Mesh(
+  new THREE.PlaneGeometry(40, 40),
+  new THREE.MeshStandardMaterial({ color: 0x1a1d24 })
+);
+ground.rotation.x = -Math.PI / 2;
+ground.position.y = -0.01;
+scene.add(ground);
+
+// ---------- PARAMS ----------
+const P = { len: 5, wid: 4, hgt: 2.8, roof: 'gable', pitch: 25 };
+
+// Block constants (Ghana 9-inch sandcrete, 450x225x225mm)
+const BLOCK_W = 0.45, BLOCK_H = 0.225, BLOCK_THICK = 0.225;
+const OPENINGS = {
+  door:   { w: 0.9, h: 2.1 },  // on front wall
+  window: { w: 1.2, h: 1.2, sillY: 1.0 } // one per side wall + front
+};
+
+// ---------- BUILD ----------
+function buildWalls() {
+  wallsGroup.clear();
+  const { len, wid, hgt } = P;
+  const blockMat = new THREE.MeshStandardMaterial({ color: 0xc9c2b3, roughness: 0.9 });
+  const edgeMat = new THREE.LineBasicMaterial({ color: 0x8a8478 });
+
+  // Wall definitions: [cx, cz, lengthAlongX, alongX?]
+  // Front wall (z = +wid/2): has door
+  // Back wall (z = -wid/2): solid
+  // Left wall (x = -len/2): window
+  // Right wall (x = +len/2): window
+  const walls = [
+    { axis: 'x', fixed:  wid/2, span: len, hasDoor: true,  hasWin: false },
+    { axis: 'x', fixed: -wid/2, span: len, hasDoor: false, hasWin: false },
+    { axis: 'z', fixed: -len/2, span: wid, hasDoor: false, hasWin: true  },
+    { axis: 'z', fixed:  len/2, span: wid, hasDoor: false, hasWin: true  },
+  ];
+
+  walls.forEach(w => {
+    const cols = Math.round(w.span / BLOCK_W);
+    const rows = Math.round(hgt / BLOCK_H);
+    const geo = new THREE.BoxGeometry(BLOCK_W * 0.97, BLOCK_H * 0.97, BLOCK_THICK);
+
+    for (let c = 0; c < cols; c++) {
+      for (let r = 0; r < rows; r++) {
+        // Opening skip logic
+        const alongPos = c * BLOCK_W + BLOCK_W / 2 - w.span / 2;
+        const yPos = r * BLOCK_H + BLOCK_H / 2;
+
+        if (w.hasDoor) {
+          const { w: dw, h: dh } = OPENINGS.door;
+          if (Math.abs(alongPos) < dw / 2 && yPos < dh) continue;
+        }
+        if (w.hasWin) {
+          const { w: ww, h: wh, sillY } = OPENINGS.window;
+          if (Math.abs(alongPos) < ww / 2 && yPos > sillY && yPos < sillY + wh) continue;
+        }
+
+        const m = new THREE.Mesh(geo, blockMat);
+        if (w.axis === 'x') m.position.set(alongPos, yPos, w.fixed);
+        else { m.position.set(w.fixed, yPos, alongPos); m.rotation.y = Math.PI / 2; }
+        wallsGroup.add(m);
+      }
+    }
+
+    // Simple edge outline for wall boundary
+    const edgeGeo = w.axis === 'x'
+      ? new THREE.EdgesGeometry(new THREE.BoxGeometry(w.span, hgt, BLOCK_THICK))
+      : new THREE.EdgesGeometry(new THREE.BoxGeometry(BLOCK_THICK, hgt, w.span));
+    const edge = new THREE.LineSegments(edgeGeo, edgeMat);
+    if (w.axis === 'x') edge.position.set(0, hgt / 2, w.fixed);
+    else edge.position.set(w.fixed, hgt / 2, 0);
+    wallsGroup.add(edge);
+  });
+}
+
+function buildRoof() {
+  roofGroup.clear();
+  const { len, wid, hgt, roof, pitch } = P;
+  const mat = new THREE.MeshStandardMaterial({ color: 0x8b3a3a, roughness: 0.8, side: THREE.DoubleSide });
+  const rad = (pitch * Math.PI) / 180;
+  const halfW = wid / 2;
+  const rise = Math.tan(rad) * halfW;
+  const yBase = hgt;
+
+  if (roof === 'flat') {
+    const slab = new THREE.Mesh(new THREE.BoxGeometry(len, 0.12, wid), mat);
+    slab.position.y = yBase + 0.06;
+    roofGroup.add(slab);
+  } else if (roof === 'gable') {
+    // Two sloped planes
+    const slopeLen = Math.sqrt(halfW * halfW + rise * rise);
+    const geo = new THREE.PlaneGeometry(len, slopeLen);
+    const front = new THREE.Mesh(geo, mat);
+    front.rotation.x = -rad;
+    front.position.set(0, yBase + rise / 2, halfW / 2);
+    roofGroup.add(front);
+    const back = new THREE.Mesh(geo.clone(), mat);
+    back.rotation.x = rad;
+    back.position.set(0, yBase + rise / 2, -halfW / 2);
+    roofGroup.add(back);
+    // Gable ends (triangles)
+    const triShape = new THREE.Shape();
+    triShape.moveTo(-halfW, 0); triShape.lineTo(halfW, 0); triShape.lineTo(0, rise); triShape.lineTo(-halfW, 0);
+    const triGeo = new THREE.ShapeGeometry(triShape);
+    const gableMat = new THREE.MeshStandardMaterial({ color: 0xc9c2b3, side: THREE.DoubleSide });
+    const end1 = new THREE.Mesh(triGeo, gableMat);
+    end1.position.set(len / 2, yBase, 0); end1.rotation.y = Math.PI / 2;
+    roofGroup.add(end1);
+    const end2 = new THREE.Mesh(triGeo.clone(), gableMat);
+    end2.position.set(-len / 2, yBase, 0); end2.rotation.y = -Math.PI / 2;
+    roofGroup.add(end2);
+  } else {
+    // hip — simplified pyramid
+    const geo = new THREE.ConeGeometry(Math.max(len, wid) / 1.4, rise, 4);
+    const hip = new THREE.Mesh(geo, mat);
+    hip.rotation.y = Math.PI / 4;
+    hip.position.y = yBase + rise / 2;
+    roofGroup.add(hip);
+  }
+}
+
+// ---------- ESTIMATION MATH ----------
+function calcEstimates() {
+  const { len, wid, hgt } = P;
+  // Gross wall area minus openings
+  const doorArea = OPENINGS.door.w * OPENINGS.door.h;
+  const winArea = 2 * OPENINGS.window.w * OPENINGS.window.h; // 2 side windows
+  const grossWallArea = 2 * (len + wid) * hgt;
+  const netWallArea = grossWallArea - doorArea - winArea;
+
+  // Blocks: 12 per m² (Ghana 9-inch with mortar joints), +5% waste
+  const blocks = Math.ceil(netWallArea * 12 * 1.05);
+
+  // Cement: mortar ~0.5 bag/m² wall + plaster 0.3 bag/m² (both sides) + 10% waste
+  const cement = Math.ceil((netWallArea * 0.5 + netWallArea * 0.3 * 2) * 1.10);
+
+  // Floor tiles: 0.3x0.3m = 0.09m² → ~11.1 per m², +10% waste
+  const floorArea = len * wid;
+  const tiles = Math.ceil((floorArea / 0.09) * 1.10);
+
+  // Paint: 2 coats @ 10m²/L → net area / 5, +5% waste
+  const paintLitres = Math.ceil((netWallArea / 5) * 1.05);
+
+  return { blocks, cement, tiles, paintLitres, netWallArea, floorArea };
+}
+
+// ---------- UI WIRING ----------
+const fmt = (n, u) => `${n.toLocaleString()} ${u}`;
+
+function update() {
+  document.getElementById('lenV').textContent = P.len.toFixed(1) + ' m';
+  document.getElementById('widV').textContent = P.wid.toFixed(1) + ' m';
+  document.getElementById('hgtV').textContent = P.hgt.toFixed(1) + ' m';
+  document.getElementById('pitV').textContent = P.pitch + '°';
+
+  buildWalls();
+  buildRoof();
+
+  const e = calcEstimates();
+  document.getElementById('blocks').textContent = fmt(e.blocks, 'pcs');
+  document.getElementById('cement').textContent = fmt(e.cement, 'bags');
+  document.getElementById('tiles').textContent = fmt(e.tiles, 'pcs');
+  document.getElementById('paint').textContent = fmt(e.paintLitres, 'L');
+
+  window.__lastEstimate = e;
+}
+
+document.getElementById('len').oninput = e => { P.len = +e.target.value; update(); };
+document.getElementById('wid').oninput = e => { P.wid = +e.target.value; update(); };
+document.getElementById('hgt').oninput = e => { P.hgt = +e.target.value; update(); };
+document.getElementById('pit').oninput = e => { P.pitch = +e.target.value; update(); };
+document.getElementById('roof').onchange = e => { P.roof = e.target.value; update(); };
+
+// ---------- MOCK PAYMENT + PDF ----------
+document.getElementById('buyBtn').onclick = () => {
+  // v0.1: simulate payment success
+  const btn = document.getElementById('buyBtn');
+  btn.textContent = 'Processing…';
+  btn.disabled = true;
+
+  setTimeout(() => {
+    btn.textContent = '✓ Unlocked — Download PDF';
+    btn.classList.add('unlocked');
+    btn.disabled = false;
+    btn.onclick = downloadPDF;
+    document.getElementById('pdf-status').textContent = 'Mock payment successful. Real Paystack in v0.2.';
+  }, 800);
+};
+
+function downloadPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+  const e = window.__lastEstimate;
+  const today = new Date().toLocaleDateString('en-GB');
+  const ref = 'RE-' + Date.now().toString(36).toUpperCase();
+
+  // Header
+  doc.setFillColor(240, 165, 0);
+  doc.rect(0, 0, 210, 22, 'F');
+  doc.setTextColor(15, 17, 21);
+  doc.setFontSize(16); doc.setFont(undefined, 'bold');
+  doc.text('BUILDER\'S PROTECTION PACKET', 14, 14);
+
+  doc.setTextColor(0, 0, 0);
+  doc.setFontSize(10); doc.setFont(undefined, 'normal');
+  doc.text(`Ref: ${ref}   |   Date: ${today}   |   Watermark: sample@buyer.com`, 14, 32);
+
+  doc.setFontSize(13); doc.setFont(undefined, 'bold');
+  doc.text('1. Bill of Quantities', 14, 44);
+
+  doc.setFontSize(10); doc.setFont(undefined, 'normal');
+  const rows = [
+    ['Room length', `${P.len.toFixed(1)} m`],
+    ['Room width', `${P.wid.toFixed(1)} m`],
+    ['Wall height', `${P.hgt.toFixed(1)} m`],
+    ['Net wall area', `${e.netWallArea.toFixed(1)} m²`],
+    ['Floor area', `${e.floorArea.toFixed(1)} m²`],
+    ['Sandcrete blocks (9")', `${e.blocks} pcs`],
+    ['Cement', `${e.cement} bags`],
+    ['Floor tiles (300x300mm)', `${e.tiles} pcs`],
+    ['Paint (2 coats)', `${e.paintLitres} L`],
+  ];
+  let y = 54;
+  rows.forEach(([k, v]) => {
+    doc.text(k, 18, y);
+    doc.text(v, 120, y);
+    y += 7;
+  });
+
+  y += 6;
+  doc.setFont(undefined, 'bold');
+  doc.text('2. Site Supervisor\'s Audit Checklist', 14, y); y += 7;
+  doc.setFont(undefined, 'normal');
+  const checklist = [
+    '- Verify block count on delivery against the BOQ above.',
+    '- Confirm 1 bag of cement yields ~25-30 blocks during laying.',
+    '- Measure plaster thickness; reject work above 15mm.',
+    '- Photograph tile boxes before and after installation.',
+  ];
+  checklist.forEach(t => { doc.text(t, 18, y); y += 6; });
+
+  y += 6;
+  doc.setFont(undefined, 'bold');
+  doc.text('3. Standard Artisan Work Agreement', 14, y); y += 7;
+  doc.setFont(undefined, 'normal');
+  const contract = [
+    'The artisan agrees to deliver the structure within the agreed timeline.',
+    'Wages are payable per milestones defined below and signed by both parties.',
+    'Material wastage beyond 10% is the artisan\'s financial responsibility.',
+    'Disputes are resolved through the local trade association before litigation.',
+    '',
+    'Artisan signature: ______________________   Date: ____________',
+    'Owner signature:   ______________________   Date: ____________',
+  ];
+  contract.forEach(t => { doc.text(t, 18, y); y += 6; });
+
+  doc.setFontSize(8);
+  doc.setTextColor(120, 120, 120);
+  doc.text('Generated by Room Estimator v0.1 — sample build for validation only.', 14, 285);
+
+  doc.save(`BOQ-${ref}.pdf`);
+}
+
+// ---------- RESIZE ----------
+new ResizeObserver(() => {
+  camera.aspect = wrap.clientWidth / wrap.clientHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(wrap.clientWidth, wrap.clientHeight);
+}).observe(wrap);
+
+// ---------- LOOP ----------
+update();
+(function animate() {
+  requestAnimationFrame(animate);
+  controls.update();
+  renderer.render(scene, camera);
+})();
+</script>
+</body>
+</html>
