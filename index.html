@@ -109,8 +109,8 @@
     .nav-links { display: none; }
     .mobile-nav { display: block; }
     .container { grid-template-columns: 1fr; margin-top: 16px; gap: 16px; }
-    .canvas-container { height: 350px; } /* Taller for mobile so tiles are visible */
-    .input-grid { grid-template-columns: 1fr; } /* Stack inputs on mobile for easier tapping */
+    .canvas-container { height: 350px; } 
+    .input-grid { grid-template-columns: 1fr; } 
     .roof-toggles { grid-template-columns: 1fr 1fr; }
   }
 </style>
@@ -126,7 +126,6 @@
   </div>
 </nav>
 
-<!-- Mobile Category Dropdown -->
 <div class="mobile-nav" id="mobileNav">
   <select onchange="switchTab(this.value)">
     <option value="room">Room Estimator</option>
@@ -149,9 +148,10 @@
         </div>
         <div class="card-body">
           <div class="input-grid">
-            <div class="input-group"><label>Length <span class="val" id="r-lenV">6.4 m</span></label><input type="range" id="r-len" min="2.5" max="15" step="0.1" value="6.4" /></div>
-            <div class="input-group"><label>Width <span class="val" id="r-widV">5.5 m</span></label><input type="range" id="r-wid" min="2.5" max="12" step="0.1" value="5.5" /></div>
-            <div class="input-group"><label>Height <span class="val" id="r-hgtV">3.7 m</span></label><input type="range" id="r-hgt" min="2.2" max="5.0" step="0.1" value="3.7" /></div>
+            <!-- Adjusted Sliders: min 0.5, max 50 -->
+            <div class="input-group"><label>Length <span class="val" id="r-lenV">6.4 m</span></label><input type="range" id="r-len" min="0.5" max="50" step="0.1" value="6.4" /></div>
+            <div class="input-group"><label>Width <span class="val" id="r-widV">5.5 m</span></label><input type="range" id="r-wid" min="0.5" max="50" step="0.1" value="5.5" /></div>
+            <div class="input-group"><label>Height <span class="val" id="r-hgtV">3.7 m</span></label><input type="range" id="r-hgt" min="0.5" max="50" step="0.1" value="3.7" /></div>
             <div class="input-group"><label>Wall Thickness (m)</label><input type="number" id="r-thick" value="0.225" step="0.025" /></div>
           </div>
         </div>
@@ -210,8 +210,9 @@
             <button class="roof-btn" data-type="flat" onclick="setRoofType('flat')">Flat</button>
           </div>
           <div class="input-grid">
-            <div class="input-group"><label>Length <span class="val" id="f-lenV">10.0 m</span></label><input type="range" id="f-len" min="3" max="30" step="0.5" value="10" /></div>
-            <div class="input-group"><label>Width <span class="val" id="f-widV">8.0 m</span></label><input type="range" id="f-wid" min="3" max="20" step="0.5" value="8" /></div>
+            <!-- Adjusted Sliders: min 0.5, max 50 -->
+            <div class="input-group"><label>Length <span class="val" id="f-lenV">10.0 m</span></label><input type="range" id="f-len" min="0.5" max="50" step="0.5" value="10" /></div>
+            <div class="input-group"><label>Width <span class="val" id="f-widV">8.0 m</span></label><input type="range" id="f-wid" min="0.5" max="50" step="0.5" value="8" /></div>
             <div class="input-group"><label>Pitch <span class="val" id="f-pitV">25°</span></label><input type="range" id="f-pit" min="5" max="50" step="1" value="25" /></div>
             <div class="input-group"><label>Overhang (m)</label><input type="number" id="f-overhang" value="0.5" step="0.1" /></div>
           </div>
@@ -264,8 +265,9 @@
         </div>
         <div class="card-body">
           <div class="input-grid">
-            <div class="input-group"><label>Room Length <span class="val" id="t-lenV">5.0 m</span></label><input type="range" id="t-len" min="2" max="20" step="0.1" value="5" /></div>
-            <div class="input-group"><label>Room Width <span class="val" id="t-widV">4.0 m</span></label><input type="range" id="t-wid" min="2" max="20" step="0.1" value="4" /></div>
+            <!-- Adjusted Sliders: min 0.5, max 50 -->
+            <div class="input-group"><label>Room Length <span class="val" id="t-lenV">5.0 m</span></label><input type="range" id="t-len" min="0.5" max="50" step="0.1" value="5" /></div>
+            <div class="input-group"><label>Room Width <span class="val" id="t-widV">4.0 m</span></label><input type="range" id="t-wid" min="0.5" max="50" step="0.1" value="4" /></div>
             <div class="input-group">
               <label>Tile Size</label>
               <select id="t-size">
@@ -334,11 +336,9 @@ window.switchTab = (tabId) => {
   document.querySelectorAll('.nav-links a').forEach(el => el.classList.remove('active'));
   document.getElementById(`app-${tabId}`).classList.add('active');
   
-  // Sync mobile dropdown
   const mobileSelect = document.querySelector('.mobile-nav select');
   if(mobileSelect) mobileSelect.value = tabId;
   
-  // Sync desktop nav
   document.querySelectorAll('.nav-links a').forEach(el => {
     if(el.textContent.toLowerCase().includes(tabId === 'room' ? 'room' : tabId === 'roof' ? 'roof' : 'tiles')) el.classList.add('active');
   });
@@ -365,7 +365,7 @@ function setupScene(containerId) {
   container.appendChild(renderer.domElement);
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true; controls.maxPolarAngle = Math.PI / 2 - 0.05;
-  controls.minDistance = 5; controls.maxDistance = 60; controls.target.set(0, 2, 0);
+  controls.minDistance = 5; controls.maxDistance = 80; controls.target.set(0, 2, 0);
   scene.add(new THREE.AmbientLight(0xffffff, 0.6));
   const dir = new THREE.DirectionalLight(0xffffff, 1.2); dir.position.set(20, 30, 20); dir.castShadow = true; scene.add(dir);
   const ground = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1 })); ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
@@ -376,13 +376,27 @@ const room3D = setupScene('canvas-room');
 const roof3D = setupScene('canvas-roof');
 const tiles3D = setupScene('canvas-tiles');
 
-// BLOCK GENERATOR
+// BLOCK GENERATOR WITH SMART 3D PERFORMANCE OPTIMIZATION
 function generateBlockWalls(group, len, wid, hgt, thick, hasDoor, hasWindows) {
   const BLOCK_W = 0.45, BLOCK_H = 0.225;
-  const geo = new THREE.BoxGeometry(BLOCK_W * 0.98, BLOCK_H * 0.98, thick);
   const doorW = 0.9, doorH = 2.1;
   const winW = 1.2, winH = 1.2, sillY = 1.0;
 
+  // SMART OPTIMIZATION: If house is massive (over 15m), use solid walls to prevent mobile crashes
+  if (len > 15 || wid > 15 || hgt > 15) {
+    const wall1 = new THREE.Mesh(new THREE.BoxGeometry(len, hgt, thick), blockMat);
+    wall1.position.set(0, hgt/2, wid/2); group.add(wall1);
+    const wall2 = new THREE.Mesh(new THREE.BoxGeometry(len, hgt, thick), blockMat);
+    wall2.position.set(0, hgt/2, -wid/2); group.add(wall2);
+    const wall3 = new THREE.Mesh(new THREE.BoxGeometry(thick, hgt, wid), blockMat);
+    wall3.position.set(-len/2, hgt/2, 0); group.add(wall3);
+    const wall4 = new THREE.Mesh(new THREE.BoxGeometry(thick, hgt, wid), blockMat);
+    wall4.position.set(len/2, hgt/2, 0); group.add(wall4);
+    return;
+  }
+
+  // Standard Block-by-Block Rendering
+  const geo = new THREE.BoxGeometry(BLOCK_W * 0.98, BLOCK_H * 0.98, thick);
   const walls = [
     { axis: 'x', fixed:  wid/2, span: len, door: hasDoor,  win: false },
     { axis: 'x', fixed: -wid/2, span: len, door: false, win: false },
