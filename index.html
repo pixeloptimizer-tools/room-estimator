@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Calculate2Build | Roof Wizard</title>
+<title>Calculate2Build | Professional Estimators</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
@@ -25,8 +25,13 @@
   .logo { font-size: 20px; font-weight: 700; cursor: pointer; }
   .logo span { color: #94a3b8; font-weight: 400; }
   .nav-links { display: flex; gap: 24px; font-size: 14px; font-weight: 500; }
-  .nav-links a { color: #94a3b8; text-decoration: none; transition: color 0.2s; cursor: pointer; }
-  .nav-links a.active, .nav-links a:hover { color: white; }
+  .nav-links a { color: #94a3b8; text-decoration: none; transition: color 0.2s; cursor: pointer; padding-bottom: 4px; border-bottom: 2px solid transparent; }
+  .nav-links a.active { color: white; border-bottom-color: var(--brand); }
+  .nav-links a:hover:not(.active) { color: white; }
+
+  /* App Sections */
+  .app-section { display: none; }
+  .app-section.active { display: block; }
 
   /* Grid Layout */
   .container { max-width: 1300px; margin: 32px auto; padding: 0 20px; display: grid; grid-template-columns: 1fr 450px; gap: 24px; align-items: start; width: 100%; }
@@ -39,7 +44,7 @@
   .card-body { padding: 24px; }
 
   /* 3D Viewer */
-  #canvas-container { width: 100%; height: 450px; background: #f1f5f9; position: relative; cursor: grab; border-bottom: 1px solid var(--border); }
+  .canvas-container { width: 100%; height: 450px; background: #f1f5f9; position: relative; cursor: grab; border-bottom: 1px solid var(--border); }
   .viewer-hint { position: absolute; bottom: 16px; left: 16px; background: white; padding: 6px 10px; border-radius: 6px; font-size: 12px; color: var(--text-muted); box-shadow: 0 1px 3px rgba(0,0,0,0.1); pointer-events: none; border: 1px solid var(--border); }
 
   /* Inputs */
@@ -54,7 +59,7 @@
   input[type=number] { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; background: var(--bg); outline: none; }
   input[type=number]:focus { border-color: var(--text-main); background: white; }
 
-  /* Roof Type Buttons */
+  /* Toggles (Roof Types) */
   .roof-toggles { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; margin-bottom: 20px; }
   .roof-btn { padding: 10px; border: 1px solid var(--border); border-radius: 6px; background: white; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; text-align: center; }
   .roof-btn.active { border-color: var(--brand); background: rgba(245, 158, 11, 0.1); color: var(--brand); }
@@ -78,11 +83,8 @@
   .mat-desc { font-size: 11px; color: var(--text-muted); line-height: 1.4; }
   .mat-qty { font-size: 14px; font-weight: 700; text-align: right; white-space: nowrap; color: var(--brand); }
 
-  /* The Overlay Paywall */
-  .paywall-overlay { 
-    position: absolute; inset: -10px; display: flex; flex-direction: column; align-items: center; justify-content: center; 
-    background: rgba(255, 255, 255, 0.4); z-index: 10; text-align: center; padding: 20px;
-  }
+  /* Paywall Overlay */
+  .paywall-overlay { position: absolute; inset: -10px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.4); z-index: 10; text-align: center; padding: 20px; }
   .paywall-box { background: white; padding: 24px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 1px solid var(--border); max-width: 300px; }
   .paywall-box h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
   .paywall-box p { font-size: 12px; color: var(--text-muted); margin-bottom: 16px; line-height: 1.5; }
@@ -90,11 +92,12 @@
   .warning-box { background: #fef3c7; border: 1px solid #fde68a; color: #92400e; padding: 16px; border-radius: 8px; font-size: 13px; line-height: 1.5; margin-top: 24px; }
   
   /* Actions */
-  .actions { display: flex; flex-direction: column; gap: 12px; margin-top: 24px; }
+  .actions { display: flex; flex-direction: column; gap: 12px; margin-top: 24px; display: none; }
   button { padding: 14px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: 0.2s; border: none; display: flex; align-items: center; justify-content: center; width: 100%; }
   .btn-primary { background: var(--text-main); color: white; }
   .btn-primary:hover { background: #334155; }
   .btn-primary.unlocked { background: #10b981; }
+  .btn-reset { background: white; color: var(--text-main); border: 1px solid var(--border); }
 
   @media (max-width: 1024px) {
     .container { grid-template-columns: 1fr; }
@@ -108,123 +111,169 @@
 <nav>
   <div class="logo">Calculate2Build <span>/ C2B</span></div>
   <div class="nav-links">
-    <a class="active">Roof Wizard</a>
-    <a style="opacity: 0.5; cursor: not-allowed;">Room Estimator</a>
+    <a class="active" onclick="switchTab('room')">Room Estimator</a>
+    <a onclick="switchTab('roof')">Roof Wizard</a>
     <a style="opacity: 0.5; cursor: not-allowed;">Concrete (Soon)</a>
   </div>
 </nav>
 
-<div class="container">
-  
-  <!-- LEFT COLUMN: 3D & INPUTS -->
-  <div class="left-col">
-    <div class="card">
-      <div class="card-header">
-        <h2>Build your Roof</h2>
-        <p>Select a roof type and adjust dimensions to see the live 3D plan.</p>
-      </div>
-      
-      <!-- 3D Canvas -->
-      <div id="canvas-container">
-        <div class="viewer-hint">Drag to rotate • Scroll to zoom</div>
-      </div>
-
-      <div class="card-body">
-        <div class="roof-toggles">
-          <button class="roof-btn active" data-type="gable">Gable</button>
-          <button class="roof-btn" data-type="hip">Hip</button>
-          <button class="roof-btn" data-type="mono">Mono-Pitch</button>
-          <button class="roof-btn" data-type="flat">Flat</button>
+<!-- ========================================== -->
+<!-- APP 1: ROOM ESTIMATOR                      -->
+<!-- ========================================== -->
+<div class="app-section active" id="app-room">
+  <div class="container">
+    <div class="left-col">
+      <div class="card">
+        <div class="card-header">
+          <h2>Build your room</h2>
+          <p>Adjust dimensions to see the live 3D plan.</p>
         </div>
-
-        <div class="input-grid">
-          <div class="input-group">
-            <label>Building Length <span class="val" id="lenV">10.0 m</span></label>
-            <input type="range" id="len" min="3" max="30" step="0.5" value="10" />
+        <div class="canvas-container" id="canvas-room">
+          <div class="viewer-hint">Drag to rotate • Scroll to zoom</div>
+        </div>
+        <div class="card-body">
+          <div class="input-grid">
+            <div class="input-group">
+              <label>Length <span class="val" id="r-lenV">6.4 m</span></label>
+              <input type="range" id="r-len" min="2.5" max="15" step="0.1" value="6.4" />
+            </div>
+            <div class="input-group">
+              <label>Width <span class="val" id="r-widV">5.5 m</span></label>
+              <input type="range" id="r-wid" min="2.5" max="12" step="0.1" value="5.5" />
+            </div>
+            <div class="input-group">
+              <label>Height <span class="val" id="r-hgtV">3.7 m</span></label>
+              <input type="range" id="r-hgt" min="2.2" max="5.0" step="0.1" value="3.7" />
+            </div>
+            <div class="input-group">
+              <label>Wall Thickness (m)</label>
+              <input type="number" id="r-thick" value="0.225" step="0.025" />
+            </div>
           </div>
-          <div class="input-group">
-            <label>Building Width <span class="val" id="widV">8.0 m</span></label>
-            <input type="range" id="wid" min="3" max="20" step="0.5" value="8" />
+        </div>
+      </div>
+    </div>
+    <div class="right-col">
+      <div class="card">
+        <div class="card-header">
+          <h2>Material estimate</h2>
+          <p>Indicative quantities based on your room.</p>
+        </div>
+        <div class="card-body">
+          <div class="area-boxes">
+            <div class="area-box"><div class="label">Floor Area</div><div class="val" id="r-outFloor">35.20 m²</div></div>
+            <div class="area-box"><div class="label">Wall Area (Net)</div><div class="val" id="r-outWall">83.56 m²</div></div>
           </div>
-          <div class="input-group">
-            <label>Roof Pitch <span class="val" id="pitV">25°</span></label>
-            <input type="range" id="pit" min="5" max="50" step="1" value="25" />
+          <div class="material-wrapper">
+            <div class="material-list blurred" id="r-materialList">
+              <div class="mat-header"><span>Material / Work Item</span><span>Qty</span></div>
+              <div class="mat-item"><div class="mat-info"><div class="mat-name">Sandcrete blocks (9")</div></div><div class="mat-qty" id="r-outBlocks">1,046</div></div>
+              <div class="mat-item"><div class="mat-info"><div class="mat-name">Cement (mortar)</div></div><div class="mat-qty" id="r-outCemMortar">8 bags</div></div>
+              <div class="mat-item"><div class="mat-info"><div class="mat-name">Mortar sand</div></div><div class="mat-qty" id="r-outSand">0.97 m³</div></div>
+              <div class="mat-item"><div class="mat-info"><div class="mat-name">Cement (plaster)</div></div><div class="mat-qty" id="r-outCemPlaster">29 bags</div></div>
+              <div class="mat-item"><div class="mat-info"><div class="mat-name">Floor tiles (600x600)</div></div><div class="mat-qty" id="r-outTiles">98 tiles</div></div>
+            </div>
+            <div class="paywall-overlay" id="r-paywall">
+              <div class="paywall-box">
+                <h3>🔒 Unlock Bill of Materials</h3>
+                <p>Get exact quantities for blocks, cement, and sand instantly.</p>
+                <button class="btn-primary" onclick="unlockApp('room')">Unlock for $1</button>
+              </div>
+            </div>
           </div>
-          <div class="input-group">
-            <label>Overhang (m)</label>
-            <input type="number" id="overhang" value="0.5" step="0.1" />
+          <div class="warning-box">
+            <strong>Important:</strong> This is an early-stage planning estimate. Verify quantities before purchasing.
+          </div>
+          <div class="actions" id="r-actions">
+            <button class="btn-primary unlocked" onclick="downloadRoomPDF()">✓ Download Official PDF</button>
+            <button class="btn-reset" onclick="resetRoom()">Reset dimensions</button>
           </div>
         </div>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- RIGHT COLUMN: RESULTS -->
-  <div class="right-col">
-    <div class="card">
-      <div class="card-header">
-        <h2>Material estimate</h2>
-        <p>Indicative quantities based on your roof plan.</p>
+<!-- ========================================== -->
+<!-- APP 2: ROOF WIZARD                         -->
+<!-- ========================================== -->
+<div class="app-section" id="app-roof">
+  <div class="container">
+    <div class="left-col">
+      <div class="card">
+        <div class="card-header">
+          <h2>Build your Roof</h2>
+          <p>Select a roof type and adjust dimensions.</p>
+        </div>
+        <div class="canvas-container" id="canvas-roof">
+          <div class="viewer-hint">Drag to rotate • Scroll to zoom</div>
+        </div>
+        <div class="card-body">
+          <div class="roof-toggles">
+            <button class="roof-btn active" data-type="gable" onclick="setRoofType('gable')">Gable</button>
+            <button class="roof-btn" data-type="hip" onclick="setRoofType('hip')">Hip</button>
+            <button class="roof-btn" data-type="mono" onclick="setRoofType('mono')">Mono</button>
+            <button class="roof-btn" data-type="flat" onclick="setRoofType('flat')">Flat</button>
+          </div>
+          <div class="input-grid">
+            <div class="input-group">
+              <label>Length <span class="val" id="f-lenV">10.0 m</span></label>
+              <input type="range" id="f-len" min="3" max="30" step="0.5" value="10" />
+            </div>
+            <div class="input-group">
+              <label>Width <span class="val" id="f-widV">8.0 m</span></label>
+              <input type="range" id="f-wid" min="3" max="20" step="0.5" value="8" />
+            </div>
+            <div class="input-group">
+              <label>Pitch <span class="val" id="f-pitV">25°</span></label>
+              <input type="range" id="f-pit" min="5" max="50" step="1" value="25" />
+            </div>
+            <div class="input-group">
+              <label>Overhang (m)</label>
+              <input type="number" id="f-overhang" value="0.5" step="0.1" />
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="card-body">
-        
-        <!-- FREE PREVIEW AREA -->
-        <div class="area-boxes">
-          <div class="area-box">
-            <div class="label">Roof Area (Slope)</div>
-            <div class="val" id="outArea">0.00 m²</div>
-          </div>
-          <div class="area-box">
-            <div class="label">Roof Angle</div>
-            <div class="val" id="outAngle">0°</div>
-          </div>
+    </div>
+    <div class="right-col">
+      <div class="card">
+        <div class="card-header">
+          <h2>Material estimate</h2>
+          <p>Indicative quantities based on your roof.</p>
         </div>
-
-        <!-- BLURRED MATERIAL LIST -->
-        <div class="material-wrapper">
-          <div class="material-list blurred" id="materialList">
-            <div class="mat-header"><span>Material / Work Item</span><span>Estimated Quantity</span></div>
-            <div class="mat-item">
-              <div class="mat-info"><div class="mat-name">Roofing Sheets (0.9 x 3m)</div><div class="mat-desc">Standard corrugated sheets</div></div>
-              <div class="mat-qty" id="outSheets">0</div>
+        <div class="card-body">
+          <div class="area-boxes">
+            <div class="area-box"><div class="label">Roof Area</div><div class="val" id="f-outArea">0.00 m²</div></div>
+            <div class="area-box"><div class="label">Angle</div><div class="val" id="f-outAngle">0°</div></div>
+          </div>
+          <div class="material-wrapper">
+            <div class="material-list blurred" id="f-materialList">
+              <div class="mat-header"><span>Material / Work Item</span><span>Qty</span></div>
+              <div class="mat-item"><div class="mat-info"><div class="mat-name">Roofing Sheets (0.9x3m)</div></div><div class="mat-qty" id="f-outSheets">0</div></div>
+              <div class="mat-item"><div class="mat-info"><div class="mat-name">Ridge Caps (3m)</div></div><div class="mat-qty" id="f-outRidges">0</div></div>
+              <div class="mat-item"><div class="mat-info"><div class="mat-name">Battens (3m)</div></div><div class="mat-qty" id="f-outBattens">0</div></div>
+              <div class="mat-item"><div class="mat-info"><div class="mat-name">Roofing Screws</div></div><div class="mat-qty" id="f-outScrews">0</div></div>
             </div>
-            <div class="mat-item">
-              <div class="mat-info"><div class="mat-name">Ridge Caps (3m)</div><div class="mat-desc">Top capping for gable/hip roofs</div></div>
-              <div class="mat-qty" id="outRidges">0</div>
-            </div>
-            <div class="mat-item">
-              <div class="mat-info"><div class="mat-name">Battens (3m x 50mm)</div><div class="mat-desc">Wooden purlins for sheet fixing</div></div>
-              <div class="mat-qty" id="outBattens">0</div>
-            </div>
-            <div class="mat-item">
-              <div class="mat-info"><div class="mat-name">Roofing Screws</div><div class="mat-desc">Packs of 100 (approx. 12 per sheet)</div></div>
-              <div class="mat-qty" id="outScrews">0</div>
+            <div class="paywall-overlay" id="f-paywall">
+              <div class="paywall-box">
+                <h3>🔒 Unlock Bill of Materials</h3>
+                <p>Get exact quantities for sheets, battens, and screws instantly.</p>
+                <button class="btn-primary" onclick="unlockApp('roof')">Unlock for $1</button>
+              </div>
             </div>
           </div>
-
-          <!-- PAYWALL OVERLAY -->
-          <div class="paywall-overlay" id="paywall">
-            <div class="paywall-box">
-              <h3>🔒 Unlock Bill of Materials</h3>
-              <p>Get exact quantities for sheets, battens, and screws instantly.</p>
-              <button class="btn-primary" id="buyBtn">Unlock for $1</button>
-            </div>
+          <div class="warning-box">
+            <strong>Important:</strong> This is a preliminary geometric estimate. Verify with your contractor.
+          </div>
+          <div class="actions" id="f-actions">
+            <button class="btn-primary unlocked" onclick="downloadRoofPDF()">✓ Download Official PDF</button>
+            <button class="btn-reset" onclick="resetRoof()">Reset dimensions</button>
           </div>
         </div>
-
-        <div class="warning-box">
-          <strong>Important:</strong> This calculator determines geometric length and preliminary quantities only. It does not determine structural capacity, purlin spacing, or rafter sizes. Always verify with your roofing contractor.
-        </div>
-
-        <div class="actions" style="display:none;" id="actionButtons">
-          <button class="btn-primary unlocked" id="downloadBtn">✓ Download Official PDF</button>
-          <button class="btn-primary" style="background:white; color:var(--text-main); border:1px solid var(--border);" id="btnReset">Reset dimensions</button>
-        </div>
-
       </div>
     </div>
   </div>
-
 </div>
 
 <!-- Include Three.js -->
@@ -242,81 +291,153 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-// ---------- SCENE SETUP ----------
-const container = document.getElementById('canvas-container');
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0xf1f5f9); 
+// ==========================================
+// TAB SWITCHING LOGIC
+// ==========================================
+function switchTab(tabId) {
+  document.querySelectorAll('.app-section').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-links a').forEach(el => el.classList.remove('active'));
+  
+  document.getElementById(`app-${tabId}`).classList.add('active');
+  event.target.classList.add('active');
+}
+window.switchTab = switchTab;
 
-const camera = new THREE.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 0.1, 1000);
-camera.position.set(15, 12, 18);
+// ==========================================
+// 3D SCENE SETUP (SHARED RENDERER)
+// ==========================================
+const sceneRoom = new THREE.Scene();
+sceneRoom.background = new THREE.Color(0xf1f5f9);
+const cameraRoom = new THREE.PerspectiveCamera(40, 1, 0.1, 1000);
+cameraRoom.position.set(15, 12, 18);
+const rendererRoom = new THREE.WebGLRenderer({ antialias: true });
+rendererRoom.setPixelRatio(Math.min(devicePixelRatio, 2));
+rendererRoom.shadowMap.enabled = true;
 
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-renderer.setSize(container.clientWidth, container.clientHeight);
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-container.appendChild(renderer.domElement);
+const sceneRoof = new THREE.Scene();
+sceneRoof.background = new THREE.Color(0xf1f5f9);
+const cameraRoof = new THREE.PerspectiveCamera(40, 1, 0.1, 1000);
+cameraRoof.position.set(15, 12, 18);
+const rendererRoof = new THREE.WebGLRenderer({ antialias: true });
+rendererRoof.setPixelRatio(Math.min(devicePixelRatio, 2));
+rendererRoof.shadowMap.enabled = true;
 
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;
-controls.dampingFactor = 0.05;
-controls.maxPolarAngle = Math.PI / 2 - 0.05; 
-controls.minDistance = 5;
-controls.maxDistance = 60;
-controls.target.set(0, 2, 0);
+// Shared Lighting
+[sceneRoom, sceneRoof].forEach(scene => {
+  scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+  const dir = new THREE.DirectionalLight(0xffffff, 1.2);
+  dir.position.set(20, 30, 20);
+  dir.castShadow = true;
+  scene.add(dir);
+  
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1 }));
+  ground.rotation.x = -Math.PI / 2;
+  ground.receiveShadow = true;
+  scene.add(ground);
+  
+  const grid = new THREE.GridHelper(100, 100, 0xcbd5e1, 0xe2e8f0);
+  grid.position.y = 0.01;
+  scene.add(grid);
+});
 
-// Lighting
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-scene.add(ambientLight);
-const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
-dirLight.position.set(20, 30, 20);
-dirLight.castShadow = true;
-dirLight.shadow.mapSize.width = 2048;
-dirLight.shadow.mapSize.height = 2048;
-scene.add(dirLight);
+// Mount Renderers
+const containerRoom = document.getElementById('canvas-room');
+containerRoom.appendChild(rendererRoom.domElement);
+const controlsRoom = new OrbitControls(cameraRoom, rendererRoom.domElement);
 
-// Environment
-const ground = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1 }));
-ground.rotation.x = -Math.PI / 2;
-ground.receiveShadow = true;
-scene.add(ground);
-const grid = new THREE.GridHelper(100, 100, 0xcbd5e1, 0xe2e8f0);
-grid.position.y = 0.01;
-scene.add(grid);
+const containerRoof = document.getElementById('canvas-roof');
+containerRoof.appendChild(rendererRoof.domElement);
+const controlsRoof = new OrbitControls(cameraRoof, rendererRoof.domElement);
 
-// ---------- BUILD VARIABLES ----------
-const P = { len: 10, wid: 8, pitch: 25, overhang: 0.5, type: 'gable' };
-const wallHeight = 2.8;
+// ==========================================
+// ROOM ESTIMATOR LOGIC
+// ==========================================
+let roomUnlocked = false;
+const roomP = { len: 6.4, wid: 5.5, hgt: 3.7 };
+const wallsRoom = new THREE.Group();
+sceneRoom.add(wallsRoom);
 
-const wallsGroup = new THREE.Group();
-const roofGroup = new THREE.Group();
-scene.add(wallsGroup, roofGroup);
-
-const wallMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.9 });
-const roofMat = new THREE.MeshStandardMaterial({ color: 0x64748b, roughness: 0.6, side: THREE.DoubleSide });
-
-// ---------- BUILD 3D ----------
-function buildScene() {
-  wallsGroup.clear();
-  roofGroup.clear();
-  const { len, wid, pitch, overhang, type } = P;
-
-  const wallGeo = new THREE.BoxGeometry(len, wallHeight, wid);
-  const wallBox = new THREE.Mesh(wallGeo, wallMat);
-  wallBox.position.y = wallHeight / 2;
+function buildRoom() {
+  wallsRoom.clear();
+  const blockMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.8 });
+  const wallGeo = new THREE.BoxGeometry(roomP.len, roomP.hgt, roomP.wid);
+  const wallBox = new THREE.Mesh(wallGeo, blockMat);
+  wallBox.position.y = roomP.hgt / 2;
   wallBox.castShadow = true; wallBox.receiveShadow = true;
-  wallsGroup.add(wallBox);
+  wallsRoom.add(wallBox);
+}
+
+function calcRoom() {
+  const { len, wid, hgt } = roomP;
+  const gross = 2 * (len + wid) * hgt;
+  const net = gross - 4.5; // Subtracting door/windows
+  
+  document.getElementById('r-outFloor').textContent = (len * wid).toFixed(2) + ' m²';
+  document.getElementById('r-outWall').textContent = net.toFixed(2) + ' m²';
+  document.getElementById('r-outBlocks').textContent = Math.ceil((net / 0.08) * 1.08).toLocaleString() + ' pcs';
+  document.getElementById('r-outCemMortar').textContent = Math.ceil(net * 0.12 * 1.08) + ' bags';
+  document.getElementById('r-outSand').textContent = (net * 0.012 * 1.08).toFixed(2) + ' m³';
+  document.getElementById('r-outCemPlaster').textContent = Math.ceil(net * 0.6 * 1.08) + ' bags';
+  document.getElementById('r-outTiles').textContent = Math.ceil((len * wid / 0.36) * 1.08) + ' tiles';
+}
+
+function syncRoom() {
+  roomP.len = +document.getElementById('r-len').value; document.getElementById('r-lenV').textContent = roomP.len.toFixed(1) + ' m';
+  roomP.wid = +document.getElementById('r-wid').value; document.getElementById('r-widV').textContent = roomP.wid.toFixed(1) + ' m';
+  roomP.hgt = +document.getElementById('r-hgt').value; document.getElementById('r-hgtV').textContent = roomP.hgt.toFixed(1) + ' m';
+  buildRoom(); calcRoom();
+}
+
+document.getElementById('r-len').oninput = syncRoom;
+document.getElementById('r-wid').oninput = syncRoom;
+document.getElementById('r-hgt').oninput = syncRoom;
+syncRoom();
+
+window.resetRoom = () => {
+  document.getElementById('r-len').value = 6.4;
+  document.getElementById('r-wid').value = 5.5;
+  document.getElementById('r-hgt').value = 3.7;
+  syncRoom();
+};
+
+// ==========================================
+// ROOF WIZARD LOGIC
+// ==========================================
+let roofUnlocked = false;
+const roofP = { len: 10, wid: 8, pitch: 25, overhang: 0.5, type: 'gable' };
+const wallsRoof = new THREE.Group();
+const roofMeshGroup = new THREE.Group();
+sceneRoof.add(wallsRoof, roofMeshGroup);
+
+function setRoofType(type) {
+  roofP.type = type;
+  document.querySelectorAll('.roof-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.roof-btn[data-type="${type}"]`).classList.add('active');
+  syncRoof();
+}
+window.setRoofType = setRoofType;
+
+function buildRoofScene() {
+  wallsRoof.clear(); roofMeshGroup.clear();
+  const { len, wid, pitch, overhang, type } = roofP;
+  const wallH = 2.8;
+  
+  const wallMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.9 });
+  const roofMat = new THREE.MeshStandardMaterial({ color: 0x64748b, roughness: 0.6, side: THREE.DoubleSide });
+
+  const wallBox = new THREE.Mesh(new THREE.BoxGeometry(len, wallH, wid), wallMat);
+  wallBox.position.y = wallH / 2;
+  wallBox.castShadow = true; wallBox.receiveShadow = true;
+  wallsRoof.add(wallBox);
 
   const rad = (pitch * Math.PI) / 180;
   const halfW = wid / 2;
   const rise = Math.tan(rad) * halfW;
-  const yBase = wallHeight;
 
   if (type === 'flat') {
     const slab = new THREE.Mesh(new THREE.BoxGeometry(len + overhang*2, 0.15, wid + overhang*2), roofMat);
-    slab.position.y = yBase + 0.075;
-    slab.castShadow = true; slab.receiveShadow = true;
-    roofGroup.add(slab);
+    slab.position.y = wallH + 0.075; slab.castShadow = true;
+    roofMeshGroup.add(slab);
     return;
   }
 
@@ -324,230 +445,210 @@ function buildScene() {
     const slopeLen = Math.sqrt(Math.pow(wid + overhang*2, 2) + Math.pow(rise*2, 2));
     const geo = new THREE.BoxGeometry(len + overhang*2, 0.1, slopeLen);
     const mono = new THREE.Mesh(geo, roofMat);
-    mono.position.set(0, yBase + rise/2, 0);
-    mono.rotation.x = -rad;
-    mono.castShadow = true; mono.receiveShadow = true;
-    roofGroup.add(mono);
+    mono.position.set(0, wallH + rise/2, 0); mono.rotation.x = -rad; mono.castShadow = true;
+    roofMeshGroup.add(mono);
     return;
   }
 
   const geometry = new THREE.BufferGeometry();
-  
   if (type === 'gable') {
-    const v0 = new THREE.Vector3(-halfW - overhang, yBase,  len/2 + overhang); 
-    const v1 = new THREE.Vector3( halfW + overhang, yBase,  len/2 + overhang); 
-    const v2 = new THREE.Vector3( 0,              yBase + rise, len/2 + overhang); 
-    const v3 = new THREE.Vector3(-halfW - overhang, yBase, -len/2 - overhang); 
-    const v4 = new THREE.Vector3( halfW + overhang, yBase, -len/2 - overhang); 
-    const v5 = new THREE.Vector3( 0,              yBase + rise, -len/2 - overhang); 
-
+    const v0 = new THREE.Vector3(-halfW - overhang, wallH,  len/2 + overhang); 
+    const v1 = new THREE.Vector3( halfW + overhang, wallH,  len/2 + overhang); 
+    const v2 = new THREE.Vector3( 0,              wallH + rise, len/2 + overhang); 
+    const v3 = new THREE.Vector3(-halfW - overhang, wallH, -len/2 - overhang); 
+    const v4 = new THREE.Vector3( halfW + overhang, wallH, -len/2 - overhang); 
+    const v5 = new THREE.Vector3( 0,              wallH + rise, -len/2 - overhang); 
     const indices = [0, 2, 5, 0, 5, 3, 1, 4, 5, 1, 5, 2, 0, 1, 2, 3, 5, 4];
     const vertices = new Float32Array([v0.x, v0.y, v0.z, v1.x, v1.y, v1.z, v2.x, v2.y, v2.z, v3.x, v3.y, v3.z, v4.x, v4.y, v4.z, v5.x, v5.y, v5.z]);
-
     geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-    geometry.setIndex(indices);
-    geometry.computeVertexNormals(); 
+    geometry.setIndex(indices); geometry.computeVertexNormals(); 
   } else if (type === 'hip') {
-    const ridgeLen = Math.max(len - wid, 0);
-    const halfRidge = ridgeLen / 2;
-    const v0 = new THREE.Vector3(-halfW - overhang, yBase,  len/2 + overhang); 
-    const v1 = new THREE.Vector3( halfW + overhang, yBase,  len/2 + overhang); 
-    const v2 = new THREE.Vector3(-halfW - overhang, yBase, -len/2 - overhang); 
-    const v3 = new THREE.Vector3( halfW + overhang, yBase, -len/2 - overhang); 
-    const topFront = new THREE.Vector3(0, yBase + rise, halfRidge);
-    const topBack = new THREE.Vector3(0, yBase + rise, -halfRidge);
-
-    const vertices = new Float32Array([v0.x, v0.y, v0.z, v1.x, v1.y, v1.z, v2.x, v2.y, v2.z, v3.x, v3.y, v3.z, topFront.x, topFront.y, topFront.z, topBack.x, topBack.y, topBack.z]);
+    const halfRidge = Math.max(len - wid, 0) / 2;
+    const v0 = new THREE.Vector3(-halfW - overhang, wallH,  len/2 + overhang); 
+    const v1 = new THREE.Vector3( halfW + overhang, wallH,  len/2 + overhang); 
+    const v2 = new THREE.Vector3(-halfW - overhang, wallH, -len/2 - overhang); 
+    const v3 = new THREE.Vector3( halfW + overhang, wallH, -len/2 - overhang); 
+    const tF = new THREE.Vector3(0, wallH + rise, halfRidge);
+    const tB = new THREE.Vector3(0, wallH + rise, -halfRidge);
+    const vertices = new Float32Array([v0.x, v0.y, v0.z, v1.x, v1.y, v1.z, v2.x, v2.y, v2.z, v3.x, v3.y, v3.z, tF.x, tF.y, tF.z, tB.x, tB.y, tB.z]);
     const indices = [0, 1, 4, 2, 5, 3, 0, 4, 5, 0, 5, 2, 1, 3, 5, 1, 5, 4];
-
     geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-    geometry.setIndex(indices);
-    geometry.computeVertexNormals();
+    geometry.setIndex(indices); geometry.computeVertexNormals();
   }
 
   const roofMesh = new THREE.Mesh(geometry, roofMat);
   roofMesh.castShadow = true; roofMesh.receiveShadow = true;
-  roofGroup.add(roofMesh);
+  roofMeshGroup.add(roofMesh);
 }
 
-// ---------- CALCULATIONS ----------
-let isUnlocked = false;
-
-function calculateRoof() {
-  const { len, wid, pitch, overhang, type } = P;
+function calcRoof() {
+  const { len, wid, pitch, overhang, type } = roofP;
   const rad = (pitch * Math.PI) / 180;
   const halfW = wid / 2;
-  const rise = Math.tan(rad) * halfW;
-  const slopeLen = Math.sqrt(halfW * halfW + rise * rise);
+  const slopeLen = Math.sqrt(halfW * halfW + Math.pow(Math.tan(rad) * halfW, 2));
   
   let area = 0;
   if (type === 'gable' || type === 'hip') area = len * slopeLen * 2;
   else if (type === 'mono') area = len * (wid + overhang*2) / Math.cos(rad);
   else area = (len + overhang*2) * (wid + overhang*2); 
 
-  const grossArea = area * 1.10;
-
-  const sheets = Math.ceil(grossArea / 2.7);
-  const ridges = Math.ceil((len + overhang*2) / 3); 
-  const battens = Math.ceil(grossArea / 2);
-  const screws = Math.ceil((sheets * 12) / 100);
-
-  document.getElementById('outArea').textContent = grossArea.toFixed(1) + ' m²';
-  document.getElementById('outAngle').textContent = pitch + '°';
-  document.getElementById('outSheets').textContent = sheets + ' sheets';
-  document.getElementById('outRidges').textContent = ridges + ' pcs';
-  document.getElementById('outBattens').textContent = battens + ' pcs';
-  document.getElementById('outScrews').textContent = screws + ' packs';
-
-  window.__data = { area, grossArea, sheets, ridges, battens, screws, len, wid, pitch, type };
+  const gross = area * 1.10;
+  
+  document.getElementById('f-outArea').textContent = gross.toFixed(1) + ' m²';
+  document.getElementById('f-outAngle').textContent = pitch + '°';
+  document.getElementById('f-outSheets').textContent = Math.ceil(gross / 2.7) + ' sheets';
+  document.getElementById('f-outRidges').textContent = Math.ceil((len + overhang*2) / 3) + ' pcs';
+  document.getElementById('f-outBattens').textContent = Math.ceil(gross / 2) + ' pcs';
+  document.getElementById('f-outScrews').textContent = Math.ceil((Math.ceil(gross / 2.7) * 12) / 100) + ' packs';
 }
 
-// ---------- UI WIRING ----------
-function syncInputs() {
-  P.len = +document.getElementById('len').value; document.getElementById('lenV').textContent = P.len.toFixed(1) + ' m';
-  P.wid = +document.getElementById('wid').value; document.getElementById('widV').textContent = P.wid.toFixed(1) + ' m';
-  P.pitch = +document.getElementById('pit').value; document.getElementById('pitV').textContent = P.pitch + '°';
-  P.overhang = +document.getElementById('overhang').value || 0.5;
-
-  buildScene();
-  calculateRoof();
+function syncRoof() {
+  roofP.len = +document.getElementById('f-len').value; document.getElementById('f-lenV').textContent = roofP.len.toFixed(1) + ' m';
+  roofP.wid = +document.getElementById('f-wid').value; document.getElementById('f-widV').textContent = roofP.wid.toFixed(1) + ' m';
+  roofP.pitch = +document.getElementById('f-pit').value; document.getElementById('f-pitV').textContent = roofP.pitch + '°';
+  roofP.overhang = +document.getElementById('f-overhang').value || 0.5;
+  buildRoofScene(); calcRoof();
 }
 
-document.getElementById('len').oninput = syncInputs;
-document.getElementById('wid').oninput = syncInputs;
-document.getElementById('pit').oninput = syncInputs;
-document.getElementById('overhang').oninput = syncInputs;
+document.getElementById('f-len').oninput = syncRoof;
+document.getElementById('f-wid').oninput = syncRoof;
+document.getElementById('f-pit').oninput = syncRoof;
+document.getElementById('f-overhang').oninput = syncRoof;
+syncRoof();
 
-document.querySelectorAll('.roof-btn').forEach(btn => {
-  btn.onclick = () => {
-    document.querySelectorAll('.roof-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    P.type = btn.dataset.type;
-    syncInputs();
-  };
-});
+window.resetRoof = () => {
+  document.getElementById('f-len').value = 10;
+  document.getElementById('f-wid').value = 8;
+  document.getElementById('f-pit').value = 25;
+  document.getElementById('f-overhang').value = 0.5;
+  setRoofType('gable');
+};
 
-// ---------- PAYWALL LOGIC ----------
-document.getElementById('buyBtn').onclick = () => {
-  const btn = document.getElementById('buyBtn');
+// ==========================================
+// PAYWALL & UNLOCK LOGIC
+// ==========================================
+window.unlockApp = (app) => {
+  const btn = event.target;
   btn.textContent = 'Processing Payment...';
   
-  // Simulate Paystack Redirect / Verification
   setTimeout(() => {
-    isUnlocked = true;
-    
-    // 1. Remove blur
-    document.getElementById('materialList').classList.remove('blurred');
-    
-    // 2. Hide paywall overlay
-    document.getElementById('paywall').style.display = 'none';
-    
-    // 3. Show action buttons
-    document.getElementById('actionButtons').style.display = 'flex';
-  }, 1200);
+    if (app === 'room') {
+      roomUnlocked = true;
+      document.getElementById('r-materialList').classList.remove('blurred');
+      document.getElementById('r-paywall').style.display = 'none';
+      document.getElementById('r-actions').style.display = 'flex';
+    } else {
+      roofUnlocked = true;
+      document.getElementById('f-materialList').classList.remove('blurred');
+      document.getElementById('f-paywall').style.display = 'none';
+      document.getElementById('f-actions').style.display = 'flex';
+    }
+  }, 1000);
 };
 
-document.getElementById('btnReset').onclick = () => {
-  document.getElementById('len').value = 10;
-  document.getElementById('wid').value = 8;
-  document.getElementById('pit').value = 25;
-  document.getElementById('overhang').value = 0.5;
-  P.type = 'gable';
-  document.querySelectorAll('.roof-btn').forEach(b => b.classList.remove('active'));
-  document.querySelector('.roof-btn[data-type="gable"]').classList.add('active');
-  syncInputs();
-};
-
-// ---------- PROFESSIONAL PDF GENERATION ----------
-document.getElementById('downloadBtn').onclick = () => {
+// ==========================================
+// PDF GENERATORS
+// ==========================================
+window.downloadRoomPDF = () => {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
-  const d = window.__data;
-  const today = new Date().toLocaleDateString('en-GB');
-  const ref = 'C2B-' + Date.now().toString(36).toUpperCase();
-
-  // 1. Branded Header
-  doc.setFillColor(15, 23, 42); // Dark Slate
-  doc.rect(0, 0, 210, 30, 'F');
-  doc.setTextColor(255, 255, 255);
-  doc.setFontSize(22); doc.setFont('helvetica', 'bold');
+  
+  doc.setFillColor(30, 41, 59); doc.rect(0, 0, 210, 30, 'F');
+  doc.setTextColor(255, 255, 255); doc.setFontSize(22); doc.setFont('helvetica', 'bold');
   doc.text("Calculate2Build", 14, 15);
   doc.setFontSize(10); doc.setFont('helvetica', 'normal');
-  doc.text("Professional Roofing Estimate", 14, 22);
+  doc.text("Official Room Estimate", 14, 22);
 
-  // 2. Meta Data
-  doc.setTextColor(100, 100, 100);
-  doc.setFontSize(9);
-  doc.text(`Ref: ${ref}`, 14, 40);
-  doc.text(`Date: ${today}`, 14, 45);
-
-  // 3. Project Specs Box
-  doc.setDrawColor(200, 200, 200);
-  doc.setFillColor(248, 250, 252);
-  doc.rect(14, 55, 182, 25, 'FD');
-  
   doc.setTextColor(0, 0, 0);
-  doc.setFontSize(10); doc.setFont('helvetica', 'bold');
-  doc.text("Roof Specifications", 18, 62);
-  doc.setFont('helvetica', 'normal');
-  doc.text(`Type: ${d.type.toUpperCase()}`, 18, 70);
-  doc.text(`Dimensions: ${d.len}m x ${d.wid}m`, 80, 70);
-  doc.text(`Pitch: ${d.pitch}°`, 150, 70);
-
-  // 4. Bill of Quantities Table
   doc.setFontSize(12); doc.setFont('helvetica', 'bold');
-  doc.text("Bill of Quantities", 14, 95);
-  
-  // Table Headers
-  doc.setFillColor(241, 245, 249);
-  doc.rect(14, 100, 182, 8, 'F');
-  doc.setFontSize(9);
-  doc.text("Item Description", 18, 106);
-  doc.text("Quantity", 160, 106);
+  doc.text("Project Specifications", 14, 45);
+  doc.setFontSize(10); doc.setFont('helvetica', 'normal');
+  doc.text(`Dimensions: ${roomP.len.toFixed(1)}m x ${roomP.wid.toFixed(1)}m x ${roomP.hgt.toFixed(1)}m`, 14, 52);
 
-  // Table Rows
-  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(12); doc.setFont('helvetica', 'bold');
+  doc.text("Bill of Quantities", 14, 70);
+  
+  doc.setFontSize(10); doc.setFont('helvetica', 'normal');
   const rows = [
-    ["Roof Area (Slope + 10% Waste)", `${d.grossArea.toFixed(2)} m²`],
-    ["Roofing Sheets (0.9m x 3m)", `${d.sheets} sheets`],
-    ["Ridge Caps (3m lengths)", `${d.ridges} pcs`],
-    ["Battens (3m lengths)", `${d.battens} pcs`],
-    ["Roofing Screws (Packs of 100)", `${d.screws} packs`],
+    ["Sandcrete blocks (9\")", document.getElementById('r-outBlocks').textContent],
+    ["Cement (mortar)", document.getElementById('r-outCemMortar').textContent],
+    ["Mortar sand", document.getElementById('r-outSand').textContent],
+    ["Cement (plaster)", document.getElementById('r-outCemPlaster').textContent],
+    ["Floor tiles (600x600)", document.getElementById('r-outTiles').textContent]
   ];
   
-  let y = 115;
+  let y = 80;
   rows.forEach(([k, v]) => {
-    doc.text(k, 18, y);
-    doc.text(v, 160, y);
-    doc.setDrawColor(230, 230, 230);
-    doc.line(14, y + 3, 196, y + 3); // Underline
+    doc.text(k, 20, y); doc.text(v, 120, y);
+    doc.setDrawColor(230,230,230); doc.line(14, y+3, 196, y+3);
     y += 10;
   });
 
-  // 5. Disclaimer Footer
-  doc.setFontSize(8);
-  doc.setTextColor(150, 150, 150);
-  doc.text("This document provides preliminary quantity estimates based on geometric inputs.", 14, 270);
-  doc.text("It does not constitute structural design or engineering advice. Verify with a professional.", 14, 275);
-
-  doc.save(`C2B_Roof_Estimate_${ref}.pdf`);
+  doc.save('C2B_Room_Estimate.pdf');
 };
 
-// Init
-syncInputs();
+window.downloadRoofPDF = () => {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  
+  doc.setFillColor(30, 41, 59); doc.rect(0, 0, 210, 30, 'F');
+  doc.setTextColor(255, 255, 255); doc.setFontSize(22); doc.setFont('helvetica', 'bold');
+  doc.text("Calculate2Build", 14, 15);
+  doc.setFontSize(10); doc.setFont('helvetica', 'normal');
+  doc.text("Official Roof Estimate", 14, 22);
 
+  doc.setTextColor(0, 0, 0);
+  doc.setFontSize(12); doc.setFont('helvetica', 'bold');
+  doc.text("Roof Specifications", 14, 45);
+  doc.setFontSize(10); doc.setFont('helvetica', 'normal');
+  doc.text(`Type: ${roofP.type.toUpperCase()} | Dimensions: ${roofP.len}m x ${roofP.wid}m | Pitch: ${roofP.pitch}°`, 14, 52);
+
+  doc.setFontSize(12); doc.setFont('helvetica', 'bold');
+  doc.text("Bill of Quantities", 14, 70);
+  
+  doc.setFontSize(10); doc.setFont('helvetica', 'normal');
+  const rows = [
+    ["Roof Area (Slope + Waste)", document.getElementById('f-outArea').textContent],
+    ["Roofing Sheets (0.9x3m)", document.getElementById('f-outSheets').textContent],
+    ["Ridge Caps (3m)", document.getElementById('f-outRidges').textContent],
+    ["Battens (3m)", document.getElementById('f-outBattens').textContent],
+    ["Roofing Screws (Packs)", document.getElementById('f-outScrews').textContent]
+  ];
+  
+  let y = 80;
+  rows.forEach(([k, v]) => {
+    doc.text(k, 20, y); doc.text(v, 120, y);
+    doc.setDrawColor(230,230,230); doc.line(14, y+3, 196, y+3);
+    y += 10;
+  });
+
+  doc.save('C2B_Roof_Estimate.pdf');
+};
+
+// ==========================================
+// ANIMATION LOOP & RESIZING
+// ==========================================
 (function animate() {
   requestAnimationFrame(animate);
-  controls.update();
-  renderer.render(scene, camera);
+  controlsRoom.update();
+  rendererRoom.render(sceneRoom, cameraRoom);
+  
+  controlsRoof.update();
+  rendererRoof.render(sceneRoof, cameraRoof);
 })();
 
 new ResizeObserver(() => {
-  if(container.clientWidth === 0) return;
-  camera.aspect = container.clientWidth / container.clientHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(container.clientWidth, container.clientHeight);
-}).observe(container);
+  if(containerRoom.clientWidth > 0) {
+    cameraRoom.aspect = containerRoom.clientWidth / containerRoom.clientHeight;
+    cameraRoom.updateProjectionMatrix();
+    rendererRoom.setSize(containerRoom.clientWidth, containerRoom.clientHeight);
+  }
+  if(containerRoof.clientWidth > 0) {
+    cameraRoof.aspect = containerRoof.clientWidth / containerRoof.clientHeight;
+    cameraRoof.updateProjectionMatrix();
+    rendererRoof.setSize(containerRoof.clientWidth, containerRoof.clientHeight);
+  }
+}).observe(document.body);
 </script>
 </body>
 </html>
