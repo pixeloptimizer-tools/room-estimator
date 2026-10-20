@@ -15,9 +15,6 @@
     --border: #e2e8f0;
     --accent: #0f172a;
     --brand: #f59e0b;
-    --warning-bg: #fef3c7;
-    --warning-border: #fde68a;
-    --warning-text: #92400e;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, sans-serif; }
@@ -31,61 +28,69 @@
   .nav-links a { color: #94a3b8; text-decoration: none; transition: color 0.2s; cursor: pointer; }
   .nav-links a.active, .nav-links a:hover { color: white; }
 
-  /* Main Layout */
-  .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; width: 100%; }
+  /* Grid Layout */
+  .container { max-width: 1300px; margin: 32px auto; padding: 0 20px; display: grid; grid-template-columns: 1fr 450px; gap: 24px; align-items: start; width: 100%; }
 
-  /* Wizard Landing Card */
-  .wizard-intro { background: var(--white); border-radius: 16px; border: 1px solid var(--border); padding: 48px; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-  .wizard-intro h1 { font-size: 32px; font-weight: 700; margin-bottom: 12px; }
-  .wizard-intro p { font-size: 16px; color: var(--text-muted); margin-bottom: 32px; max-width: 500px; margin-left: auto; margin-right: auto; line-height: 1.6; }
-  .btn-start { background: var(--brand); color: #000; border: none; padding: 16px 40px; border-radius: 8px; font-size: 16px; font-weight: 700; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3); }
-  .btn-start:hover { background: #fbbf24; transform: translateY(-2px); }
+  /* Cards */
+  .card { background: var(--white); border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05); overflow: hidden; margin-bottom: 24px; }
+  .card-header { padding: 20px 24px; border-bottom: 1px solid var(--border); }
+  .card-header h2 { font-size: 20px; font-weight: 700; }
+  .card-header p { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+  .card-body { padding: 24px; }
 
-  /* Wizard Modal Overlay */
-  .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
-  .modal-overlay.active { display: flex; }
+  /* 3D Viewer */
+  #canvas-container { width: 100%; height: 450px; background: #f1f5f9; position: relative; cursor: grab; border-bottom: 1px solid var(--border); }
+  .viewer-hint { position: absolute; bottom: 16px; left: 16px; background: white; padding: 6px 10px; border-radius: 6px; font-size: 12px; color: var(--text-muted); box-shadow: 0 1px 3px rgba(0,0,0,0.1); pointer-events: none; border: 1px solid var(--border); }
+
+  /* Inputs */
+  .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .input-group { display: flex; flex-direction: column; gap: 6px; }
+  .input-group label { font-size: 13px; font-weight: 600; display: flex; justify-content: space-between; }
+  .input-group .val { color: var(--text-main); font-weight: 600; }
   
-  /* Modal Content */
-  .modal { background: var(--white); width: 100%; max-width: 600px; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); display: flex; flex-direction: column; max-height: 90vh; }
-  .modal-header { padding: 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-  .modal-header h2 { font-size: 20px; font-weight: 700; }
-  .close-btn { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-muted); }
-  .modal-body { padding: 24px; overflow-y: auto; flex: 1; }
-  .modal-footer { padding: 24px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; background: var(--bg); }
+  input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; margin: 8px 0; }
+  input[type=range]::-webkit-slider-runnable-track { height: 6px; background: #e2e8f0; border-radius: 3px; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 18px; width: 18px; border-radius: 50%; background: var(--text-main); cursor: pointer; margin-top: -6px; }
+  input[type=number] { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; background: var(--bg); outline: none; }
+  input[type=number]:focus { border-color: var(--text-main); background: white; }
 
-  /* Wizard Steps */
-  .step { display: none; }
-  .step.active { display: block; animation: fadeIn 0.3s ease; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-  
-  .step-title { font-size: 14px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; }
-  .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
-  .option-card { border: 2px solid var(--border); border-radius: 8px; padding: 16px; cursor: pointer; text-align: center; transition: 0.2s; font-weight: 600; font-size: 15px; }
-  .option-card:hover { border-color: var(--text-muted); }
-  .option-card.selected { border-color: var(--brand); background: rgba(245, 158, 11, 0.05); color: var(--brand); }
-  
-  .input-group { margin-bottom: 16px; }
-  .input-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
-  .input-group input { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 15px; outline: none; }
-  .input-group input:focus { border-color: var(--brand); }
+  /* Roof Type Buttons */
+  .roof-toggles { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; margin-bottom: 20px; }
+  .roof-btn { padding: 10px; border: 1px solid var(--border); border-radius: 6px; background: white; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; text-align: center; }
+  .roof-btn.active { border-color: var(--brand); background: rgba(245, 158, 11, 0.1); color: var(--brand); }
 
-  /* Buttons */
-  .btn { padding: 12px 24px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; transition: 0.2s; }
-  .btn-primary { background: var(--text-main); color: white; }
+  /* Right Column - Material List */
+  .area-boxes { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+  .area-box { background: var(--bg); padding: 16px; border-radius: 8px; border: 1px solid var(--border); }
+  .area-box .label { font-size: 12px; color: var(--text-muted); font-weight: 500; }
+  .area-box .val { font-size: 20px; font-weight: 700; margin-top: 4px; color: var(--text-main); }
+
+  .material-list { display: flex; flex-direction: column; }
+  .mat-header { display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; padding-bottom: 12px; border-bottom: 1px solid var(--border); margin-bottom: 12px; }
+  .mat-item { display: flex; justify-content: space-between; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid var(--border); }
+  .mat-item:last-child { border-bottom: none; }
+  .mat-info { display: flex; flex-direction: column; gap: 4px; padding-right: 16px; }
+  .mat-name { font-size: 14px; font-weight: 600; }
+  .mat-desc { font-size: 11px; color: var(--text-muted); line-height: 1.4; }
+  .mat-qty { font-size: 14px; font-weight: 600; text-align: right; white-space: nowrap; }
+
+  .warning-box { background: #fef3c7; border: 1px solid #fde68a; color: #92400e; padding: 16px; border-radius: 8px; font-size: 13px; line-height: 1.5; margin-top: 24px; }
+  
+  /* Actions */
+  .actions { display: flex; flex-direction: column; gap: 12px; margin-top: 24px; }
+  .action-row { display: flex; gap: 12px; }
+  button { padding: 12px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: 0.2s; border: none; display: flex; align-items: center; justify-content: center; }
+  .btn-primary { background: var(--text-main); color: white; flex: 2; }
   .btn-primary:hover { background: #334155; }
-  .btn-secondary { background: white; border: 1px solid var(--border); color: var(--text-main); }
-  .btn-secondary:hover { background: var(--border); }
-  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-primary.unlocked { background: #10b981; }
+  .btn-outline { background: white; color: var(--text-main); border: 1px solid var(--border); flex: 1; }
+  .btn-outline:hover { background: var(--bg); }
 
-  /* Results Box */
-  .results-box { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 20px; margin-bottom: 24px; }
-  .result-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
-  .result-row:last-child { border-bottom: none; }
-  .result-row span:first-child { color: var(--text-muted); }
-  .result-row span:last-child { font-weight: 700; color: var(--text-main); }
-  .highlight-result { font-size: 24px; font-weight: 700; color: var(--brand); text-align: center; margin: 20px 0; }
-  
-  .disclaimer { font-size: 11px; color: var(--text-muted); line-height: 1.5; margin-top: 16px; border-top: 1px solid var(--border); padding-top: 16px; }
+  @media (max-width: 1024px) {
+    .container { grid-template-columns: 1fr; }
+    .input-grid { grid-template-columns: 1fr; }
+    .roof-toggles { grid-template-columns: 1fr 1fr; }
+  }
 </style>
 </head>
 <body>
@@ -94,94 +99,129 @@
   <div class="logo">Calculate2Build <span>/ C2B</span></div>
   <div class="nav-links">
     <a class="active">Roof Wizard</a>
+    <a style="opacity: 0.5; cursor: not-allowed;">Room Estimator</a>
     <a style="opacity: 0.5; cursor: not-allowed;">Concrete (Soon)</a>
-    <a style="opacity: 0.5; cursor: not-allowed;">Tiling (Soon)</a>
   </div>
 </nav>
 
 <div class="container">
-  <!-- Landing Screen -->
-  <div class="wizard-intro">
-    <h1>Roofing Wizard</h1>
-    <p>I don't know which calculator I need. Answer 4 simple questions, and we will calculate your roofing sheets, battens, ridge caps, and screws instantly.</p>
-    <button class="btn-start" id="startWizard">Start Estimation</button>
-  </div>
-</div>
-
-<!-- Wizard Modal -->
-<div class="modal-overlay" id="wizardModal">
-  <div class="modal">
-    <div class="modal-header">
-      <h2 id="modalTitle">Step 1 of 4</h2>
-      <button class="close-btn" id="closeModal">&times;</button>
-    </div>
-    
-    <div class="modal-body">
+  
+  <!-- LEFT COLUMN: 3D & INPUTS -->
+  <div class="left-col">
+    <div class="card">
+      <div class="card-header">
+        <h2>Build your Roof</h2>
+        <p>Select a roof type and adjust dimensions to see the live 3D plan.</p>
+      </div>
       
-      <!-- STEP 1: Roof Type -->
-      <div class="step active" id="step1">
-        <div class="step-title">What type of roof do you have?</div>
-        <div class="options-grid">
-          <div class="option-card selected" data-val="gable">Gable Roof</div>
-          <div class="option-card" data-val="hip">Hip Roof</div>
-          <div class="option-card" data-val="mono">Mono-Pitch</div>
-          <div class="option-card" data-val="flat">Flat Roof</div>
-        </div>
+      <!-- 3D Canvas -->
+      <div id="canvas-container">
+        <div class="viewer-hint">Drag to rotate • Scroll to zoom</div>
       </div>
 
-      <!-- STEP 2: Dimensions -->
-      <div class="step" id="step2">
-        <div class="step-title">Building Dimensions</div>
-        <div class="input-group">
-          <label>Building Length (m)</label>
-          <input type="number" id="bLen" value="10" step="0.1" />
+      <div class="card-body">
+        <div class="roof-toggles">
+          <button class="roof-btn active" data-type="gable">Gable</button>
+          <button class="roof-btn" data-type="hip">Hip</button>
+          <button class="roof-btn" data-type="mono">Mono-Pitch</button>
+          <button class="roof-btn" data-type="flat">Flat</button>
         </div>
-        <div class="input-group">
-          <label>Building Width (m)</label>
-          <input type="number" id="bWid" value="8" step="0.1" />
+
+        <div class="input-grid">
+          <div class="input-group">
+            <label>Building Length <span class="val" id="lenV">10.0 m</span></label>
+            <input type="range" id="len" min="3" max="30" step="0.5" value="10" />
+          </div>
+          <div class="input-group">
+            <label>Building Width <span class="val" id="widV">8.0 m</span></label>
+            <input type="range" id="wid" min="3" max="20" step="0.5" value="8" />
+          </div>
+          <div class="input-group">
+            <label>Roof Pitch <span class="val" id="pitV">25°</span></label>
+            <input type="range" id="pit" min="5" max="50" step="1" value="25" />
+          </div>
+          <div class="input-group">
+            <label>Overhang (m)</label>
+            <input type="number" id="overhang" value="0.5" step="0.1" />
+            <div class="helper" style="font-size:11px; color:var(--text-muted);">Eaves extending past walls</div>
+          </div>
         </div>
       </div>
+    </div>
+  </div>
 
-      <!-- STEP 3: Pitch -->
-      <div class="step" id="step3">
-        <div class="step-title">Roof Pitch (Angle)</div>
-        <div class="input-group">
-          <label>Pitch in degrees (°)</label>
-          <input type="number" id="roofPitch" value="25" min="5" max="60" />
-        </div>
-        <div class="disclaimer" style="border:none; margin-top:0;">
-          Standard roofing sheets require a minimum pitch of 15° to prevent water ingress.
-        </div>
+  <!-- RIGHT COLUMN: RESULTS -->
+  <div class="right-col">
+    <div class="card">
+      <div class="card-header">
+        <h2>Material estimate</h2>
+        <p>Indicative quantities based on your roof plan.</p>
       </div>
-
-      <!-- STEP 4: Results -->
-      <div class="step" id="step4">
-        <div class="step-title">Your Roof Plan Estimate</div>
+      <div class="card-body">
         
-        <div class="results-box">
-          <div class="result-row"><span>Roof Area (Slope)</span><span id="resArea">0.00 m²</span></div>
-          <div class="result-row"><span>Roofing Sheets (0.9m x 3m)</span><span id="resSheets">0 sheets</span></div>
-          <div class="result-row"><span>Ridge Caps (3m)</span><span id="resRidges">0 pcs</span></div>
-          <div class="result-row"><span>Battens (3m x 50mm)</span><span id="resBattens">0 pcs</span></div>
-          <div class="result-row"><span>Roofing Screws</span><span id="resScrews">0 packs</span></div>
+        <div class="area-boxes">
+          <div class="area-box">
+            <div class="label">Roof Area (Slope)</div>
+            <div class="val" id="outArea">0.00 m²</div>
+          </div>
+          <div class="area-box">
+            <div class="label">Roof Angle</div>
+            <div class="val" id="outAngle">0°</div>
+          </div>
         </div>
 
-        <div class="disclaimer">
+        <div class="material-list">
+          <div class="mat-header"><span>Material / Work Item</span><span>Estimated Quantity</span></div>
+          
+          <div class="mat-item">
+            <div class="mat-info">
+              <div class="mat-name">Roofing Sheets (0.9 x 3m)</div>
+              <div class="mat-desc">Standard corrugated sheets (includes 10% waste)</div>
+            </div>
+            <div class="mat-qty" id="outSheets">0 sheets</div>
+          </div>
+
+          <div class="mat-item">
+            <div class="mat-info">
+              <div class="mat-name">Ridge Caps (3m)</div>
+              <div class="mat-desc">Top capping for gable/hip roofs</div>
+            </div>
+            <div class="mat-qty" id="outRidges">0 pcs</div>
+          </div>
+
+          <div class="mat-item">
+            <div class="mat-info">
+              <div class="mat-name">Battens (3m x 50mm)</div>
+              <div class="mat-desc">Wooden purlins for sheet fixing</div>
+            </div>
+            <div class="mat-qty" id="outBattens">0 pcs</div>
+          </div>
+
+          <div class="mat-item">
+            <div class="mat-info">
+              <div class="mat-name">Roofing Screws</div>
+              <div class="mat-desc">Packs of 100 (approx. 12 per sheet)</div>
+            </div>
+            <div class="mat-qty" id="outScrews">0 packs</div>
+          </div>
+        </div>
+
+        <div class="warning-box">
           <strong>Important:</strong> This calculator determines geometric length and preliminary quantities only. It does not determine structural capacity, purlin spacing, or rafter sizes. Always verify with your roofing contractor.
         </div>
+
+        <div class="actions">
+          <button class="btn-primary" id="buyBtn">Download PDF Report ($1)</button>
+          <button class="btn-outline" id="btnReset" style="width:100%;">Reset dimensions</button>
+        </div>
+
       </div>
-
-    </div>
-
-    <div class="modal-footer">
-      <button class="btn btn-secondary" id="btnPrev" style="visibility: hidden;">Back</button>
-      <button class="btn btn-primary" id="btnNext">Next</button>
-      <button class="btn btn-primary" id="btnDownload" style="display: none; background: #10b981;">Download PDF ($1)</button>
     </div>
   </div>
+
 </div>
 
-<!-- Include Libraries -->
+<!-- Include Three.js -->
 <script type="importmap">
 {
   "imports": {
@@ -192,178 +232,322 @@
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-<script>
-  // --- WIZARD STATE ---
-  let currentStep = 1;
-  const totalSteps = 4;
-  const state = { roofType: 'gable', len: 10, wid: 8, pitch: 25 };
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-  const modal = document.getElementById('wizardModal');
-  const btnPrev = document.getElementById('btnPrev');
-  const btnNext = document.getElementById('btnNext');
-  const btnDownload = document.getElementById('btnDownload');
-  const modalTitle = document.getElementById('modalTitle');
+// ---------- SCENE SETUP ----------
+const container = document.getElementById('canvas-container');
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0xf1f5f9); 
 
-  // --- OPEN/CLOSE ---
-  document.getElementById('startWizard').onclick = () => { modal.classList.add('active'); };
-  document.getElementById('closeModal').onclick = () => { modal.classList.remove('active'); };
+const camera = new THREE.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 0.1, 1000);
+camera.position.set(15, 12, 18);
 
-  // --- ROOF TYPE SELECTION ---
-  document.querySelectorAll('.option-card').forEach(card => {
-    card.onclick = () => {
-      document.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
-      card.classList.add('selected');
-      state.roofType = card.dataset.val;
-    };
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(container.clientWidth, container.clientHeight);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+container.appendChild(renderer.domElement);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.05;
+controls.maxPolarAngle = Math.PI / 2 - 0.05; 
+controls.minDistance = 5;
+controls.maxDistance = 60;
+controls.target.set(0, 2, 0);
+
+// Lighting
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+scene.add(ambientLight);
+
+const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
+dirLight.position.set(20, 30, 20);
+dirLight.castShadow = true;
+dirLight.shadow.mapSize.width = 2048;
+dirLight.shadow.mapSize.height = 2048;
+dirLight.shadow.camera.left = -30;
+dirLight.shadow.camera.right = 30;
+dirLight.shadow.camera.top = 30;
+dirLight.shadow.camera.bottom = -30;
+scene.add(dirLight);
+
+// Environment
+const ground = new THREE.Mesh(
+  new THREE.PlaneGeometry(200, 200),
+  new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1 })
+);
+ground.rotation.x = -Math.PI / 2;
+ground.receiveShadow = true;
+scene.add(ground);
+
+const grid = new THREE.GridHelper(100, 100, 0xcbd5e1, 0xe2e8f0);
+grid.position.y = 0.01;
+scene.add(grid);
+
+// ---------- BUILD VARIABLES ----------
+const P = { len: 10, wid: 8, pitch: 25, overhang: 0.5, type: 'gable' };
+const wallHeight = 2.8; // Standard wall height for visualization
+
+const wallsGroup = new THREE.Group();
+const roofGroup = new THREE.Group();
+scene.add(wallsGroup, roofGroup);
+
+const wallMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.9 });
+const roofMat = new THREE.MeshStandardMaterial({ color: 0x64748b, roughness: 0.6, side: THREE.DoubleSide });
+
+// ---------- BUILD THE HOUSE & ROOF ----------
+function buildScene() {
+  wallsGroup.clear();
+  roofGroup.clear();
+
+  const { len, wid, pitch, overhang, type } = P;
+
+  // 1. Build the simple wall box (for visual context)
+  const wallGeo = new THREE.BoxGeometry(len, wallHeight, wid);
+  const wallBox = new THREE.Mesh(wallGeo, wallMat);
+  wallBox.position.y = wallHeight / 2;
+  wallBox.castShadow = true; wallBox.receiveShadow = true;
+  wallsGroup.add(wallBox);
+
+  // 2. Roof Math
+  const rad = (pitch * Math.PI) / 180;
+  const halfW = wid / 2;
+  const rise = Math.tan(rad) * halfW;
+  const yBase = wallHeight;
+
+  // If Flat Roof
+  if (type === 'flat') {
+    const slab = new THREE.Mesh(new THREE.BoxGeometry(len + overhang*2, 0.15, wid + overhang*2), roofMat);
+    slab.position.y = yBase + 0.075;
+    slab.castShadow = true; slab.receiveShadow = true;
+    roofGroup.add(slab);
+    return;
+  }
+
+  // If Mono-Pitch Roof
+  if (type === 'mono') {
+    const slopeLen = Math.sqrt(Math.pow(wid + overhang*2, 2) + Math.pow(rise*2, 2));
+    const geo = new THREE.BoxGeometry(len + overhang*2, 0.1, slopeLen);
+    const mono = new THREE.Mesh(geo, roofMat);
+    mono.position.set(0, yBase + rise/2, 0);
+    mono.rotation.x = -rad;
+    mono.castShadow = true; mono.receiveShadow = true;
+    roofGroup.add(mono);
+    return;
+  }
+
+  // Gable / Hip Roof Geometry
+  const geometry = new THREE.BufferGeometry();
+  
+  if (type === 'gable') {
+    // Standard Gable Prism
+    const v0 = new THREE.Vector3(-halfW - overhang, yBase,  len/2 + overhang); 
+    const v1 = new THREE.Vector3( halfW + overhang, yBase,  len/2 + overhang); 
+    const v2 = new THREE.Vector3( 0,              yBase + rise, len/2 + overhang); 
+    const v3 = new THREE.Vector3(-halfW - overhang, yBase, -len/2 - overhang); 
+    const v4 = new THREE.Vector3( halfW + overhang, yBase, -len/2 - overhang); 
+    const v5 = new THREE.Vector3( 0,              yBase + rise, -len/2 - overhang); 
+
+    const indices = [
+      0, 2, 5,  0, 5, 3, // Left slope
+      1, 4, 5,  1, 5, 2, // Right slope
+      0, 1, 2,           // Front triangle
+      3, 5, 4            // Back triangle
+    ];
+
+    const vertices = new Float32Array([
+      v0.x, v0.y, v0.z,  v1.x, v1.y, v1.z,  v2.x, v2.y, v2.z,
+      v3.x, v3.y, v3.z,  v4.x, v4.y, v4.z,  v5.x, v5.y, v5.z
+    ]);
+
+    geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+    geometry.setIndex(indices);
+    geometry.computeVertexNormals(); 
+  } 
+  else if (type === 'hip') {
+    // Hip Roof (Pyramid-like with ridge)
+    const ridgeLen = Math.max(len - wid, 0); // Ridge only exists if length > width
+    const halfRidge = ridgeLen / 2;
+
+    const v0 = new THREE.Vector3(-halfW - overhang, yBase,  len/2 + overhang); 
+    const v1 = new THREE.Vector3( halfW + overhang, yBase,  len/2 + overhang); 
+    const v2 = new THREE.Vector3(-halfW - overhang, yBase, -len/2 - overhang); 
+    const v3 = new THREE.Vector3( halfW + overhang, yBase, -len/2 - overhang); 
+
+    const topFront = new THREE.Vector3(0, yBase + rise, halfRidge);
+    const topBack = new THREE.Vector3(0, yBase + rise, -halfRidge);
+
+    const vertices = new Float32Array([
+      v0.x, v0.y, v0.z,  v1.x, v1.y, v1.z,  v2.x, v2.y, v2.z,  v3.x, v3.y, v3.z,
+      topFront.x, topFront.y, topFront.z, topBack.x, topBack.y, topBack.z
+    ]);
+
+    const indices = [
+      0, 1, 4,       // Front hip
+      2, 5, 3,       // Back hip
+      0, 4, 5,  0, 5, 2, // Left side
+      1, 3, 5,  1, 5, 4  // Right side
+    ];
+
+    geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+    geometry.setIndex(indices);
+    geometry.computeVertexNormals();
+  }
+
+  const roofMesh = new THREE.Mesh(geometry, roofMat);
+  roofMesh.castShadow = true; roofMesh.receiveShadow = true;
+  roofGroup.add(roofMesh);
+}
+
+// ---------- CALCULATION ENGINE ----------
+function calculateRoof() {
+  const { len, wid, pitch, overhang, type } = P;
+  
+  const rad = (pitch * Math.PI) / 180;
+  const halfW = wid / 2;
+  const rise = Math.tan(rad) * halfW;
+  const slopeLen = Math.sqrt(halfW * halfW + rise * rise);
+  
+  let area = 0;
+  if (type === 'gable') area = len * slopeLen * 2;
+  else if (type === 'hip') area = len * slopeLen * 2; // Simplified for estimation
+  else if (type === 'mono') area = len * (wid + overhang*2) / Math.cos(rad);
+  else area = (len + overhang*2) * (wid + overhang*2); 
+
+  // Add 10% waste
+  const grossArea = area * 1.10;
+
+  // Materials
+  const sheetArea = 0.9 * 3; // 2.7m2 per standard sheet
+  const sheets = Math.ceil(grossArea / sheetArea);
+  
+  const ridgeLen = len + overhang*2; 
+  const ridges = Math.ceil(ridgeLen / 3); 
+
+  const battens = Math.ceil(grossArea / 2); // Approx 1 batten per 2m2
+  const screws = Math.ceil((sheets * 12) / 100); // 12 per sheet, 100 per pack
+
+  // Update UI
+  document.getElementById('outArea').textContent = grossArea.toFixed(1) + ' m²';
+  document.getElementById('outAngle').textContent = pitch + '°';
+  document.getElementById('outSheets').textContent = sheets + ' sheets';
+  document.getElementById('outRidges').textContent = ridges + ' pcs';
+  document.getElementById('outBattens').textContent = battens + ' pcs';
+  document.getElementById('outScrews').textContent = screws + ' packs';
+
+  window.__data = { area, grossArea, sheets, ridges, battens, screws, len, wid, pitch, type };
+}
+
+// ---------- UI WIRING ----------
+function syncInputs() {
+  P.len = +document.getElementById('len').value; document.getElementById('lenV').textContent = P.len.toFixed(1) + ' m';
+  P.wid = +document.getElementById('wid').value; document.getElementById('widV').textContent = P.wid.toFixed(1) + ' m';
+  P.pitch = +document.getElementById('pit').value; document.getElementById('pitV').textContent = P.pitch + '°';
+  P.overhang = +document.getElementById('overhang').value || 0.5;
+
+  buildScene();
+  calculateRoof();
+}
+
+document.getElementById('len').oninput = syncInputs;
+document.getElementById('wid').oninput = syncInputs;
+document.getElementById('pit').oninput = syncInputs;
+document.getElementById('overhang').oninput = syncInputs;
+
+// Roof Type Toggles
+document.querySelectorAll('.roof-btn').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('.roof-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    P.type = btn.dataset.type;
+    syncInputs();
+  };
+});
+
+document.getElementById('btnReset').onclick = () => {
+  document.getElementById('len').value = 10;
+  document.getElementById('wid').value = 8;
+  document.getElementById('pit').value = 25;
+  document.getElementById('overhang').value = 0.5;
+  P.type = 'gable';
+  document.querySelectorAll('.roof-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector('.roof-btn[data-type="gable"]').classList.add('active');
+  syncInputs();
+};
+
+// ---------- PAYMENT & PDF ----------
+document.getElementById('buyBtn').onclick = () => {
+  const btn = document.getElementById('buyBtn');
+  btn.textContent = 'Processing Payment ($1)...';
+  
+  setTimeout(() => {
+    btn.textContent = '✓ Download PDF';
+    btn.classList.add('unlocked');
+    btn.onclick = downloadPDF;
+  }, 1000);
+};
+
+function downloadPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  const d = window.__data;
+
+  doc.setFillColor(30, 41, 59);
+  doc.rect(0, 0, 210, 22, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(16); doc.setFont('helvetica', 'bold');
+  doc.text("C2B ROOFING ESTIMATE", 14, 14);
+
+  doc.setTextColor(0, 0, 0);
+  doc.setFontSize(10); doc.setFont('helvetica', 'normal');
+  doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 32);
+  doc.text(`Roof Type: ${d.type.toUpperCase()}`, 14, 38);
+  doc.text(`Dimensions: ${d.len}m x ${d.wid}m | Pitch: ${d.pitch}°`, 14, 44);
+
+  doc.setFontSize(13); doc.setFont('helvetica', 'bold');
+  doc.text('Material Schedule', 14, 60);
+  
+  doc.setFontSize(10); doc.setFont('helvetica', 'normal');
+  const rows = [
+    ['Total Roof Area (with waste)', `${d.grossArea.toFixed(2)} m²`],
+    ['Roofing Sheets (0.9m x 3m)', `${d.sheets} sheets`],
+    ['Ridge Caps (3m lengths)', `${d.ridges} pcs`],
+    ['Battens (3m lengths)', `${d.battens} pcs`],
+    ['Roofing Screws (Packs of 100)', `${d.screws} packs`],
+  ];
+  
+  let y = 70;
+  rows.forEach(([k, v]) => {
+    doc.text(k, 20, y);
+    doc.text(v, 120, y);
+    y += 8;
   });
 
-  // --- NAVIGATION LOGIC ---
-  function updateStep() {
-    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-    document.getElementById(`step${currentStep}`).classList.add('active');
-    
-    modalTitle.textContent = `Step ${currentStep} of 4`;
-    
-    btnPrev.style.visibility = currentStep === 1 ? 'hidden' : 'visible';
-    
-    if (currentStep === totalSteps) {
-      btnNext.style.display = 'none';
-      btnDownload.style.display = 'block';
-    } else {
-      btnNext.style.display = 'block';
-      btnDownload.style.display = 'none';
-    }
-  }
+  doc.setFontSize(8);
+  doc.setTextColor(150, 150, 150);
+  doc.text('This is a preliminary geometric estimate. Verify quantities with your roofing contractor.', 14, 280);
 
-  btnPrev.onclick = () => { if(currentStep > 1) { currentStep--; updateStep(); } };
+  doc.save('C2B_Roof_Estimate.pdf');
+}
 
-  btnNext.onclick = () => {
-    // Save inputs on step 2 and 3
-    if (currentStep === 2) {
-      state.len = parseFloat(document.getElementById('bLen').value) || 10;
-      state.wid = parseFloat(document.getElementById('bWid').value) || 8;
-    }
-    if (currentStep === 3) {
-      state.pitch = parseFloat(document.getElementById('roofPitch').value) || 25;
-    }
-    
-    if (currentStep < totalSteps) {
-      currentStep++;
-      updateStep();
-      if (currentStep === 4) calculateRoof();
-    }
-  };
+// Init
+syncInputs();
 
-  // --- CALCULATION ENGINE ---
-  function calculateRoof() {
-    // 1. Math for Roof Area
-    const rad = (state.pitch * Math.PI) / 180;
-    const halfW = state.wid / 2;
-    const rise = Math.tan(rad) * halfW;
-    const slopeLen = Math.sqrt(halfW * halfW + rise * rise);
-    
-    let area = 0;
-    if (state.roofType === 'gable') area = state.len * slopeLen * 2;
-    else if (state.roofType === 'hip') area = state.len * slopeLen * 2; // Simplified
-    else if (state.roofType === 'mono') area = state.len * slopeLen;
-    else area = state.len * state.wid; // Flat
+(function animate() {
+  requestAnimationFrame(animate);
+  controls.update();
+  renderer.render(scene, camera);
+})();
 
-    // Add 10% waste
-    const grossArea = area * 1.10;
-
-    // 2. Materials (Standard 0.9m x 3m sheets = 2.7m2)
-    const sheetArea = 0.9 * 3;
-    const sheets = Math.ceil(grossArea / sheetArea);
-    
-    // 3. Ridge Caps (Approx length = Building Length + overhangs)
-    const ridgeLen = state.len + 1; 
-    const ridges = Math.ceil(ridgeLen / 3); // 3m lengths
-
-    // 4. Battens (Assuming 1m spacing vertically, 0.6m horizontally)
-    // Approx: 1 batten (3m length) per 2m2 of roof area
-    const battens = Math.ceil(grossArea / 2);
-
-    // 5. Screws (Approx 12 screws per sheet, 100 per pack)
-    const screws = Math.ceil((sheets * 12) / 100);
-
-    // Populate UI
-    document.getElementById('resArea').textContent = grossArea.toFixed(2) + ' m²';
-    document.getElementById('resSheets').textContent = sheets + ' sheets';
-    document.getElementById('resRidges').textContent = ridges + ' pcs';
-    document.getElementById('resBattens').textContent = battens + ' pcs';
-    document.getElementById('resScrews').textContent = screws + ' packs';
-
-    // Save to window for PDF
-    window.__roofEstimate = { area, grossArea, sheets, ridges, battens, screws, state };
-  }
-
-  // --- PDF GENERATION ---
-  btnDownload.onclick = () => {
-    const btn = btnDownload;
-    btn.textContent = 'Processing Payment ($1)...';
-    
-    // Simulate Paystack Popup delay
-    setTimeout(() => {
-      btn.textContent = '✓ Payment Successful. Downloading...';
-      btn.disabled = true;
-      
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
-      const data = window.__roofEstimate;
-
-      // Header
-      doc.setFillColor(30, 41, 59);
-      doc.rect(0, 0, 210, 22, 'F');
-      doc.setTextColor(255, 255, 255);
-      doc.setFontSize(16); doc.setFont('helvetica', 'bold');
-      doc.text("C2B ROOFING ESTIMATE", 14, 14);
-
-      // Details
-      doc.setTextColor(0, 0, 0);
-      doc.setFontSize(10); doc.setFont('helvetica', 'normal');
-      doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 32);
-      doc.text(`Roof Type: ${data.state.roofType.toUpperCase()}`, 14, 38);
-      doc.text(`Dimensions: ${data.state.len}m x ${data.state.wid}m | Pitch: ${data.state.pitch}°`, 14, 44);
-
-      // Table
-      doc.setFontSize(13); doc.setFont('helvetica', 'bold');
-      doc.text('Material Schedule', 14, 60);
-      
-      doc.setFontSize(10); doc.setFont('helvetica', 'normal');
-      const rows = [
-        ['Total Roof Area (with waste)', `${data.grossArea.toFixed(2)} m²`],
-        ['Roofing Sheets (0.9m x 3m)', `${data.sheets} sheets`],
-        ['Ridge Caps (3m lengths)', `${data.ridges} pcs`],
-        ['Battens (3m lengths)', `${data.battens} pcs`],
-        ['Roofing Screws (Packs of 100)', `${data.screws} packs`],
-      ];
-      
-      let y = 70;
-      rows.forEach(([k, v]) => {
-        doc.text(k, 20, y);
-        doc.text(v, 120, y);
-        y += 8;
-      });
-
-      // Watermark/Disclaimer
-      doc.setFontSize(8);
-      doc.setTextColor(150, 150, 150);
-      doc.text('This is a preliminary geometric estimate. Not a structural design. Verify quantities with your roofing contractor.', 14, 280);
-      doc.text('Generated by Calculate2Build', 14, 285);
-
-      doc.save('C2B_Roof_Estimate.pdf');
-      
-      // Reset Modal
-      setTimeout(() => {
-        modal.classList.remove('active');
-        currentStep = 1; updateStep();
-        btn.textContent = 'Download PDF ($1)';
-        btn.disabled = false;
-      }, 1500);
-
-    }, 1500);
-  };
-
+new ResizeObserver(() => {
+  if(container.clientWidth === 0) return;
+  camera.aspect = container.clientWidth / container.clientHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(container.clientWidth, container.clientHeight);
+}).observe(container);
 </script>
 </body>
 </html>
