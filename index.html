@@ -191,7 +191,7 @@
               <div class="paywall-box">
                 <h3>🔒 Unlock Bill of Materials</h3>
                 <p>Get exact quantities for blocks, cement, and sand instantly.</p>
-                <button class="btn-primary" onclick="unlockApp('room')">Unlock for $1</button>
+                <button class="btn-primary" onclick="payWithPaystack('room', 1)">Unlock for $1</button>
               </div>
             </div>
           </div>
@@ -251,7 +251,7 @@
               <div class="paywall-box">
                 <h3>🔒 Unlock Bill of Materials</h3>
                 <p>Get exact quantities for sheets, battens, and screws instantly.</p>
-                <button class="btn-primary" onclick="unlockApp('roof')">Unlock for $1</button>
+                <button class="btn-primary" onclick="payWithPaystack('roof', 1)">Unlock for $1</button>
               </div>
             </div>
           </div>
@@ -312,7 +312,7 @@
               <div class="paywall-box">
                 <h3>🔒 Unlock Bill of Materials</h3>
                 <p>Get exact quantities for adhesive, grout, and spacers instantly.</p>
-                <button class="btn-primary" onclick="unlockApp('tiles')">Unlock for $1</button>
+                <button class="btn-primary" onclick="payWithPaystack('tiles', 1)">Unlock for $1</button>
               </div>
             </div>
           </div>
@@ -387,12 +387,10 @@
       <p>We'd love to hear from you. Whether you have a question about an estimate, need support with a PDF download, or want to discuss a partnership, reach out to us.</p>
       
       <h3>Support & Inquiries</h3>
-      <p>Email us directly at: <a href="mailto:support@calculate2build.com" style="color: var(--brand); font-weight: 600;">quicktoolsapp@proton.me</a></p>
+      <p>Email us directly at: <a href="mailto:quicktoolsapp@proton.me" style="color: var(--brand); font-weight: 600;">quicktoolsapp@proton.me</a></p>
       
       <h3>Business Hours</h3>
       <p>Monday - Friday: 9:00 AM - 5:00 PM (GMT)<br>We aim to respond to all inquiries within 24-48 hours.</p>
-      
-    
     </div>
 
   </div>
@@ -407,11 +405,49 @@
   }
 }
 </script>
+<!-- PAYSTACK INLINE SCRIPT -->
+<script src="https://js.paystack.co/v1/inline.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <script type="module">
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+// ==========================================
+// PAYSTACK INTEGRATION
+// ==========================================
+// 👇 REPLACE THIS WITH YOUR REAL PAYSTACK PUBLIC KEY FROM YOUR DASHBOARD 👇
+const PAYSTACK_PUBLIC_KEY = 'pk_test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
+
+window.payWithPaystack = (appType, amountUSD) => {
+  // We are charging 15 GHS (approx $1). Paystack uses the smallest currency unit (pesewas), so multiply by 100.
+  const amountGHS = 15 * 100; 
+  
+  let handler = PaystackPop.setup({
+    key: PAYSTACK_PUBLIC_KEY,
+    email: 'quicktoolsapp@proton.me', // We use your email as a fallback for the receipt
+    amount: amountGHS,
+    currency: 'GHS',
+    ref: 'C2B-' + Math.floor((Math.random() * 1000000000) + 1),
+    callback: function(response) {
+      // Payment was successful!
+      // In a real backend environment, you would verify the reference on your server here.
+      // For this frontend-only version, we unlock it directly.
+      
+      document.getElementById(`${appType === 'room' ? 'r' : appType === 'roof' ? 'f' : 't'}-materialList`).classList.remove('blurred');
+      document.getElementById(`${appType === 'room' ? 'r' : appType === 'roof' ? 'f' : 't'}-paywall`).style.display = 'none';
+      document.getElementById(`${appType === 'room' ? 'r' : appType === 'roof' ? 'f' : 't'}-actions`).style.display = 'flex';
+      
+      alert('Payment successful! Ref: ' + response.reference);
+    },
+    onClose: function() {
+      // User closed the payment modal without paying
+      console.log('Payment window closed.');
+    }
+  });
+  
+  handler.openIframe();
+};
 
 // MODAL LOGIC
 window.openModal = (type) => {
@@ -694,16 +730,7 @@ document.getElementById('t-len').oninput = syncTiles; document.getElementById('t
 syncTiles();
 window.resetTiles = () => { document.getElementById('t-len').value = 5; document.getElementById('t-wid').value = 4; document.getElementById('t-size').value = "0.36"; document.getElementById('t-waste').value = 10; syncTiles(); };
 
-// PAYWALL & PDF LOGIC
-window.unlockApp = (app) => {
-  const btn = event.target; btn.textContent = 'Processing Payment...';
-  setTimeout(() => {
-    document.getElementById(`${app === 'room' ? 'r' : app === 'roof' ? 'f' : 't'}-materialList`).classList.remove('blurred');
-    document.getElementById(`${app === 'room' ? 'r' : app === 'roof' ? 'f' : 't'}-paywall`).style.display = 'none';
-    document.getElementById(`${app === 'room' ? 'r' : app === 'roof' ? 'f' : 't'}-actions`).style.display = 'flex';
-  }, 1000);
-};
-
+// PDF GENERATORS
 window.downloadRoomPDF = () => {
   const { jsPDF } = window.jspdf; const doc = new jsPDF();
   doc.setFillColor(30, 41, 59); doc.rect(0, 0, 210, 30, 'F');
