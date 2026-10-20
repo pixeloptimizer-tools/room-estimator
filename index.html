@@ -104,6 +104,20 @@
   .btn-primary.unlocked { background: #10b981; }
   .btn-reset { background: white; color: var(--text-main); border: 1px solid var(--border); }
 
+  /* Footer & Legal Modals */
+  footer { background: #0f172a; color: #94a3b8; padding: 24px; text-align: center; margin-top: 40px; font-size: 12px; }
+  footer a { color: #94a3b8; text-decoration: none; margin: 0 10px; cursor: pointer; transition: color 0.2s; }
+  footer a:hover { color: white; text-decoration: underline; }
+  
+  .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
+  .modal-overlay.active { display: flex; }
+  .modal-box { background: white; width: 100%; max-width: 600px; border-radius: 12px; padding: 32px; max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); position: relative; }
+  .modal-close { position: absolute; top: 16px; right: 20px; font-size: 24px; cursor: pointer; color: var(--text-muted); border: none; background: none; }
+  .modal-box h2 { font-size: 22px; margin-bottom: 16px; color: var(--text-main); }
+  .modal-box h3 { font-size: 16px; margin: 20px 0 8px; color: var(--text-main); }
+  .modal-box p, .modal-box li { font-size: 13px; line-height: 1.6; color: var(--text-muted); margin-bottom: 10px; }
+  .modal-box ul { padding-left: 20px; }
+
   /* Mobile Adjustments */
   @media (max-width: 768px) {
     .nav-links { display: none; }
@@ -148,7 +162,6 @@
         </div>
         <div class="card-body">
           <div class="input-grid">
-            <!-- Adjusted Sliders: min 0.5, max 50 -->
             <div class="input-group"><label>Length <span class="val" id="r-lenV">6.4 m</span></label><input type="range" id="r-len" min="0.5" max="50" step="0.1" value="6.4" /></div>
             <div class="input-group"><label>Width <span class="val" id="r-widV">5.5 m</span></label><input type="range" id="r-wid" min="0.5" max="50" step="0.1" value="5.5" /></div>
             <div class="input-group"><label>Height <span class="val" id="r-hgtV">3.7 m</span></label><input type="range" id="r-hgt" min="0.5" max="50" step="0.1" value="3.7" /></div>
@@ -210,7 +223,6 @@
             <button class="roof-btn" data-type="flat" onclick="setRoofType('flat')">Flat</button>
           </div>
           <div class="input-grid">
-            <!-- Adjusted Sliders: min 0.5, max 50 -->
             <div class="input-group"><label>Length <span class="val" id="f-lenV">10.0 m</span></label><input type="range" id="f-len" min="0.5" max="50" step="0.5" value="10" /></div>
             <div class="input-group"><label>Width <span class="val" id="f-widV">8.0 m</span></label><input type="range" id="f-wid" min="0.5" max="50" step="0.5" value="8" /></div>
             <div class="input-group"><label>Pitch <span class="val" id="f-pitV">25°</span></label><input type="range" id="f-pit" min="5" max="50" step="1" value="25" /></div>
@@ -265,7 +277,6 @@
         </div>
         <div class="card-body">
           <div class="input-grid">
-            <!-- Adjusted Sliders: min 0.5, max 50 -->
             <div class="input-group"><label>Room Length <span class="val" id="t-lenV">5.0 m</span></label><input type="range" id="t-len" min="0.5" max="50" step="0.1" value="5" /></div>
             <div class="input-group"><label>Room Width <span class="val" id="t-widV">4.0 m</span></label><input type="range" id="t-wid" min="0.5" max="50" step="0.1" value="4" /></div>
             <div class="input-group">
@@ -316,6 +327,79 @@
   </div>
 </div>
 
+<!-- FOOTER -->
+<footer>
+  <div style="margin-bottom: 12px; font-weight: 600; color: white;">Calculate2Build / C2B</div>
+  <div>
+    <a onclick="openModal('privacy')">Privacy Policy</a> | 
+    <a onclick="openModal('terms')">Terms of Service</a> | 
+    <a onclick="openModal('contact')">Contact Us</a>
+  </div>
+  <div style="margin-top: 12px; font-size: 11px;">&copy; 2026 Calculate2Build. All rights reserved. Estimates are for planning purposes only.</div>
+</footer>
+
+<!-- LEGAL MODALS -->
+<div class="modal-overlay" id="legalModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()">&times;</button>
+    
+    <!-- PRIVACY POLICY -->
+    <div id="content-privacy" style="display:none;">
+      <h2>Privacy Policy</h2>
+      <p>Last updated: October 2026</p>
+      <p>At Calculate2Build ("we", "us", or "our"), we respect your privacy. This policy explains how we handle your information when you use our website.</p>
+      
+      <h3>1. Information We Collect</h3>
+      <p>We do not require you to create an account to use our calculators. We do not collect personal information (like your name or email) unless you explicitly contact us. All calculation data (dimensions, roof pitch, etc.) is processed locally in your browser and is never sent to our servers.</p>
+      
+      <h3>2. Third-Party Services</h3>
+      <p>We may use third-party payment processors (like Paystack or Flutterwave) to handle payments for PDF downloads. These providers may collect your payment information in accordance with their own privacy policies.</p>
+      
+      <h3>3. Cookies and Analytics</h3>
+      <p>We may use basic analytics tools to understand how users interact with the site. These tools may use cookies to track anonymous usage data.</p>
+      
+      <h3>4. Contact Us</h3>
+      <p>If you have questions about this Privacy Policy, please contact us via the Contact page.</p>
+    </div>
+
+    <!-- TERMS OF SERVICE -->
+    <div id="content-terms" style="display:none;">
+      <h2>Terms of Service</h2>
+      <p>Last updated: October 2026</p>
+      <p>By using Calculate2Build, you agree to these terms.</p>
+      
+      <h3>1. Nature of the Service</h3>
+      <p>Calculate2Build provides preliminary construction quantity and cost estimates. <strong>These tools are for planning purposes only.</strong> They do not constitute professional engineering, architectural, or quantity surveying advice.</p>
+      
+      <h3>2. Limitation of Liability</h3>
+      <p>We do not guarantee the accuracy of the estimates. Actual material quantities and costs may vary based on site conditions, supplier pricing, workmanship, and waste. You are solely responsible for verifying all quantities with a qualified professional before purchasing materials or beginning construction.</p>
+      
+      <h3>3. Payments and Refunds</h3>
+      <p>PDF downloads are sold "as is." Because they are digital goods delivered instantly, all sales are final. However, if you experience a technical error with your download, please contact us within 24 hours for a resolution.</p>
+      
+      <h3>4. Intellectual Property</h3>
+      <p>The design, code, and branding of Calculate2Build are our intellectual property. You may not copy or redistribute the platform without permission.</p>
+    </div>
+
+    <!-- CONTACT -->
+    <div id="content-contact" style="display:none;">
+      <h2>Contact Us</h2>
+      <p>We'd love to hear from you. Whether you have a question about an estimate, need support with a PDF download, or want to discuss a partnership, reach out to us.</p>
+      
+      <h3>Support & Inquiries</h3>
+      <p>Email us directly at: <a href="mailto:support@calculate2build.com" style="color: var(--brand); font-weight: 600;">support@calculate2build.com</a></p>
+      
+      <h3>Business Hours</h3>
+      <p>Monday - Friday: 9:00 AM - 5:00 PM (GMT)<br>We aim to respond to all inquiries within 24-48 hours.</p>
+      
+      <div style="margin-top: 24px; padding: 16px; background: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0;">
+        <p style="margin: 0; font-size: 12px; color: #64748b;"><strong>Note:</strong> This email is currently a placeholder. If you host this site, remember to replace it with your actual email address.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
 <!-- Include Three.js -->
 <script type="importmap">
 {
@@ -331,6 +415,15 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
+// MODAL LOGIC
+window.openModal = (type) => {
+  document.getElementById('legalModal').classList.add('active');
+  document.querySelectorAll('#legalModal > div > div').forEach(el => el.style.display = 'none');
+  document.getElementById(`content-${type}`).style.display = 'block';
+};
+window.closeModal = () => { document.getElementById('legalModal').classList.remove('active'); };
+
+// TAB LOGIC
 window.switchTab = (tabId) => {
   document.querySelectorAll('.app-section').forEach(el => el.classList.remove('active'));
   document.querySelectorAll('.nav-links a').forEach(el => el.classList.remove('active'));
@@ -365,24 +458,23 @@ function setupScene(containerId) {
   container.appendChild(renderer.domElement);
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true; controls.maxPolarAngle = Math.PI / 2 - 0.05;
-  controls.minDistance = 5; controls.maxDistance = 80; controls.target.set(0, 2, 0);
+  controls.minDistance = 5; controls.maxDistance = 100; controls.target.set(0, 2, 0);
   scene.add(new THREE.AmbientLight(0xffffff, 0.6));
   const dir = new THREE.DirectionalLight(0xffffff, 1.2); dir.position.set(20, 30, 20); dir.castShadow = true; scene.add(dir);
   const ground = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1 })); ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
-  const grid = new THREE.GridHelper(100, 100, 0xcbd5e1, 0xe2e8f0); grid.position.y = 0.01; scene.add(grid);
+  const grid = new THREE.GridHelper(200, 200, 0xcbd5e1, 0xe2e8f0); grid.position.y = 0.01; scene.add(grid);
   return { scene, camera, renderer, controls, container };
 }
 const room3D = setupScene('canvas-room');
 const roof3D = setupScene('canvas-roof');
 const tiles3D = setupScene('canvas-tiles');
 
-// BLOCK GENERATOR WITH SMART 3D PERFORMANCE OPTIMIZATION
+// BLOCK GENERATOR
 function generateBlockWalls(group, len, wid, hgt, thick, hasDoor, hasWindows) {
   const BLOCK_W = 0.45, BLOCK_H = 0.225;
   const doorW = 0.9, doorH = 2.1;
   const winW = 1.2, winH = 1.2, sillY = 1.0;
 
-  // SMART OPTIMIZATION: If house is massive (over 15m), use solid walls to prevent mobile crashes
   if (len > 15 || wid > 15 || hgt > 15) {
     const wall1 = new THREE.Mesh(new THREE.BoxGeometry(len, hgt, thick), blockMat);
     wall1.position.set(0, hgt/2, wid/2); group.add(wall1);
@@ -395,7 +487,6 @@ function generateBlockWalls(group, len, wid, hgt, thick, hasDoor, hasWindows) {
     return;
   }
 
-  // Standard Block-by-Block Rendering
   const geo = new THREE.BoxGeometry(BLOCK_W * 0.98, BLOCK_H * 0.98, thick);
   const walls = [
     { axis: 'x', fixed:  wid/2, span: len, door: hasDoor,  win: false },
