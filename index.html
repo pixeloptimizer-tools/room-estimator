@@ -79,6 +79,11 @@
   .wall-toggle { padding: 8px; border: 1px solid var(--border); border-radius: 6px; background: white; font-size: 12px; font-weight: 600; cursor: pointer; text-align: center; transition: 0.2s; }
   .wall-toggle.active { border-color: var(--text-main); background: var(--text-main); color: white; }
 
+  /* Roof Toggles */
+  .roof-toggles { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+  .roof-btn { padding: 12px; border: 1px solid var(--border); border-radius: 6px; background: white; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; text-align: center; }
+  .roof-btn.active { border-color: var(--brand); background: rgba(245, 158, 11, 0.1); color: var(--brand); }
+
   /* Action Buttons */
   .room-actions { display: flex; gap: 10px; margin-top: 20px; }
   .btn-save { flex: 2; padding: 14px; background: var(--brand); color: #000; border: none; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; transition: 0.2s; }
@@ -150,6 +155,7 @@
     .container { grid-template-columns: 1fr; margin-top: 16px; gap: 16px; }
     .canvas-container { height: 350px; } 
     .input-grid { grid-template-columns: 1fr; } 
+    .roof-toggles { grid-template-columns: 1fr 1fr; }
   }
 </style>
 </head>
@@ -208,7 +214,6 @@
             </div>
           </div>
 
-          <!-- SHARED WALLS LOGIC -->
           <div class="shared-walls">
             <p>Does this room share a wall with another room?</p>
             <div class="wall-toggles">
@@ -224,9 +229,7 @@
             <button class="btn-clear" onclick="clearAllRooms()">Clear All</button>
           </div>
 
-          <div class="room-list" id="savedRoomsList">
-            <!-- Populated by JS -->
-          </div>
+          <div class="room-list" id="savedRoomsList"></div>
 
         </div>
       </div>
@@ -242,7 +245,6 @@
           
           <div class="material-wrapper">
             <div class="material-list blurred" id="r-materialList">
-              
               <div class="category-title">Masonry (Blocks & Mortar)</div>
               <div class="mat-item"><div class="mat-info"><div class="mat-name">Sandcrete Blocks</div><div class="mat-desc" id="r-outBlockType">9" (225mm)</div></div><div class="mat-qty" id="r-outBlocks">0 pcs</div></div>
               <div class="mat-item"><div class="mat-info"><div class="mat-name">Cement (mortar)</div><div class="mat-desc">For laying blocks</div></div><div class="mat-qty" id="r-outCemMortar">0 bags</div></div>
@@ -255,16 +257,14 @@
 
               <div class="category-title">Ceilings</div>
               <div class="mat-item"><div class="mat-info"><div class="mat-name">Ceiling Boards</div><div class="mat-desc">PVC or Plasterboard</div></div><div class="mat-qty" id="r-outCeiling">0 m²</div></div>
-
             </div>
             
-            <!-- PAYWALL -->
             <div class="paywall-overlay" id="r-paywall">
               <div class="paywall-box">
                 <h3>🔒 Unlock Complete Site-Ready Breakdown</h3>
                 <p class="subtitle">Get exact structural quantities instantly.</p>
                 <ul class="premium-features">
-                  <li><span>✅</span> <div><strong>Precision Quantities:</strong> Blocks, cement, sand, tiles, paint perfectly scaled.</div></li>
+                  <li><span>✅</span> <div><strong>Precision Quantities:</strong> Blocks, cement, sand, paint perfectly scaled.</div></li>
                   <li><span>✅</span> <div><strong>Standard Waste Buffers:</strong> Multipliers included to protect against breakages.</div></li>
                   <li><span>✅</span> <div><strong>Room Schedule:</strong> Itemized breakdown for every room in the PDF.</div></li>
                   <li><span>✅</span> <div><strong>Shareable Blueprint:</strong> Clean PDF optimized for WhatsApp or printing.</div></li>
@@ -284,9 +284,124 @@
   </div>
 </div>
 
-<!-- APP 2 & 3 placeholders -->
-<div class="app-section" id="app-roof"> <div class="container"><div class="card"><div class="card-body"><h2>Roof Wizard Coming Soon</h2></div></div></div> </div>
-<div class="app-section" id="app-tiles"> <div class="container"><div class="card"><div class="card-body"><h2>Floor Tiles Coming Soon</h2></div></div></div> </div>
+<!-- APP 2: ROOF WIZARD -->
+<div class="app-section" id="app-roof">
+  <div class="container">
+    <div class="left-col">
+      <div class="card">
+        <div class="card-header"><h2>Build your Roof</h2><p>Select a roof type and adjust dimensions.</p></div>
+        <div class="canvas-container" id="canvas-roof">
+          <div class="viewer-hint">Drag to rotate • Scroll to zoom</div>
+        </div>
+        <div class="card-body">
+          <div class="roof-toggles">
+            <button class="roof-btn active" data-type="gable" onclick="setRoofType('gable')">Gable</button>
+            <button class="roof-btn" data-type="hip" onclick="setRoofType('hip')">Hip</button>
+            <button class="roof-btn" data-type="mono" onclick="setRoofType('mono')">Mono</button>
+            <button class="roof-btn" data-type="flat" onclick="setRoofType('flat')">Flat</button>
+          </div>
+          <div class="input-grid">
+            <div class="input-group"><label>Length <span class="val" id="f-lenV">10.0 m</span></label><input type="range" id="f-len" min="0.5" max="50" step="0.5" value="10" /></div>
+            <div class="input-group"><label>Width <span class="val" id="f-widV">8.0 m</span></label><input type="range" id="f-wid" min="0.5" max="50" step="0.5" value="8" /></div>
+            <div class="input-group"><label>Pitch <span class="val" id="f-pitV">25°</span></label><input type="range" id="f-pit" min="5" max="50" step="1" value="25" /></div>
+            <div class="input-group"><label>Overhang (m)</label><input type="number" id="f-overhang" value="0.5" step="0.1" /></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="right-col">
+      <div class="card">
+        <div class="card-header"><h2>Roofing Materials</h2><p>Indicative quantities based on your roof.</p></div>
+        <div class="card-body">
+          <div class="area-boxes">
+            <div class="area-box"><div class="label">Roof Area</div><div class="val" id="f-outArea">0.00 m²</div></div>
+            <div class="area-box"><div class="label">Angle</div><div class="val" id="f-outAngle">0°</div></div>
+          </div>
+          <div class="material-wrapper">
+            <div class="material-list blurred" id="f-materialList">
+              <div class="mat-header"><span>Material / Work Item</span><span>Qty</span></div>
+              <div class="mat-item"><div class="mat-info"><div class="mat-name">Roofing Sheets (0.9x3m)</div></div><div class="mat-qty" id="f-outSheets">0</div></div>
+              <div class="mat-item"><div class="mat-info"><div class="mat-name">Ridge Caps (3m)</div></div><div class="mat-qty" id="f-outRidges">0</div></div>
+              <div class="mat-item"><div class="mat-info"><div class="mat-name">Battens (3m)</div></div><div class="mat-qty" id="f-outBattens">0</div></div>
+              <div class="mat-item"><div class="mat-info"><div class="mat-name">Roofing Screws</div></div><div class="mat-qty" id="f-outScrews">0</div></div>
+            </div>
+            <div class="paywall-overlay" id="f-paywall">
+              <div class="paywall-box">
+                <h3>🔒 Unlock Roofing Materials</h3>
+                <p class="subtitle">Get exact quantities for sheets, battens, and screws instantly.</p>
+                <button class="btn-unlock" onclick="mockUnlock('roof')">Unlock for ₵15 (Preview Mode)</button>
+              </div>
+            </div>
+          </div>
+          <div class="warning-box"><strong>Important:</strong> This is a preliminary geometric estimate. Verify with your contractor.</div>
+          <div class="actions" id="f-actions">
+            <button class="btn-primary unlocked" onclick="downloadRoofPDF()">✓ Download Official PDF</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- APP 3: FLOOR TILES -->
+<div class="app-section" id="app-tiles">
+  <div class="container">
+    <div class="left-col">
+      <div class="card">
+        <div class="card-header"><h2>Floor Tiling</h2><p>Calculate tiles, adhesive, and grout.</p></div>
+        <div class="canvas-container" id="canvas-tiles">
+          <div class="viewer-hint">Drag to rotate • Scroll to zoom</div>
+        </div>
+        <div class="card-body">
+          <div class="input-grid">
+            <div class="input-group"><label>Room Length <span class="val" id="t-lenV">5.0 m</span></label><input type="range" id="t-len" min="0.5" max="50" step="0.1" value="5" /></div>
+            <div class="input-group"><label>Room Width <span class="val" id="t-widV">4.0 m</span></label><input type="range" id="t-wid" min="0.5" max="50" step="0.1" value="4" /></div>
+            <div class="input-group">
+              <label>Tile Size</label>
+              <select id="t-size">
+                <option value="0.09">300 x 300 mm</option>
+                <option value="0.16">400 x 400 mm</option>
+                <option value="0.36" selected>600 x 600 mm</option>
+                <option value="0.64">800 x 800 mm</option>
+              </select>
+            </div>
+            <div class="input-group"><label>Waste Allowance (%)</label><input type="number" id="t-waste" value="10" step="1" /></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="right-col">
+      <div class="card">
+        <div class="card-header"><h2>Tiling Materials</h2><p>Indicative quantities for your flooring.</p></div>
+        <div class="card-body">
+          <div class="area-boxes">
+            <div class="area-box"><div class="label">Floor Area</div><div class="val" id="t-outArea">0.00 m²</div></div>
+            <div class="area-box"><div class="label">Tiles Needed</div><div class="val" id="t-outTiles">0 tiles</div></div>
+          </div>
+          <div class="material-wrapper">
+            <div class="material-list blurred" id="t-materialList">
+              <div class="mat-header"><span>Material / Work Item</span><span>Qty</span></div>
+              <div class="mat-item"><div class="mat-info"><div class="mat-name">Tile Adhesive (20kg bags)</div></div><div class="mat-qty" id="t-outAdhesive">0 bags</div></div>
+              <div class="mat-item"><div class="mat-info"><div class="mat-name">Tile Grout (5kg bags)</div></div><div class="mat-qty" id="t-outGrout">0 bags</div></div>
+              <div class="mat-item"><div class="mat-info"><div class="mat-name">Tile Spacers (pack)</div></div><div class="mat-qty" id="t-outSpacers">0 packs</div></div>
+            </div>
+            <div class="paywall-overlay" id="t-paywall">
+              <div class="paywall-box">
+                <h3>🔒 Unlock Tiling Materials</h3>
+                <p class="subtitle">Get exact quantities for adhesive, grout, and spacers instantly.</p>
+                <button class="btn-unlock" onclick="mockUnlock('tiles')">Unlock for ₵15 (Preview Mode)</button>
+              </div>
+            </div>
+          </div>
+          <div class="warning-box"><strong>Important:</strong> This is a preliminary estimate. Actual coverage varies by tile layout and substrate.</div>
+          <div class="actions" id="t-actions">
+            <button class="btn-primary unlocked" onclick="downloadTilesPDF()">✓ Download Official PDF</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- FOOTER -->
 <footer>
@@ -332,7 +447,6 @@ const M_TO_FT = 3.28084;
 let savedRooms = [];
 let activeRoomId = 1;
 
-// Current active inputs (stored in meters internally)
 const currentRoom = { 
   len: 6.4, wid: 5.5, hgt: 3.7, blockThick: 0.225,
   sharedLeft: false, sharedRight: false, sharedTop: false, sharedBottom: false 
@@ -356,7 +470,7 @@ window.toggleWall = (side) => {
   if (side === 'right') { currentRoom.sharedRight = !currentRoom.sharedRight; document.getElementById('wall-right').classList.toggle('active', currentRoom.sharedRight); }
   if (side === 'top') { currentRoom.sharedTop = !currentRoom.sharedTop; document.getElementById('wall-top').classList.toggle('active', currentRoom.sharedTop); }
   if (side === 'bottom') { currentRoom.sharedBottom = !currentRoom.sharedBottom; document.getElementById('wall-bottom').classList.toggle('active', currentRoom.sharedBottom); }
-  updateUI(); // Recalculate totals instantly
+  updateUI(); rebuild3D();
 };
 
 // ==========================================
@@ -365,38 +479,26 @@ window.toggleWall = (side) => {
 window.saveCurrentRoom = () => {
   savedRooms.push({ id: activeRoomId, ...currentRoom });
   activeRoomId++;
-  
-  // Reset
-  currentRoom.len = 5.0;
-  currentRoom.wid = 4.0;
-  currentRoom.sharedLeft = false;
-  currentRoom.sharedRight = false;
-  currentRoom.sharedTop = false;
-  currentRoom.sharedBottom = false;
+  currentRoom.len = 5.0; currentRoom.wid = 4.0;
+  currentRoom.sharedLeft = false; currentRoom.sharedRight = false; currentRoom.sharedTop = false; currentRoom.sharedBottom = false;
   document.getElementById('wall-left').classList.remove('active');
   document.getElementById('wall-right').classList.remove('active');
   document.getElementById('wall-top').classList.remove('active');
   document.getElementById('wall-bottom').classList.remove('active');
-  document.getElementById('r-len').value = 5.0;
-  document.getElementById('r-wid').value = 4.0;
-  
-  updateUI();
-  rebuild3D();
+  document.getElementById('r-len').value = 5.0; document.getElementById('r-wid').value = 4.0;
+  updateUI(); rebuild3D();
 };
 
 window.clearAllRooms = () => {
-  savedRooms = [];
-  activeRoomId = 1;
+  savedRooms = []; activeRoomId = 1;
   currentRoom.len = 6.4; currentRoom.wid = 5.5;
   currentRoom.sharedLeft = false; currentRoom.sharedRight = false; currentRoom.sharedTop = false; currentRoom.sharedBottom = false;
   document.getElementById('wall-left').classList.remove('active');
   document.getElementById('wall-right').classList.remove('active');
   document.getElementById('wall-top').classList.remove('active');
   document.getElementById('wall-bottom').classList.remove('active');
-  document.getElementById('r-len').value = 6.4;
-  document.getElementById('r-wid').value = 5.5;
-  updateUI();
-  rebuild3D();
+  document.getElementById('r-len').value = 6.4; document.getElementById('r-wid').value = 5.5;
+  updateUI(); rebuild3D();
 };
 
 // ==========================================
@@ -407,7 +509,6 @@ function updateUI() {
   const suffix = currentUnit === 'm' ? ' m' : ' ft';
 
   document.getElementById('activeRoomBadge').textContent = `Designing Room ${activeRoomId}`;
-  
   document.getElementById('r-lenV').textContent = (currentRoom.len * mult).toFixed(1) + suffix;
   document.getElementById('r-widV').textContent = (currentRoom.wid * mult).toFixed(1) + suffix;
   document.getElementById('r-hgtV').textContent = (currentRoom.hgt * mult).toFixed(1) + suffix;
@@ -417,106 +518,81 @@ function updateUI() {
     list.innerHTML = '<div style="font-size: 12px; color: var(--text-muted); text-align: center;">No rooms saved yet.</div>';
   } else {
     list.innerHTML = savedRooms.map((r, i) => `
-      <div class="room-item">
-        <span>Room ${i + 1}</span>
-        <span>${(r.len * mult).toFixed(1)} ${suffix} x ${(r.wid * mult).toFixed(1)} ${suffix}</span>
-      </div>
+      <div class="room-item"><span>Room ${i + 1}</span><span>${(r.len * mult).toFixed(1)} ${suffix} x ${(r.wid * mult).toFixed(1)} ${suffix}</span></div>
     `).join('');
   }
-
   calcTotals();
 }
 
 function calcTotals() {
-  let totalArea = 0;
-  let totalWallArea = 0;
+  let totalArea = 0; let totalWallArea = 0;
   const hgt = currentRoom.hgt;
 
   const calcRoom = (r) => {
-    // Gross perimeter
     let gross = 2 * (r.len + r.wid) * hgt;
-    
-    // Deduct shared walls to prevent overordering
-    // A shared length deducts (hgt * 1) from the gross wall area
     let deductions = 0;
     if (r.sharedLeft) deductions += (r.wid * hgt);
     if (r.sharedRight) deductions += (r.wid * hgt);
     if (r.sharedTop) deductions += (r.len * hgt);
     if (r.sharedBottom) deductions += (r.len * hgt);
-
-    // Deduct doors/windows (assuming 1 door + 2 windows per room)
-    const openings = 4.5; 
-    
-    let net = gross - deductions - openings;
+    let net = gross - deductions - 4.5; // 4.5 is door/window approximation
     if (net < 0) net = 0;
-
-    totalArea += (r.len * r.wid);
-    totalWallArea += net;
+    totalArea += (r.len * r.wid); totalWallArea += net;
   };
 
   savedRooms.forEach(calcRoom);
   calcRoom(currentRoom);
 
-  // Masonry
-  const blockCount = Math.ceil((totalWallArea / 0.08) * 1.07);
-  document.getElementById('r-outBlocks').textContent = blockCount.toLocaleString() + ' pcs';
-  document.getElementById('r-outBlockType').textContent = document.getElementById('r-block').value === '0.225' ? '9" (225mm)' : document.getElementById('r-block').value === '0.150' ? '6" (150mm)' : 'Sandcrete';
-  
+  document.getElementById('r-outBlocks').textContent = Math.ceil((totalWallArea / 0.08) * 1.07).toLocaleString() + ' pcs';
   document.getElementById('r-outCemMortar').textContent = Math.ceil(totalWallArea * 0.12 * 1.07) + ' bags';
   document.getElementById('r-outSand').textContent = (totalWallArea * 0.012 * 1.07).toFixed(2) + ' m³';
-  
-  // Finishes
   document.getElementById('r-outCemPlaster').textContent = Math.ceil(totalWallArea * 0.6 * 1.07) + ' bags';
   document.getElementById('r-outSandPlaster').textContent = (totalWallArea * 0.05 * 1.07).toFixed(2) + ' m³';
   document.getElementById('r-outPaint').textContent = (totalWallArea / 8.3 * 2 * 1.05).toFixed(1) + ' L';
-  
-  // Ceilings
   document.getElementById('r-outCeiling').textContent = Math.ceil(totalArea * 1.05) + ' m²';
-
   document.getElementById('r-outFloor').textContent = totalArea.toFixed(2) + ' m²';
   document.getElementById('r-outWall').textContent = totalWallArea.toFixed(2) + ' m²';
 }
 
 // ==========================================
-// 3D ENGINE
+// 3D ENGINE (Room)
 // ==========================================
 const blockMat = new THREE.MeshStandardMaterial({ color: 0xd4cbb8, roughness: 0.9 });
 const roofMat = new THREE.MeshStandardMaterial({ color: 0x64748b, roughness: 0.6, side: THREE.DoubleSide });
 const doorMat = new THREE.MeshStandardMaterial({ color: 0x8b5a2b, roughness: 0.9 });
 const glassMat = new THREE.MeshStandardMaterial({ color: 0x93c5fd, roughness: 0.1, metalness: 0.5 });
+const tileMat = new THREE.MeshStandardMaterial({ color: 0x93c5fd, roughness: 0.2 });
 
-const container = document.getElementById('canvas-room');
-const scene = new THREE.Scene(); scene.background = new THREE.Color(0xf1f5f9);
-const camera = new THREE.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 0.1, 1000);
-camera.position.set(15, 12, 18);
+const containerRoom = document.getElementById('canvas-room');
+const sceneRoom = new THREE.Scene(); sceneRoom.background = new THREE.Color(0xf1f5f9);
+const cameraRoom = new THREE.PerspectiveCamera(40, containerRoom.clientWidth / containerRoom.clientHeight, 0.1, 1000);
+cameraRoom.position.set(15, 12, 18);
 
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-renderer.setSize(container.clientWidth, container.clientHeight);
-renderer.shadowMap.enabled = true;
-container.appendChild(renderer.domElement);
+const rendererRoom = new THREE.WebGLRenderer({ antialias: true });
+rendererRoom.setPixelRatio(Math.min(devicePixelRatio, 2));
+rendererRoom.setSize(containerRoom.clientWidth, containerRoom.clientHeight);
+rendererRoom.shadowMap.enabled = true;
+containerRoom.appendChild(rendererRoom.domElement);
 
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true; controls.maxPolarAngle = Math.PI / 2 - 0.05;
-controls.minDistance = 5; controls.maxDistance = 100; controls.target.set(0, 2, 0);
+const controlsRoom = new OrbitControls(cameraRoom, rendererRoom.domElement);
+controlsRoom.enableDamping = true; controlsRoom.maxPolarAngle = Math.PI / 2 - 0.05;
+controlsRoom.minDistance = 5; controlsRoom.maxDistance = 100; controlsRoom.target.set(0, 2, 0);
 
-scene.add(new THREE.AmbientLight(0xffffff, 0.6));
-const dir = new THREE.DirectionalLight(0xffffff, 1.2); dir.position.set(20, 30, 20); dir.castShadow = true; scene.add(dir);
-const ground = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1 })); ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
-const grid = new THREE.GridHelper(200, 200, 0xcbd5e1, 0xe2e8f0); grid.position.y = 0.01; scene.add(grid);
+sceneRoom.add(new THREE.AmbientLight(0xffffff, 0.6));
+const dirRoom = new THREE.DirectionalLight(0xffffff, 1.2); dirRoom.position.set(20, 30, 20); dirRoom.castShadow = true; sceneRoom.add(dirRoom);
+const groundRoom = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1 })); groundRoom.rotation.x = -Math.PI / 2; groundRoom.receiveShadow = true; sceneRoom.add(groundRoom);
+const gridRoom = new THREE.GridHelper(200, 200, 0xcbd5e1, 0xe2e8f0); gridRoom.position.y = 0.01; sceneRoom.add(gridRoom);
 
 const buildingGroup = new THREE.Group();
-scene.add(buildingGroup);
+sceneRoom.add(buildingGroup);
 
 function rebuild3D() {
   buildingGroup.clear();
-  
   const { len, wid, hgt, blockThick } = currentRoom;
   const BLOCK_W = 0.45, BLOCK_H = 0.225;
   const doorW = 0.9, doorH = 2.1;
   const winW = 1.2, winH = 1.2, sillY = 1.0;
 
-  // Smart optimization
   if (len > 15 || wid > 15 || hgt > 15) {
     const wall1 = new THREE.Mesh(new THREE.BoxGeometry(len, hgt, blockThick), blockMat);
     wall1.position.set(0, hgt/2, wid/2); buildingGroup.add(wall1);
@@ -528,18 +604,14 @@ function rebuild3D() {
     wall4.position.set(len/2, hgt/2, 0); buildingGroup.add(wall4);
   } else {
     const geo = new THREE.BoxGeometry(BLOCK_W * 0.98, BLOCK_H * 0.98, blockThick);
-    
-    // Hide walls if they are shared
     const walls = [
       { axis: 'x', fixed:  wid/2, span: len, door: true,  win: false, visible: !currentRoom.sharedTop },
       { axis: 'x', fixed: -wid/2, span: len, door: false, win: false, visible: !currentRoom.sharedBottom },
       { axis: 'z', fixed: -len/2, span: wid, door: false, win: true,  visible: !currentRoom.sharedLeft },
       { axis: 'z', fixed:  len/2, span: wid, door: false, win: true,  visible: !currentRoom.sharedRight },
     ];
-
     walls.forEach(w => {
-      if (!w.visible) return; // Skip drawing if shared
-      
+      if (!w.visible) return;
       const cols = Math.round(w.span / BLOCK_W);
       const rows = Math.round(hgt / BLOCK_H);
       for (let c = 0; c < cols; c++) {
@@ -556,19 +628,10 @@ function rebuild3D() {
         }
       }
     });
-    
-    if (!currentRoom.sharedTop) {
-      const door = new THREE.Mesh(new THREE.BoxGeometry(doorW, doorH, 0.05), doorMat);
-      door.position.set(0, doorH/2, wid/2); buildingGroup.add(door);
-    }
-    
+    if (!currentRoom.sharedTop) { const door = new THREE.Mesh(new THREE.BoxGeometry(doorW, doorH, 0.05), doorMat); door.position.set(0, doorH/2, wid/2); buildingGroup.add(door); }
     const winGeo = new THREE.BoxGeometry(winW, winH, 0.05);
-    if (!currentRoom.sharedLeft) {
-      const w1 = new THREE.Mesh(winGeo, glassMat); w1.position.set(-len/2, sillY + winH/2, wid/4); w1.rotation.y = Math.PI / 2; buildingGroup.add(w1);
-    }
-    if (!currentRoom.sharedRight) {
-      const w2 = new THREE.Mesh(winGeo, glassMat); w2.position.set(len/2, sillY + winH/2, wid/4); w2.rotation.y = Math.PI / 2; buildingGroup.add(w2);
-    }
+    if (!currentRoom.sharedLeft) { const w1 = new THREE.Mesh(winGeo, glassMat); w1.position.set(-len/2, sillY + winH/2, wid/4); w1.rotation.y = Math.PI / 2; buildingGroup.add(w1); }
+    if (!currentRoom.sharedRight) { const w2 = new THREE.Mesh(winGeo, glassMat); w2.position.set(len/2, sillY + winH/2, wid/4); w2.rotation.y = Math.PI / 2; buildingGroup.add(w2); }
   }
 
   const rad = (25 * Math.PI) / 180; const halfW = wid / 2; const rise = Math.tan(rad) * halfW; const overhang = 0.4;
@@ -584,10 +647,194 @@ function rebuild3D() {
   roofGeo.setAttribute('position', new THREE.BufferAttribute(vertices, 3)); roofGeo.setIndex(indices); roofGeo.computeVertexNormals(); 
   const roof = new THREE.Mesh(roofGeo, roofMat); roof.castShadow = true; roof.receiveShadow = true; buildingGroup.add(roof);
 
-  camera.position.set(len * 1.5, hgt * 2, wid * 1.5);
-  controls.target.set(0, hgt * 0.5, 0);
-  controls.update();
+  cameraRoom.position.set(len * 1.5, hgt * 2, wid * 1.5);
+  controlsRoom.target.set(0, hgt * 0.5, 0);
+  controlsRoom.update();
 }
+
+// ==========================================
+// 3D ENGINE (Roof)
+// ==========================================
+const containerRoof = document.getElementById('canvas-roof');
+const sceneRoof = new THREE.Scene(); sceneRoof.background = new THREE.Color(0xf1f5f9);
+const cameraRoof = new THREE.PerspectiveCamera(40, containerRoof.clientWidth / containerRoof.clientHeight, 0.1, 1000);
+cameraRoof.position.set(15, 12, 18);
+
+const rendererRoof = new THREE.WebGLRenderer({ antialias: true });
+rendererRoof.setPixelRatio(Math.min(devicePixelRatio, 2));
+rendererRoof.setSize(containerRoof.clientWidth, containerRoof.clientHeight);
+rendererRoof.shadowMap.enabled = true;
+containerRoof.appendChild(rendererRoof.domElement);
+
+const controlsRoof = new OrbitControls(cameraRoof, rendererRoof.domElement);
+controlsRoof.enableDamping = true; controlsRoof.maxPolarAngle = Math.PI / 2 - 0.05;
+controlsRoof.minDistance = 5; controlsRoof.maxDistance = 100; controlsRoof.target.set(0, 2, 0);
+
+sceneRoof.add(new THREE.AmbientLight(0xffffff, 0.6));
+const dirRoof = new THREE.DirectionalLight(0xffffff, 1.2); dirRoof.position.set(20, 30, 20); dirRoof.castShadow = true; sceneRoof.add(dirRoof);
+const groundRoof = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1 })); groundRoof.rotation.x = -Math.PI / 2; groundRoof.receiveShadow = true; sceneRoof.add(groundRoof);
+const gridRoof = new THREE.GridHelper(200, 200, 0xcbd5e1, 0xe2e8f0); gridRoof.position.y = 0.01; sceneRoof.add(gridRoof);
+
+const wallsGroupRoof = new THREE.Group();
+const roofMeshGroup = new THREE.Group();
+sceneRoof.add(wallsGroupRoof, roofMeshGroup);
+
+const roofP = { len: 10, wid: 8, pitch: 25, overhang: 0.5, type: 'gable' };
+
+window.setRoofType = (type) => { 
+  roofP.type = type; 
+  document.querySelectorAll('.roof-btn').forEach(b => b.classList.remove('active')); 
+  document.querySelector(`.roof-btn[data-type="${type}"]`).classList.add('active'); 
+  syncRoof(); 
+};
+
+function buildRoof() {
+  wallsGroupRoof.clear(); roofMeshGroup.clear();
+  // Draw simple base walls for context
+  const wallGeo = new THREE.BoxGeometry(roofP.len, 2.8, roofP.wid);
+  const wall = new THREE.Mesh(wallGeo, blockMat);
+  wall.position.y = 1.4; wall.castShadow = true; wall.receiveShadow = true;
+  wallsGroupRoof.add(wall);
+
+  const rad = (roofP.pitch * Math.PI) / 180; const halfW = roofP.wid / 2; const rise = Math.tan(rad) * halfW;
+
+  if (roofP.type === 'flat') {
+    const slab = new THREE.Mesh(new THREE.BoxGeometry(roofP.len + roofP.overhang*2, 0.15, roofP.wid + roofP.overhang*2), roofMat);
+    slab.position.y = 2.8 + 0.075; slab.castShadow = true; roofMeshGroup.add(slab); return;
+  }
+  if (roofP.type === 'mono') {
+    const slopeLen = Math.sqrt(Math.pow(roofP.wid + roofP.overhang*2, 2) + Math.pow(rise*2, 2));
+    const mono = new THREE.Mesh(new THREE.BoxGeometry(roofP.len + roofP.overhang*2, 0.1, slopeLen), roofMat);
+    mono.position.set(0, 2.8 + rise/2, 0); mono.rotation.x = -rad; mono.castShadow = true; roofMeshGroup.add(mono); return;
+  }
+
+  const geometry = new THREE.BufferGeometry();
+  if (roofP.type === 'gable') {
+    const v0 = new THREE.Vector3(-halfW - roofP.overhang, 2.8,  roofP.len/2 + roofP.overhang); 
+    const v1 = new THREE.Vector3( halfW + roofP.overhang, 2.8,  roofP.len/2 + roofP.overhang); 
+    const v2 = new THREE.Vector3( 0,              2.8 + rise, roofP.len/2 + roofP.overhang); 
+    const v3 = new THREE.Vector3(-halfW - roofP.overhang, 2.8, -roofP.len/2 - roofP.overhang); 
+    const v4 = new THREE.Vector3( halfW + roofP.overhang, 2.8, -roofP.len/2 - roofP.overhang); 
+    const v5 = new THREE.Vector3( 0,              2.8 + rise, -roofP.len/2 - roofP.overhang); 
+    const indices = [0, 2, 5, 0, 5, 3, 1, 4, 5, 1, 5, 2, 0, 1, 2, 3, 5, 4];
+    const vertices = new Float32Array([v0.x, v0.y, v0.z, v1.x, v1.y, v1.z, v2.x, v2.y, v2.z, v3.x, v3.y, v3.z, v4.x, v4.y, v4.z, v5.x, v5.y, v5.z]);
+    geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3)); geometry.setIndex(indices); geometry.computeVertexNormals(); 
+  } else if (roofP.type === 'hip') {
+    const halfRidge = Math.max(roofP.len - roofP.wid, 0) / 2;
+    const v0 = new THREE.Vector3(-halfW - roofP.overhang, 2.8,  roofP.len/2 + roofP.overhang); 
+    const v1 = new THREE.Vector3( halfW + roofP.overhang, 2.8,  roofP.len/2 + roofP.overhang); 
+    const v2 = new THREE.Vector3(-halfW - roofP.overhang, 2.8, -roofP.len/2 - roofP.overhang); 
+    const v3 = new THREE.Vector3( halfW + roofP.overhang, 2.8, -roofP.len/2 - roofP.overhang); 
+    const tF = new THREE.Vector3(0, 2.8 + rise, halfRidge);
+    const tB = new THREE.Vector3(0, 2.8 + rise, -halfRidge);
+    const vertices = new Float32Array([v0.x, v0.y, v0.z, v1.x, v1.y, v1.z, v2.x, v2.y, v2.z, v3.x, v3.y, v3.z, tF.x, tF.y, tF.z, tB.x, tB.y, tB.z]);
+    const indices = [0, 1, 4, 2, 5, 3, 0, 4, 5, 0, 5, 2, 1, 3, 5, 1, 5, 4];
+    geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3)); geometry.setIndex(indices); geometry.computeVertexNormals();
+  }
+  const roofMesh = new THREE.Mesh(geometry, roofMat); roofMesh.castShadow = true; roofMesh.receiveShadow = true; roofMeshGroup.add(roofMesh);
+}
+
+function calcRoof() {
+  const rad = (roofP.pitch * Math.PI) / 180; const halfW = roofP.wid / 2;
+  const slopeLen = Math.sqrt(halfW * halfW + Math.pow(Math.tan(rad) * halfW, 2));
+  let area = 0;
+  if (roofP.type === 'gable' || roofP.type === 'hip') area = roofP.len * slopeLen * 2;
+  else if (roofP.type === 'mono') area = roofP.len * (roofP.wid + roofP.overhang*2) / Math.cos(rad);
+  else area = (roofP.len + roofP.overhang*2) * (roofP.wid + roofP.overhang*2); 
+  const gross = area * 1.10;
+  document.getElementById('f-outArea').textContent = gross.toFixed(1) + ' m²';
+  document.getElementById('f-outAngle').textContent = roofP.pitch + '°';
+  document.getElementById('f-outSheets').textContent = Math.ceil(gross / 2.7) + ' sheets';
+  document.getElementById('f-outRidges').textContent = Math.ceil((roofP.len + roofP.overhang*2) / 3) + ' pcs';
+  document.getElementById('f-outBattens').textContent = Math.ceil(gross / 2) + ' pcs';
+  document.getElementById('f-outScrews').textContent = Math.ceil((Math.ceil(gross / 2.7) * 12) / 100) + ' packs';
+}
+
+function syncRoof() {
+  roofP.len = +document.getElementById('f-len').value; document.getElementById('f-lenV').textContent = roofP.len.toFixed(1) + ' m';
+  roofP.wid = +document.getElementById('f-wid').value; document.getElementById('f-widV').textContent = roofP.wid.toFixed(1) + ' m';
+  roofP.pitch = +document.getElementById('f-pit').value; document.getElementById('f-pitV').textContent = roofP.pitch + '°';
+  roofP.overhang = +document.getElementById('f-overhang').value || 0.5;
+  buildRoof(); calcRoof();
+}
+document.getElementById('f-len').oninput = syncRoof; document.getElementById('f-wid').oninput = syncRoof; document.getElementById('f-pit').oninput = syncRoof; document.getElementById('f-overhang').oninput = syncRoof;
+
+// ==========================================
+// 3D ENGINE (Tiles)
+// ==========================================
+const containerTiles = document.getElementById('canvas-tiles');
+const sceneTiles = new THREE.Scene(); sceneTiles.background = new THREE.Color(0xf1f5f9);
+const cameraTiles = new THREE.PerspectiveCamera(40, containerTiles.clientWidth / containerTiles.clientHeight, 0.1, 1000);
+cameraTiles.position.set(12, 10, 15);
+
+const rendererTiles = new THREE.WebGLRenderer({ antialias: true });
+rendererTiles.setPixelRatio(Math.min(devicePixelRatio, 2));
+rendererTiles.setSize(containerTiles.clientWidth, containerTiles.clientHeight);
+rendererTiles.shadowMap.enabled = true;
+containerTiles.appendChild(rendererTiles.domElement);
+
+const controlsTiles = new OrbitControls(cameraTiles, rendererTiles.domElement);
+controlsTiles.enableDamping = true; controlsTiles.maxPolarAngle = Math.PI / 2 - 0.05;
+controlsTiles.minDistance = 5; controlsTiles.maxDistance = 100; controlsTiles.target.set(0, 2, 0);
+
+sceneTiles.add(new THREE.AmbientLight(0xffffff, 0.6));
+const dirTiles = new THREE.DirectionalLight(0xffffff, 1.2); dirTiles.position.set(20, 30, 20); dirTiles.castShadow = true; sceneTiles.add(dirTiles);
+const groundTiles = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1 })); groundTiles.rotation.x = -Math.PI / 2; groundTiles.receiveShadow = true; sceneTiles.add(groundTiles);
+const gridTiles = new THREE.GridHelper(200, 200, 0xcbd5e1, 0xe2e8f0); gridTiles.position.y = 0.01; sceneTiles.add(gridTiles);
+
+const wallsGroupTiles = new THREE.Group();
+const floorGroupTiles = new THREE.Group();
+sceneTiles.add(wallsGroupTiles, floorGroupTiles);
+
+const tilesP = { len: 5, wid: 4, size: 0.36, waste: 10 };
+
+function buildTiles() {
+  wallsGroupTiles.clear(); floorGroupTiles.clear();
+  
+  // Simple wall box for context
+  const wallGeo = new THREE.BoxGeometry(tilesP.len, 2.8, tilesP.wid);
+  const wall = new THREE.Mesh(wallGeo, blockMat);
+  wall.position.y = 1.4; wall.castShadow = true; wall.receiveShadow = true;
+  wallsGroupTiles.add(wall);
+
+  const tileGeo = new THREE.PlaneGeometry(tilesP.size * 0.95, tilesP.size * 0.95);
+  const cols = Math.floor(tilesP.len / tilesP.size);
+  const rows = Math.floor(tilesP.wid / tilesP.size);
+  
+  for (let c = 0; c < cols; c++) {
+    for (let r = 0; r < rows; r++) {
+      const tile = new THREE.Mesh(tileGeo, tileMat);
+      tile.rotation.x = -Math.PI / 2;
+      tile.position.set(
+        c * tilesP.size + tilesP.size / 2 - tilesP.len / 2,
+        0.01,
+        r * tilesP.size + tilesP.size / 2 - tilesP.wid / 2
+      );
+      floorGroupTiles.add(tile);
+    }
+  }
+}
+
+function calcTiles() {
+  const area = tilesP.len * tilesP.wid;
+  const gross = area * (1 + tilesP.waste / 100);
+  const tiles = Math.ceil(gross / tilesP.size);
+  
+  document.getElementById('t-outArea').textContent = area.toFixed(2) + ' m²';
+  document.getElementById('t-outTiles').textContent = tiles + ' tiles';
+  document.getElementById('t-outAdhesive').textContent = Math.ceil((gross / 4) * 1.1) + ' bags'; 
+  document.getElementById('t-outGrout').textContent = Math.ceil((gross * 0.5) / 5) + ' bags'; 
+  document.getElementById('t-outSpacers').textContent = Math.ceil(gross / 10) + ' packs';
+}
+
+function syncTiles() {
+  tilesP.len = +document.getElementById('t-len').value; document.getElementById('t-lenV').textContent = tilesP.len.toFixed(1) + ' m';
+  tilesP.wid = +document.getElementById('t-wid').value; document.getElementById('t-widV').textContent = tilesP.wid.toFixed(1) + ' m';
+  tilesP.size = +document.getElementById('t-size').value;
+  tilesP.waste = +document.getElementById('t-waste').value || 10;
+  buildTiles(); calcTiles();
+}
+document.getElementById('t-len').oninput = syncTiles; document.getElementById('t-wid').oninput = syncTiles; document.getElementById('t-size').onchange = syncTiles; document.getElementById('t-waste').oninput = syncTiles;
 
 // ==========================================
 // UI LISTENERS
@@ -605,13 +852,14 @@ document.getElementById('r-block').onchange = (e) => { currentRoom.blockThick = 
 // ==========================================
 // PAYSTACK & PDF
 // ==========================================
-window.mockUnlock = () => {
+window.mockUnlock = (app) => {
   const btn = event.target;
   btn.textContent = 'Processing Payment...';
   setTimeout(() => {
-    document.getElementById('r-materialList').classList.remove('blurred');
-    document.getElementById('r-paywall').style.display = 'none';
-    document.getElementById('r-actions').style.display = 'flex';
+    const prefix = app === 'room' ? 'r' : app === 'roof' ? 'f' : 't';
+    document.getElementById(`${prefix}-materialList`).classList.remove('blurred');
+    document.getElementById(`${prefix}-paywall`).style.display = 'none';
+    document.getElementById(`${prefix}-actions`).style.display = 'flex';
   }, 800);
 };
 
@@ -652,6 +900,48 @@ window.downloadRoomPDF = () => {
   doc.save('C2B_Building_Estimate.pdf');
 };
 
+window.downloadRoofPDF = () => {
+  const { jsPDF } = window.jspdf; const doc = new jsPDF();
+  doc.setFillColor(30, 41, 59); doc.rect(0, 0, 210, 30, 'F');
+  doc.setTextColor(255, 255, 255); doc.setFontSize(22); doc.setFont('helvetica', 'bold'); doc.text("Calculate2Build", 14, 15);
+  doc.setFontSize(10); doc.setFont('helvetica', 'normal'); doc.text("Official Roof Estimate", 14, 22);
+  doc.setTextColor(0, 0, 0); doc.setFontSize(12); doc.setFont('helvetica', 'bold'); doc.text("Roof Specifications", 14, 45);
+  doc.setFontSize(10); doc.setFont('helvetica', 'normal'); doc.text(`Type: ${roofP.type.toUpperCase()} | Dimensions: ${roofP.len}m x ${roofP.wid}m | Pitch: ${roofP.pitch}°`, 14, 52);
+  doc.setFontSize(12); doc.setFont('helvetica', 'bold'); doc.text("Bill of Quantities", 14, 70);
+  doc.setFontSize(10); doc.setFont('helvetica', 'normal');
+  const rows = [
+    ["Roof Area (Slope + Waste)", document.getElementById('f-outArea').textContent],
+    ["Roofing Sheets (0.9x3m)", document.getElementById('f-outSheets').textContent],
+    ["Ridge Caps (3m)", document.getElementById('f-outRidges').textContent],
+    ["Battens (3m)", document.getElementById('f-outBattens').textContent],
+    ["Roofing Screws (Packs)", document.getElementById('f-outScrews').textContent]
+  ];
+  let y = 80;
+  rows.forEach(([k, v]) => { doc.text(k, 20, y); doc.text(v, 120, y); doc.setDrawColor(230,230,230); doc.line(14, y+3, 196, y+3); y += 10; });
+  doc.save('C2B_Roof_Estimate.pdf');
+};
+
+window.downloadTilesPDF = () => {
+  const { jsPDF } = window.jspdf; const doc = new jsPDF();
+  doc.setFillColor(30, 41, 59); doc.rect(0, 0, 210, 30, 'F');
+  doc.setTextColor(255, 255, 255); doc.setFontSize(22); doc.setFont('helvetica', 'bold'); doc.text("Calculate2Build", 14, 15);
+  doc.setFontSize(10); doc.setFont('helvetica', 'normal'); doc.text("Official Tiling Estimate", 14, 22);
+  doc.setTextColor(0, 0, 0); doc.setFontSize(12); doc.setFont('helvetica', 'bold'); doc.text("Project Specifications", 14, 45);
+  doc.setFontSize(10); doc.setFont('helvetica', 'normal'); doc.text(`Room: ${tilesP.len.toFixed(1)}m x ${tilesP.wid.toFixed(1)}m | Tile Size: ${(tilesP.size*100).toFixed(0)}x${(tilesP.size*100).toFixed(0)}mm`, 14, 52);
+  doc.setFontSize(12); doc.setFont('helvetica', 'bold'); doc.text("Bill of Quantities", 14, 70);
+  doc.setFontSize(10); doc.setFont('helvetica', 'normal');
+  const rows = [
+    ["Floor Area", document.getElementById('t-outArea').textContent],
+    ["Floor Tiles Needed", document.getElementById('t-outTiles').textContent],
+    ["Tile Adhesive (20kg bags)", document.getElementById('t-outAdhesive').textContent],
+    ["Tile Grout (5kg bags)", document.getElementById('t-outGrout').textContent],
+    ["Tile Spacers (packs)", document.getElementById('t-outSpacers').textContent]
+  ];
+  let y = 80;
+  rows.forEach(([k, v]) => { doc.text(k, 20, y); doc.text(v, 120, y); doc.setDrawColor(230,230,230); doc.line(14, y+3, 196, y+3); y += 10; });
+  doc.save('C2B_Tiling_Estimate.pdf');
+};
+
 // ==========================================
 // MODALS & INIT
 // ==========================================
@@ -673,20 +963,26 @@ window.switchTab = (tabId) => {
   setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 50);
 };
 
-updateUI();
-rebuild3D();
+// Init
+updateUI(); rebuild3D();
+syncRoof();
+syncTiles();
 
 (function animate() {
   requestAnimationFrame(animate);
-  controls.update(); renderer.render(scene, camera);
+  controlsRoom.update(); rendererRoom.render(sceneRoom, cameraRoom);
+  controlsRoof.update(); rendererRoof.render(sceneRoof, cameraRoof);
+  controlsTiles.update(); rendererTiles.render(sceneTiles, cameraTiles);
 })();
 
 new ResizeObserver(() => {
-  if(container.clientWidth > 0) {
-    camera.aspect = container.clientWidth / container.clientHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(container.clientWidth, container.clientHeight);
-  }
+  [containerRoom, containerRoof, containerTiles].forEach(c => {
+    if(c.clientWidth > 0) {
+      if(c.id === 'canvas-room') { cameraRoom.aspect = c.clientWidth / c.clientHeight; cameraRoom.updateProjectionMatrix(); rendererRoom.setSize(c.clientWidth, c.clientHeight); }
+      if(c.id === 'canvas-roof') { cameraRoof.aspect = c.clientWidth / c.clientHeight; cameraRoof.updateProjectionMatrix(); rendererRoof.setSize(c.clientWidth, c.clientHeight); }
+      if(c.id === 'canvas-tiles') { cameraTiles.aspect = c.clientWidth / c.clientHeight; cameraTiles.updateProjectionMatrix(); rendererTiles.setSize(c.clientWidth, c.clientHeight); }
+    }
+  });
 }).observe(document.body);
 </script>
 </body>
