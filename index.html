@@ -52,6 +52,7 @@
   /* 3D Viewer */
   .canvas-container { width: 100%; height: 400px; background: #f1f5f9; position: relative; cursor: grab; border-bottom: 1px solid var(--border); touch-action: none; }
   .viewer-hint { position: absolute; bottom: 12px; left: 12px; background: white; padding: 6px 10px; border-radius: 6px; font-size: 11px; color: var(--text-muted); box-shadow: 0 1px 3px rgba(0,0,0,0.1); pointer-events: none; border: 1px solid var(--border); }
+  .active-room-badge { position: absolute; top: 12px; left: 12px; background: var(--brand); color: #000; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; pointer-events: none; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
 
   /* Unit Toggle */
   .unit-toggle { display: flex; background: #e2e8f0; border-radius: 6px; padding: 4px; }
@@ -71,10 +72,17 @@
   input[type=number], select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; background: var(--bg); outline: none; }
   input[type=number]:focus, select:focus { border-color: var(--text-main); background: white; }
 
-  /* Toggles */
-  .roof-toggles { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; margin-bottom: 16px; }
-  .roof-btn { padding: 12px; border: 1px solid var(--border); border-radius: 6px; background: white; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; text-align: center; }
-  .roof-btn.active { border-color: var(--brand); background: rgba(245, 158, 11, 0.1); color: var(--brand); }
+  /* Action Buttons */
+  .room-actions { display: flex; gap: 10px; margin-top: 20px; }
+  .btn-save { flex: 2; padding: 14px; background: var(--text-main); color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+  .btn-save:hover { background: #334155; }
+  .btn-clear { flex: 1; padding: 14px; background: white; color: var(--text-main); border: 1px solid var(--border); border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+
+  /* Room List */
+  .room-list { margin-top: 20px; border-top: 1px solid var(--border); padding-top: 16px; }
+  .room-item { display: flex; justify-content: space-between; align-items: center; font-size: 13px; padding: 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; margin-bottom: 8px; }
+  .room-item span:first-child { font-weight: 600; color: var(--text-main); }
+  .room-item span:last-child { color: var(--text-muted); font-size: 12px; }
 
   /* Right Column - Material List */
   .area-boxes { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
@@ -87,12 +95,14 @@
   .material-list { display: flex; flex-direction: column; transition: filter 0.3s; }
   .material-list.blurred { filter: blur(6px); user-select: none; pointer-events: none; }
   
-  .mat-header { display: flex; justify-content: space-between; font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; padding-bottom: 10px; border-bottom: 1px solid var(--border); margin-bottom: 10px; }
-  .mat-item { display: flex; justify-content: space-between; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .category-title { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin: 16px 0 8px; border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+  .category-title:first-child { margin-top: 0; }
+
+  .mat-item { display: flex; justify-content: space-between; align-items: flex-start; padding: 8px 0; border-bottom: 1px dashed var(--border); }
   .mat-item:last-child { border-bottom: none; }
-  .mat-info { display: flex; flex-direction: column; gap: 4px; padding-right: 12px; }
+  .mat-info { display: flex; flex-direction: column; gap: 2px; padding-right: 12px; }
   .mat-name { font-size: 13px; font-weight: 600; }
-  .mat-desc { font-size: 10px; color: var(--text-muted); line-height: 1.4; }
+  .mat-desc { font-size: 10px; color: var(--text-muted); }
   .mat-qty { font-size: 13px; font-weight: 700; text-align: right; white-space: nowrap; color: var(--brand); }
 
   /* PAYWALL OVERLAY */
@@ -110,35 +120,29 @@
 
   .warning-box { background: #fef3c7; border: 1px solid #fde68a; color: #92400e; padding: 12px; border-radius: 8px; font-size: 12px; line-height: 1.5; margin-top: 20px; }
   
-  /* Actions */
   .actions { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; display: none; }
-  button { padding: 14px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s; border: none; display: flex; align-items: center; justify-content: center; width: 100%; }
-  .btn-primary { background: var(--text-main); color: white; }
-  .btn-primary:hover { background: #334155; }
+  .btn-primary { background: var(--text-main); color: white; padding: 14px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
   .btn-primary.unlocked { background: var(--green); }
-  .btn-reset { background: white; color: var(--text-main); border: 1px solid var(--border); }
 
   /* Footer & Legal Modals */
   footer { background: #0f172a; color: #94a3b8; padding: 24px; text-align: center; margin-top: 40px; font-size: 12px; }
-  footer a { color: #94a3b8; text-decoration: none; margin: 0 10px; cursor: pointer; transition: color 0.2s; }
+  footer a { color: #94a3b8; text-decoration: none; margin: 0 10px; cursor: pointer; }
   footer a:hover { color: white; text-decoration: underline; }
   
   .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
   .modal-overlay.active { display: flex; }
   .modal-box { background: white; width: 100%; max-width: 600px; border-radius: 12px; padding: 32px; max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); position: relative; }
   .modal-close { position: absolute; top: 16px; right: 20px; font-size: 24px; cursor: pointer; color: var(--text-muted); border: none; background: none; }
-  .modal-box h2 { font-size: 22px; margin-bottom: 16px; color: var(--text-main); }
-  .modal-box h3 { font-size: 16px; margin: 20px 0 8px; color: var(--text-main); }
-  .modal-box p, .modal-box li { font-size: 13px; line-height: 1.6; color: var(--text-muted); margin-bottom: 10px; }
+  .modal-box h2 { font-size: 22px; margin-bottom: 16px; }
+  .modal-box h3 { font-size: 16px; margin: 20px 0 8px; }
+  .modal-box p { font-size: 13px; line-height: 1.6; color: var(--text-muted); margin-bottom: 10px; }
 
-  /* Mobile Adjustments */
   @media (max-width: 768px) {
     .nav-links { display: none; }
     .mobile-nav { display: block; }
     .container { grid-template-columns: 1fr; margin-top: 16px; gap: 16px; }
     .canvas-container { height: 350px; } 
     .input-grid { grid-template-columns: 1fr; } 
-    .roof-toggles { grid-template-columns: 1fr 1fr; }
   }
 </style>
 </head>
@@ -168,8 +172,8 @@
       <div class="card">
         <div class="card-header">
           <div>
-            <h2>Build your room</h2>
-            <p>Adjust dimensions to see the live 3D plan.</p>
+            <h2>Build your rooms</h2>
+            <p>Measure one room, save it, then add the next.</p>
           </div>
           <div class="unit-toggle">
             <button class="active" id="btn-m" onclick="setUnit('m')">Metres</button>
@@ -177,6 +181,7 @@
           </div>
         </div>
         <div class="canvas-container" id="canvas-room">
+          <div class="active-room-badge" id="activeRoomBadge">Designing Room 1</div>
           <div class="viewer-hint">Drag to rotate • Scroll to zoom</div>
         </div>
         <div class="card-body">
@@ -184,52 +189,72 @@
             <div class="input-group"><label>Length <span class="val" id="r-lenV">6.4 m</span></label><input type="range" id="r-len" min="0.5" max="50" step="0.1" value="6.4" /></div>
             <div class="input-group"><label>Width <span class="val" id="r-widV">5.5 m</span></label><input type="range" id="r-wid" min="0.5" max="50" step="0.1" value="5.5" /></div>
             <div class="input-group"><label>Height <span class="val" id="r-hgtV">3.7 m</span></label><input type="range" id="r-hgt" min="2.0" max="8.0" step="0.1" value="3.7" /></div>
-            <div class="input-group"><label>Wall Thickness (m)</label><input type="number" id="r-thick" value="0.225" step="0.025" /></div>
+            <div class="input-group"><label>Wall Thickness</label><select id="r-thick"><option value="0.225">225 mm (9")</option><option value="0.150">150 mm (6")</option></select></div>
           </div>
+          
+          <div class="room-actions">
+            <button class="btn-save" onclick="saveCurrentRoom()">Save Room & Add Next</button>
+            <button class="btn-clear" onclick="clearAllRooms()">Clear All</button>
+          </div>
+
+          <div class="room-list" id="savedRoomsList">
+            <!-- Populated by JS -->
+          </div>
+
         </div>
       </div>
     </div>
     <div class="right-col">
       <div class="card">
-        <div class="card-header"><h2>Material estimate</h2><p>Indicative quantities based on your room.</p></div>
+        <div class="card-header"><h2>Comprehensive Estimate</h2><p>Indicative quantities for all saved rooms.</p></div>
         <div class="card-body">
           <div class="area-boxes">
-            <div class="area-box"><div class="label">Floor Area</div><div class="val" id="r-outFloor">35.20 m²</div></div>
-            <div class="area-box"><div class="label">Wall Area (Net)</div><div class="val" id="r-outWall">83.56 m²</div></div>
+            <div class="area-box"><div class="label">Total Floor Area</div><div class="val" id="r-outFloor">0.00 m²</div></div>
+            <div class="area-box"><div class="label">Total Wall Area</div><div class="val" id="r-outWall">0.00 m²</div></div>
           </div>
+          
           <div class="material-wrapper">
             <div class="material-list blurred" id="r-materialList">
-              <div class="mat-header"><span>Material / Work Item</span><span>Qty</span></div>
-              <div class="mat-item"><div class="mat-info"><div class="mat-name">Sandcrete blocks (9")</div><div class="mat-desc">Net wall area ÷ 0.08 m²/block</div></div><div class="mat-qty" id="r-outBlocks">1,046 pcs</div></div>
-              <div class="mat-item"><div class="mat-info"><div class="mat-name">Cement (mortar)</div><div class="mat-desc">Preliminary allowance</div></div><div class="mat-qty" id="r-outCemMortar">8 bags</div></div>
-              <div class="mat-item"><div class="mat-info"><div class="mat-name">Mortar sand</div><div class="mat-desc">Approximate loose volume</div></div><div class="mat-qty" id="r-outSand">0.97 m³</div></div>
-              <div class="mat-item"><div class="mat-info"><div class="mat-name">Cement (plaster)</div><div class="mat-desc">Both faces approximated</div></div><div class="mat-qty" id="r-outCemPlaster">29 bags</div></div>
-              <div class="mat-item"><div class="mat-info"><div class="mat-name">Floor tiles (600x600)</div><div class="mat-desc">Floor area plus 10% waste</div></div><div class="mat-qty" id="r-outTiles">98 tiles</div></div>
+              
+              <div class="category-title">Masonry & Substructure</div>
+              <div class="mat-item"><div class="mat-info"><div class="mat-name">Sandcrete blocks (9")</div><div class="mat-desc">Includes 7% waste</div></div><div class="mat-qty" id="r-outBlocks">0</div></div>
+              <div class="mat-item"><div class="mat-info"><div class="mat-name">Cement (mortar)</div><div class="mat-desc">For laying blocks</div></div><div class="mat-qty" id="r-outCemMortar">0</div></div>
+              <div class="mat-item"><div class="mat-info"><div class="mat-name">Mortar sand</div><div class="mat-desc">Loose volume</div></div><div class="mat-qty" id="r-outSand">0</div></div>
+
+              <div class="category-title">Plastering & Finishes</div>
+              <div class="mat-item"><div class="mat-info"><div class="mat-name">Cement (plaster)</div><div class="mat-desc">Both faces (15mm)</div></div><div class="mat-qty" id="r-outCemPlaster">0</div></div>
+              <div class="mat-item"><div class="mat-info"><div class="mat-name">Plaster sand</div><div class="mat-desc">Loose volume</div></div><div class="mat-qty" id="r-outSandPlaster">0</div></div>
+              <div class="mat-item"><div class="mat-info"><div class="mat-name">Paint (2 coats)</div><div class="mat-desc">Interior emulsion</div></div><div class="mat-qty" id="r-outPaint">0</div></div>
+
+              <div class="category-title">Flooring</div>
+              <div class="mat-item"><div class="mat-info"><div class="mat-name">Floor tiles (600x600)</div><div class="mat-desc">Includes 10% waste</div></div><div class="mat-qty" id="r-outTiles">0</div></div>
+              <div class="mat-item"><div class="mat-info"><div class="mat-name">Tile adhesive</div><div class="mat-desc">20kg bags</div></div><div class="mat-qty" id="r-outAdhesive">0</div></div>
+              <div class="mat-item"><div class="mat-info"><div class="mat-name">Grout</div><div class="mat-desc">5kg bags</div></div><div class="mat-qty" id="r-outGrout">0</div></div>
+
+              <div class="category-title">Ceilings & Roof</div>
+              <div class="mat-item"><div class="mat-info"><div class="mat-name">Ceiling Boards</div><div class="mat-desc">PVC or Plasterboard</div></div><div class="mat-qty" id="r-outCeiling">0</div></div>
+              <div class="mat-item"><div class="mat-info"><div class="mat-name">Roof Area</div><div class="mat-desc">Slope + 10% waste</div></div><div class="mat-qty" id="r-outRoof">0</div></div>
             </div>
             
-            <!-- UPGRADED PAYWALL BOX -->
+            <!-- PAYWALL -->
             <div class="paywall-overlay" id="r-paywall">
               <div class="paywall-box">
                 <h3>🔒 Unlock Complete Site-Ready Breakdown</h3>
                 <p class="subtitle">Get exact structural quantities instantly.</p>
-                
                 <ul class="premium-features">
-                  <li><span>✅</span> <div><strong>Precision Quantities:</strong> Blocks, cement bags, sand perfectly scaled.</div></li>
-                  <li><span>✅</span> <div><strong>Standard Waste Buffers:</strong> Multipliers included to protect against onsite breakages.</div></li>
-                  <li><span>✅</span> <div><strong>Mix & Layout Ratios:</strong> Professional guidance for mortar, plaster, or tiles.</div></li>
-                  <li><span>✅</span> <div><strong>Shareable Blueprint:</strong> Clean, downloadable PDF optimized for WhatsApp or printing.</div></li>
+                  <li><span>✅</span> <div><strong>Precision Quantities:</strong> Blocks, cement, sand, tiles, paint perfectly scaled.</div></li>
+                  <li><span>✅</span> <div><strong>Standard Waste Buffers:</strong> Multipliers included to protect against breakages.</div></li>
+                  <li><span>✅</span> <div><strong>Room Schedule:</strong> Itemized breakdown for every room in the PDF.</div></li>
+                  <li><span>✅</span> <div><strong>Shareable Blueprint:</strong> Clean PDF optimized for WhatsApp or printing.</div></li>
                 </ul>
-                
                 <button class="btn-unlock" onclick="mockUnlock('room')">Unlock for ₵15 (Preview Mode)</button>
-                <div style="font-size: 10px; color: var(--text-muted); text-align: center; margin-top: 8px;">Secure via Paystack / Flutterwave (Coming Soon)</div>
               </div>
             </div>
           </div>
           
-          <div class="warning-box"><strong>Important:</strong> This is an early-stage planning estimate. Verify quantities before purchasing.</div>
+          <div class="warning-box"><strong>Important:</strong> Verify quantities with a local professional before purchasing.</div>
           <div class="actions" id="r-actions">
             <button class="btn-primary unlocked" onclick="downloadRoomPDF()">✓ Download Official PDF</button>
-            <button class="btn-reset" onclick="resetRoom()">Reset dimensions</button>
           </div>
         </div>
       </div>
@@ -237,126 +262,9 @@
   </div>
 </div>
 
-<!-- APP 2: ROOF WIZARD -->
-<div class="app-section" id="app-roof">
-  <div class="container">
-    <div class="left-col">
-      <div class="card">
-        <div class="card-header"><h2>Build your Roof</h2><p>Select a roof type and adjust dimensions.</p></div>
-        <div class="canvas-container" id="canvas-roof">
-          <div class="viewer-hint">Drag to rotate • Scroll to zoom</div>
-        </div>
-        <div class="card-body">
-          <div class="roof-toggles">
-            <button class="roof-btn active" data-type="gable" onclick="setRoofType('gable')">Gable</button>
-            <button class="roof-btn" data-type="hip" onclick="setRoofType('hip')">Hip</button>
-            <button class="roof-btn" data-type="mono" onclick="setRoofType('mono')">Mono</button>
-            <button class="roof-btn" data-type="flat" onclick="setRoofType('flat')">Flat</button>
-          </div>
-          <div class="input-grid">
-            <div class="input-group"><label>Length <span class="val" id="f-lenV">10.0 m</span></label><input type="range" id="f-len" min="0.5" max="50" step="0.5" value="10" /></div>
-            <div class="input-group"><label>Width <span class="val" id="f-widV">8.0 m</span></label><input type="range" id="f-wid" min="0.5" max="50" step="0.5" value="8" /></div>
-            <div class="input-group"><label>Pitch <span class="val" id="f-pitV">25°</span></label><input type="range" id="f-pit" min="5" max="50" step="1" value="25" /></div>
-            <div class="input-group"><label>Overhang (m)</label><input type="number" id="f-overhang" value="0.5" step="0.1" /></div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="right-col">
-      <div class="card">
-        <div class="card-header"><h2>Material estimate</h2><p>Indicative quantities based on your roof.</p></div>
-        <div class="card-body">
-          <div class="area-boxes">
-            <div class="area-box"><div class="label">Roof Area</div><div class="val" id="f-outArea">0.00 m²</div></div>
-            <div class="area-box"><div class="label">Angle</div><div class="val" id="f-outAngle">0°</div></div>
-          </div>
-          <div class="material-wrapper">
-            <div class="material-list blurred" id="f-materialList">
-              <div class="mat-header"><span>Material / Work Item</span><span>Qty</span></div>
-              <div class="mat-item"><div class="mat-info"><div class="mat-name">Roofing Sheets (0.9x3m)</div></div><div class="mat-qty" id="f-outSheets">0</div></div>
-              <div class="mat-item"><div class="mat-info"><div class="mat-name">Ridge Caps (3m)</div></div><div class="mat-qty" id="f-outRidges">0</div></div>
-              <div class="mat-item"><div class="mat-info"><div class="mat-name">Battens (3m)</div></div><div class="mat-qty" id="f-outBattens">0</div></div>
-              <div class="mat-item"><div class="mat-info"><div class="mat-name">Roofing Screws</div></div><div class="mat-qty" id="f-outScrews">0</div></div>
-            </div>
-            <div class="paywall-overlay" id="f-paywall">
-              <div class="paywall-box">
-                <h3>🔒 Unlock Bill of Materials</h3>
-                <p class="subtitle">Get exact quantities for sheets, battens, and screws instantly.</p>
-                <button class="btn-unlock" onclick="mockUnlock('roof')">Unlock for ₵15 (Preview Mode)</button>
-              </div>
-            </div>
-          </div>
-          <div class="warning-box"><strong>Important:</strong> This is a preliminary geometric estimate. Verify with your contractor.</div>
-          <div class="actions" id="f-actions">
-            <button class="btn-primary unlocked" onclick="downloadRoofPDF()">✓ Download Official PDF</button>
-            <button class="btn-reset" onclick="resetRoof()">Reset dimensions</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- APP 3: FLOOR TILES -->
-<div class="app-section" id="app-tiles">
-  <div class="container">
-    <div class="left-col">
-      <div class="card">
-        <div class="card-header"><h2>Floor Tiling</h2><p>Calculate tiles, adhesive, and grout.</p></div>
-        <div class="canvas-container" id="canvas-tiles">
-          <div class="viewer-hint">Drag to rotate • Scroll to zoom</div>
-        </div>
-        <div class="card-body">
-          <div class="input-grid">
-            <div class="input-group"><label>Room Length <span class="val" id="t-lenV">5.0 m</span></label><input type="range" id="t-len" min="0.5" max="50" step="0.1" value="5" /></div>
-            <div class="input-group"><label>Room Width <span class="val" id="t-widV">4.0 m</span></label><input type="range" id="t-wid" min="0.5" max="50" step="0.1" value="4" /></div>
-            <div class="input-group">
-              <label>Tile Size</label>
-              <select id="t-size">
-                <option value="0.09">300 x 300 mm</option>
-                <option value="0.16">400 x 400 mm</option>
-                <option value="0.36" selected>600 x 600 mm</option>
-                <option value="0.64">800 x 800 mm</option>
-              </select>
-            </div>
-            <div class="input-group"><label>Waste Allowance (%)</label><input type="number" id="t-waste" value="10" step="1" /></div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="right-col">
-      <div class="card">
-        <div class="card-header"><h2>Material estimate</h2><p>Indicative quantities for your flooring.</p></div>
-        <div class="card-body">
-          <div class="area-boxes">
-            <div class="area-box"><div class="label">Floor Area</div><div class="val" id="t-outArea">0.00 m²</div></div>
-            <div class="area-box"><div class="label">Tiles Needed</div><div class="val" id="t-outTiles">0 tiles</div></div>
-          </div>
-          <div class="material-wrapper">
-            <div class="material-list blurred" id="t-materialList">
-              <div class="mat-header"><span>Material / Work Item</span><span>Qty</span></div>
-              <div class="mat-item"><div class="mat-info"><div class="mat-name">Tile Adhesive (20kg bags)</div></div><div class="mat-qty" id="t-outAdhesive">0 bags</div></div>
-              <div class="mat-item"><div class="mat-info"><div class="mat-name">Tile Grout (5kg bags)</div></div><div class="mat-qty" id="t-outGrout">0 bags</div></div>
-              <div class="mat-item"><div class="mat-info"><div class="mat-name">Tile Spacers (pack)</div></div><div class="mat-qty" id="t-outSpacers">0 packs</div></div>
-            </div>
-            <div class="paywall-overlay" id="t-paywall">
-              <div class="paywall-box">
-                <h3>🔒 Unlock Bill of Materials</h3>
-                <p class="subtitle">Get exact quantities for adhesive, grout, and spacers instantly.</p>
-                <button class="btn-unlock" onclick="mockUnlock('tiles')">Unlock for ₵15 (Preview Mode)</button>
-              </div>
-            </div>
-          </div>
-          <div class="warning-box"><strong>Important:</strong> This is a preliminary estimate. Actual coverage varies by tile layout and substrate.</div>
-          <div class="actions" id="t-actions">
-            <button class="btn-primary unlocked" onclick="downloadTilesPDF()">✓ Download Official PDF</button>
-            <button class="btn-reset" onclick="resetTiles()">Reset dimensions</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+<!-- APP 2 & 3 placeholders -->
+<div class="app-section" id="app-roof"> <div class="container"><div class="card"><div class="card-body"><h2>Roof Wizard Coming Soon</h2></div></div></div> </div>
+<div class="app-section" id="app-tiles"> <div class="container"><div class="card"><div class="card-body"><h2>Floor Tiles Coming Soon</h2></div></div></div> </div>
 
 <!-- FOOTER -->
 <footer>
@@ -373,9 +281,9 @@
 <div class="modal-overlay" id="legalModal">
   <div class="modal-box">
     <button class="modal-close" onclick="closeModal()">&times;</button>
-    <div id="content-privacy" style="display:none;"><h2>Privacy Policy</h2><p>Last updated: October 2026</p><p>At Calculate2Build ("we", "us", or "our"), we respect your privacy...</p></div>
-    <div id="content-terms" style="display:none;"><h2>Terms of Service</h2><p>Last updated: October 2026</p><p>By using Calculate2Build, you agree to these terms...</p></div>
-    <div id="content-contact" style="display:none;"><h2>Contact Us</h2><p>Email us directly at: <a href="mailto:quicktoolsapp@proton.me" style="color: var(--brand); font-weight: 600;">quicktoolsapp@proton.me</a></p></div>
+    <div id="content-privacy" style="display:none;"><h2>Privacy Policy</h2><p>Last updated: October 2026</p></div>
+    <div id="content-terms" style="display:none;"><h2>Terms of Service</h2><p>Last updated: October 2026</p></div>
+    <div id="content-contact" style="display:none;"><h2>Contact Us</h2><p>Email us at: <a href="mailto:quicktoolsapp@proton.me">quicktoolsapp@proton.me</a></p></div>
   </div>
 </div>
 
@@ -395,60 +303,313 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 // ==========================================
-// GLOBAL STATE & TOGGLE LOGIC
+// STATE MANAGEMENT
 // ==========================================
-let currentUnit = 'm'; 
+let currentUnit = 'm';
 const M_TO_FT = 3.28084;
+let savedRooms = [];
+let activeRoomId = 1;
 
+// Current active inputs (always stored in meters internally)
+const currentRoom = { len: 6.4, wid: 5.5, hgt: 3.7, thick: 0.225 };
+
+// ==========================================
+// UNIT TOGGLE LOGIC
+// ==========================================
 window.setUnit = (unit) => {
   currentUnit = unit;
   document.getElementById('btn-m').classList.toggle('active', unit === 'm');
   document.getElementById('btn-ft').classList.toggle('active', unit === 'ft');
-  
-  // Update Room UI
-  const lenM = parseFloat(document.getElementById('r-len').value);
-  const widM = parseFloat(document.getElementById('r-wid').value);
-  const hgtM = parseFloat(document.getElementById('r-hgt').value);
-  
-  const mult = unit === 'm' ? 1 : M_TO_FT;
-  const suffix = unit === 'm' ? ' m' : ' ft';
-  
-  document.getElementById('r-lenV').textContent = (lenM * mult).toFixed(1) + suffix;
-  document.getElementById('r-widV').textContent = (widM * mult).toFixed(1) + suffix;
-  document.getElementById('r-hgtV').textContent = (hgtM * mult).toFixed(1) + suffix;
-  
-  // Update sliders logic (convert current slider values so they match the new labels)
-  document.getElementById('r-len').value = (lenM * mult).toFixed(1);
-  document.getElementById('r-wid').value = (widM * mult).toFixed(1);
-  document.getElementById('r-hgt').value = (hgtM * mult).toFixed(1);
-  
-  // Update max bounds dynamically
-  document.getElementById('r-len').max = (50 * mult).toFixed(1);
-  document.getElementById('r-wid').max = (50 * mult).toFixed(1);
-  document.getElementById('r-hgt').max = (8 * mult).toFixed(1);
+  updateUI();
 };
 
-// Intercept slider input to store in meters internally
-function getSliderValueMeters(id) {
-  const val = parseFloat(document.getElementById(id).value);
-  return currentUnit === 'm' ? val : val / M_TO_FT;
+// ==========================================
+// MULTI-ROOM LOGIC (The "Master Room" Architecture)
+// ==========================================
+window.saveCurrentRoom = () => {
+  // 1. Save current room to memory
+  savedRooms.push({ id: activeRoomId, ...currentRoom });
+  
+  // 2. Increment ID and reset current values for the next room
+  activeRoomId++;
+  currentRoom.len = 5.0;
+  currentRoom.wid = 4.0;
+  currentRoom.hgt = 3.7;
+  currentRoom.thick = 0.225;
+  
+  // 3. Reset sliders
+  document.getElementById('r-len').value = 5.0;
+  document.getElementById('r-wid').value = 4.0;
+  document.getElementById('r-hgt').value = 3.7;
+  
+  // 4. Update UI and 3D
+  updateUI();
+  rebuild3D();
+};
+
+window.clearAllRooms = () => {
+  savedRooms = [];
+  activeRoomId = 1;
+  currentRoom.len = 6.4;
+  currentRoom.wid = 5.5;
+  currentRoom.hgt = 3.7;
+  document.getElementById('r-len').value = 6.4;
+  document.getElementById('r-wid').value = 5.5;
+  document.getElementById('r-hgt').value = 3.7;
+  updateUI();
+  rebuild3D();
+};
+
+// ==========================================
+// UI UPDATES & CALCULATIONS
+// ==========================================
+function updateUI() {
+  const mult = currentUnit === 'm' ? 1 : M_TO_FT;
+  const suffix = currentUnit === 'm' ? ' m' : ' ft';
+
+  // Update active room badges
+  document.getElementById('activeRoomBadge').textContent = `Designing Room ${activeRoomId}`;
+  
+  // Update labels
+  document.getElementById('r-lenV').textContent = (currentRoom.len * mult).toFixed(1) + suffix;
+  document.getElementById('r-widV').textContent = (currentRoom.wid * mult).toFixed(1) + suffix;
+  document.getElementById('r-hgtV').textContent = (currentRoom.hgt * mult).toFixed(1) + suffix;
+
+  // Update room list
+  const list = document.getElementById('savedRoomsList');
+  if (savedRooms.length === 0) {
+    list.innerHTML = '<div style="font-size: 12px; color: var(--text-muted); text-align: center;">No rooms saved yet.</div>';
+  } else {
+    list.innerHTML = savedRooms.map((r, i) => `
+      <div class="room-item">
+        <span>Room ${i + 1}</span>
+        <span>${(r.len * mult).toFixed(1)} ${suffix} x ${(r.wid * mult).toFixed(1)} ${suffix}</span>
+      </div>
+    `).join('');
+  }
+
+  calcTotals();
+}
+
+function calcTotals() {
+  // Combine saved rooms + current active room
+  let totalArea = 0;
+  let totalWallArea = 0;
+  const hgt = currentRoom.hgt;
+
+  // Helper for single room calculation
+  const calcRoom = (r) => {
+    const gross = 2 * (r.len + r.wid) * hgt;
+    const net = gross - 4.5; // Simple assumption for door/windows
+    totalArea += (r.len * r.wid);
+    totalWallArea += net;
+  };
+
+  savedRooms.forEach(calcRoom);
+  calcRoom(currentRoom);
+
+  // 1. Masonry
+  document.getElementById('r-outBlocks').textContent = Math.ceil((totalWallArea / 0.08) * 1.07).toLocaleString() + ' pcs';
+  document.getElementById('r-outCemMortar').textContent = Math.ceil(totalWallArea * 0.12 * 1.07) + ' bags';
+  document.getElementById('r-outSand').textContent = (totalWallArea * 0.012 * 1.07).toFixed(2) + ' m³';
+  
+  // 2. Plastering & Finishes
+  document.getElementById('r-outCemPlaster').textContent = Math.ceil(totalWallArea * 0.6 * 1.07) + ' bags';
+  document.getElementById('r-outSandPlaster').textContent = (totalWallArea * 0.05 * 1.07).toFixed(2) + ' m³';
+  document.getElementById('r-outPaint').textContent = (totalWallArea / 8.3 * 2 * 1.05).toFixed(1) + ' L';
+  
+  // 3. Flooring
+  document.getElementById('r-outTiles').textContent = Math.ceil((totalArea / 0.36) * 1.1) + ' tiles';
+  document.getElementById('r-outAdhesive').textContent = Math.ceil((totalArea / 4) * 1.1) + ' bags';
+  document.getElementById('r-outGrout').textContent = (totalArea * 0.1 * 1.1).toFixed(1) + ' kg';
+
+  // 4. Ceilings & Roof
+  document.getElementById('r-outCeiling').textContent = Math.ceil(totalArea * 1.05) + ' m²';
+  // Approx roof area based on total length and max width
+  const maxWid = Math.max(currentRoom.wid, ...savedRooms.map(r => r.wid));
+  const totalLen = savedRooms.reduce((sum, r) => sum + r.len, 0) + currentRoom.len;
+  const halfW = maxWid / 2;
+  const rise = Math.tan(25 * Math.PI / 180) * halfW;
+  const slopeLen = Math.sqrt(halfW * halfW + rise * rise);
+  const roofArea = totalLen * slopeLen * 2;
+  document.getElementById('r-outRoof').textContent = (roofArea * 1.1).toFixed(1) + ' m²';
+
+  document.getElementById('r-outFloor').textContent = totalArea.toFixed(2) + ' m²';
+  document.getElementById('r-outWall').textContent = totalWallArea.toFixed(2) + ' m²';
 }
 
 // ==========================================
-// PAYSTACK / MOCK PAYMENT
+// 3D ENGINE (Focus on current room only)
 // ==========================================
-window.mockUnlock = (app) => {
+const blockMat = new THREE.MeshStandardMaterial({ color: 0xd4cbb8, roughness: 0.9 });
+const roofMat = new THREE.MeshStandardMaterial({ color: 0x64748b, roughness: 0.6, side: THREE.DoubleSide });
+const doorMat = new THREE.MeshStandardMaterial({ color: 0x8b5a2b, roughness: 0.9 });
+const glassMat = new THREE.MeshStandardMaterial({ color: 0x93c5fd, roughness: 0.1, metalness: 0.5 });
+
+const container = document.getElementById('canvas-room');
+const scene = new THREE.Scene(); scene.background = new THREE.Color(0xf1f5f9);
+const camera = new THREE.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 0.1, 1000);
+camera.position.set(15, 12, 18);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(container.clientWidth, container.clientHeight);
+renderer.shadowMap.enabled = true;
+container.appendChild(renderer.domElement);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true; controls.maxPolarAngle = Math.PI / 2 - 0.05;
+controls.minDistance = 5; controls.maxDistance = 100; controls.target.set(0, 2, 0);
+
+scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+const dir = new THREE.DirectionalLight(0xffffff, 1.2); dir.position.set(20, 30, 20); dir.castShadow = true; scene.add(dir);
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1 })); ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
+const grid = new THREE.GridHelper(200, 200, 0xcbd5e1, 0xe2e8f0); grid.position.y = 0.01; scene.add(grid);
+
+const buildingGroup = new THREE.Group();
+scene.add(buildingGroup);
+
+function rebuild3D() {
+  buildingGroup.clear();
+  
+  const { len, wid, hgt, thick } = currentRoom;
+  const BLOCK_W = 0.45, BLOCK_H = 0.225;
+  const doorW = 0.9, doorH = 2.1;
+  const winW = 1.2, winH = 1.2, sillY = 1.0;
+
+  // Smart optimization for massive rooms
+  if (len > 15 || wid > 15 || hgt > 15) {
+    const wall1 = new THREE.Mesh(new THREE.BoxGeometry(len, hgt, thick), blockMat);
+    wall1.position.set(0, hgt/2, wid/2); buildingGroup.add(wall1);
+    const wall2 = new THREE.Mesh(new THREE.BoxGeometry(len, hgt, thick), blockMat);
+    wall2.position.set(0, hgt/2, -wid/2); buildingGroup.add(wall2);
+    const wall3 = new THREE.Mesh(new THREE.BoxGeometry(thick, hgt, wid), blockMat);
+    wall3.position.set(-len/2, hgt/2, 0); buildingGroup.add(wall3);
+    const wall4 = new THREE.Mesh(new THREE.BoxGeometry(thick, hgt, wid), blockMat);
+    wall4.position.set(len/2, hgt/2, 0); buildingGroup.add(wall4);
+  } else {
+    // Standard block-by-block rendering
+    const geo = new THREE.BoxGeometry(BLOCK_W * 0.98, BLOCK_H * 0.98, thick);
+    const walls = [
+      { axis: 'x', fixed:  wid/2, span: len, door: true,  win: false },
+      { axis: 'x', fixed: -wid/2, span: len, door: false, win: false },
+      { axis: 'z', fixed: -len/2, span: wid, door: false, win: true },
+      { axis: 'z', fixed:  len/2, span: wid, door: false, win: true },
+    ];
+
+    walls.forEach(w => {
+      const cols = Math.round(w.span / BLOCK_W);
+      const rows = Math.round(hgt / BLOCK_H);
+      for (let c = 0; c < cols; c++) {
+        for (let r = 0; r < rows; r++) {
+          const alongPos = c * BLOCK_W + BLOCK_W / 2 - w.span / 2;
+          const yPos = r * BLOCK_H + BLOCK_H / 2;
+          if (w.door && Math.abs(alongPos) < doorW / 2 && yPos < doorH) continue;
+          if (w.win && (Math.abs(alongPos - w.span/4) < winW/2 || Math.abs(alongPos + w.span/4) < winW/2) && yPos > sillY && yPos < sillY + winH) continue;
+          const m = new THREE.Mesh(geo, blockMat);
+          m.castShadow = true; m.receiveShadow = true;
+          if (w.axis === 'x') m.position.set(alongPos, yPos, w.fixed);
+          else { m.position.set(w.fixed, yPos, alongPos); m.rotation.y = Math.PI / 2; }
+          buildingGroup.add(m);
+        }
+      }
+    });
+    
+    // Add door and windows
+    const door = new THREE.Mesh(new THREE.BoxGeometry(doorW, doorH, 0.05), doorMat);
+    door.position.set(0, doorH/2, wid/2); buildingGroup.add(door);
+    
+    const winGeo = new THREE.BoxGeometry(winW, winH, 0.05);
+    const w1 = new THREE.Mesh(winGeo, glassMat); w1.position.set(-len/2, sillY + winH/2, wid/4); w1.rotation.y = Math.PI / 2; buildingGroup.add(w1);
+    const w2 = new THREE.Mesh(winGeo, glassMat); w2.position.set(len/2, sillY + winH/2, wid/4); w2.rotation.y = Math.PI / 2; buildingGroup.add(w2);
+  }
+
+  // Roof
+  const rad = (25 * Math.PI) / 180; const halfW = wid / 2; const rise = Math.tan(rad) * halfW; const overhang = 0.4;
+  const roofGeo = new THREE.BufferGeometry();
+  const v0 = new THREE.Vector3(-halfW - overhang, hgt,  len/2 + overhang); 
+  const v1 = new THREE.Vector3( halfW + overhang, hgt,  len/2 + overhang); 
+  const v2 = new THREE.Vector3( 0,              hgt + rise, len/2 + overhang); 
+  const v3 = new THREE.Vector3(-halfW - overhang, hgt, -len/2 - overhang); 
+  const v4 = new THREE.Vector3( halfW + overhang, hgt, -len/2 - overhang); 
+  const v5 = new THREE.Vector3( 0,              hgt + rise, -len/2 - overhang); 
+  const indices = [0, 2, 5, 0, 5, 3, 1, 4, 5, 1, 5, 2, 0, 1, 2, 3, 5, 4];
+  const vertices = new Float32Array([v0.x, v0.y, v0.z, v1.x, v1.y, v1.z, v2.x, v2.y, v2.z, v3.x, v3.y, v3.z, v4.x, v4.y, v4.z, v5.x, v5.y, v5.z]);
+  roofGeo.setAttribute('position', new THREE.BufferAttribute(vertices, 3)); roofGeo.setIndex(indices); roofGeo.computeVertexNormals(); 
+  const roof = new THREE.Mesh(roofGeo, roofMat); roof.castShadow = true; roof.receiveShadow = true; buildingGroup.add(roof);
+
+  // Auto-center camera based on room size
+  camera.position.set(len * 1.5, hgt * 2, wid * 1.5);
+  controls.target.set(0, hgt * 0.5, 0);
+  controls.update();
+}
+
+// ==========================================
+// UI LISTENERS
+// ==========================================
+const getSliderVal = (id) => {
+  const val = parseFloat(document.getElementById(id).value);
+  return currentUnit === 'm' ? val : val / M_TO_FT;
+};
+
+document.getElementById('r-len').oninput = (e) => { currentRoom.len = getSliderVal('r-len'); updateUI(); rebuild3D(); };
+document.getElementById('r-wid').oninput = (e) => { currentRoom.wid = getSliderVal('r-wid'); updateUI(); rebuild3D(); };
+document.getElementById('r-hgt').oninput = (e) => { currentRoom.hgt = getSliderVal('r-hgt'); updateUI(); rebuild3D(); };
+document.getElementById('r-thick').onchange = (e) => { currentRoom.thick = parseFloat(e.target.value); updateUI(); rebuild3D(); };
+
+// ==========================================
+// PAYSTACK & PDF
+// ==========================================
+window.mockUnlock = () => {
   const btn = event.target;
   btn.textContent = 'Processing Payment...';
   setTimeout(() => {
-    document.getElementById(`${app === 'room' ? 'r' : app === 'roof' ? 'f' : 't'}-materialList`).classList.remove('blurred');
-    document.getElementById(`${app === 'room' ? 'r' : app === 'roof' ? 'f' : 't'}-paywall`).style.display = 'none';
-    document.getElementById(`${app === 'room' ? 'r' : app === 'roof' ? 'f' : 't'}-actions`).style.display = 'flex';
+    document.getElementById('r-materialList').classList.remove('blurred');
+    document.getElementById('r-paywall').style.display = 'none';
+    document.getElementById('r-actions').style.display = 'flex';
   }, 800);
 };
 
+window.downloadRoomPDF = () => {
+  const { jsPDF } = window.jspdf; const doc = new jsPDF();
+  const mult = currentUnit === 'm' ? 1 : M_TO_FT;
+  const suffix = currentUnit === 'm' ? 'm' : 'ft';
+
+  doc.setFillColor(30, 41, 59); doc.rect(0, 0, 210, 30, 'F');
+  doc.setTextColor(255, 255, 255); doc.setFontSize(22); doc.setFont('helvetica', 'bold'); doc.text("Calculate2Build", 14, 15);
+  doc.setFontSize(10); doc.setFont('helvetica', 'normal'); doc.text("Official Building Estimate", 14, 22);
+  
+  doc.setTextColor(0, 0, 0); doc.setFontSize(12); doc.setFont('helvetica', 'bold'); doc.text("Room Schedule", 14, 45);
+  
+  doc.setFontSize(10); doc.setFont('helvetica', 'normal');
+  let y = 52;
+  
+  savedRooms.forEach((r, i) => {
+    doc.text(`Room ${i+1}: ${(r.len * mult).toFixed(1)} ${suffix} x ${(r.wid * mult).toFixed(1)} ${suffix}`, 14, y);
+    y += 6;
+  });
+
+  y += 10;
+  doc.setFontSize(12); doc.setFont('helvetica', 'bold'); doc.text("Bill of Quantities", 14, y);
+  doc.setFontSize(10); doc.setFont('helvetica', 'normal');
+  
+  const rows = [
+    ["Sandcrete blocks (9\")", document.getElementById('r-outBlocks').textContent],
+    ["Cement (mortar)", document.getElementById('r-outCemMortar').textContent],
+    ["Mortar sand", document.getElementById('r-outSand').textContent],
+    ["Cement (plaster)", document.getElementById('r-outCemPlaster').textContent],
+    ["Paint (2 coats)", document.getElementById('r-outPaint').textContent],
+    ["Floor tiles (600x600)", document.getElementById('r-outTiles').textContent],
+    ["Ceiling Boards", document.getElementById('r-outCeiling').textContent],
+    ["Roof Area", document.getElementById('r-outRoof').textContent]
+  ];
+  y += 8;
+  rows.forEach(([k, v]) => { doc.text(k, 20, y); doc.text(v, 120, y); doc.setDrawColor(230,230,230); doc.line(14, y+3, 196, y+3); y += 10; });
+  doc.save('C2B_Building_Estimate.pdf');
+};
+
 // ==========================================
-// UI & MODAL LOGIC
+// MODALS & INIT
 // ==========================================
 window.openModal = (type) => {
   document.getElementById('legalModal').classList.add('active');
@@ -459,375 +620,29 @@ window.closeModal = () => { document.getElementById('legalModal').classList.remo
 window.switchTab = (tabId) => {
   document.querySelectorAll('.app-section').forEach(el => el.classList.remove('active'));
   document.getElementById(`app-${tabId}`).classList.add('active');
-  
   const mobileSelect = document.querySelector('.mobile-nav select');
   if(mobileSelect) mobileSelect.value = tabId;
-  
   document.querySelectorAll('.nav-links a').forEach(el => {
     if(el.textContent.toLowerCase().includes(tabId === 'room' ? 'room' : tabId === 'roof' ? 'roof' : 'tiles')) el.classList.add('active');
     else el.classList.remove('active');
   });
-
   setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 50);
 };
 
-// ==========================================
-// 3D ENGINE
-// ==========================================
-const blockMat = new THREE.MeshStandardMaterial({ color: 0xd4cbb8, roughness: 0.9 });
-const roofMat = new THREE.MeshStandardMaterial({ color: 0x64748b, roughness: 0.6, side: THREE.DoubleSide });
-const doorMat = new THREE.MeshStandardMaterial({ color: 0x8b5a2b, roughness: 0.9 });
-const glassMat = new THREE.MeshStandardMaterial({ color: 0x93c5fd, roughness: 0.1, metalness: 0.5 });
-const tileMat = new THREE.MeshStandardMaterial({ color: 0x93c5fd, roughness: 0.2 });
+updateUI();
+rebuild3D();
 
-function setupScene(containerId) {
-  const container = document.getElementById(containerId);
-  const scene = new THREE.Scene(); scene.background = new THREE.Color(0xf1f5f9);
-  const camera = new THREE.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 0.1, 1000);
-  camera.position.set(15, 12, 18);
-  
-  const renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-  renderer.setSize(container.clientWidth, container.clientHeight);
-  renderer.shadowMap.enabled = true;
-  container.appendChild(renderer.domElement);
-  
-  const controls = new OrbitControls(camera, renderer.domElement);
-  controls.enableDamping = true; controls.maxPolarAngle = Math.PI / 2 - 0.05;
-  controls.minDistance = 5; controls.maxDistance = 100; controls.target.set(0, 2, 0);
-  
-  scene.add(new THREE.AmbientLight(0xffffff, 0.6));
-  const dir = new THREE.DirectionalLight(0xffffff, 1.2); dir.position.set(20, 30, 20); dir.castShadow = true; scene.add(dir);
-  const ground = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1 })); ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
-  const grid = new THREE.GridHelper(200, 200, 0xcbd5e1, 0xe2e8f0); grid.position.y = 0.01; scene.add(grid);
-  
-  return { scene, camera, renderer, controls, container };
-}
-
-const room3D = setupScene('canvas-room');
-const roof3D = setupScene('canvas-roof');
-const tiles3D = setupScene('canvas-tiles');
-
-// BLOCK GENERATOR
-function generateBlockWalls(group, len, wid, hgt, thick, hasDoor, hasWindows) {
-  const BLOCK_W = 0.45, BLOCK_H = 0.225;
-  const doorW = 0.9, doorH = 2.1;
-  const winW = 1.2, winH = 1.2, sillY = 1.0;
-
-  if (len > 15 || wid > 15 || hgt > 15) {
-    const wall1 = new THREE.Mesh(new THREE.BoxGeometry(len, hgt, thick), blockMat);
-    wall1.position.set(0, hgt/2, wid/2); group.add(wall1);
-    const wall2 = new THREE.Mesh(new THREE.BoxGeometry(len, hgt, thick), blockMat);
-    wall2.position.set(0, hgt/2, -wid/2); group.add(wall2);
-    const wall3 = new THREE.Mesh(new THREE.BoxGeometry(thick, hgt, wid), blockMat);
-    wall3.position.set(-len/2, hgt/2, 0); group.add(wall3);
-    const wall4 = new THREE.Mesh(new THREE.BoxGeometry(thick, hgt, wid), blockMat);
-    wall4.position.set(len/2, hgt/2, 0); group.add(wall4);
-    return;
-  }
-
-  const geo = new THREE.BoxGeometry(BLOCK_W * 0.98, BLOCK_H * 0.98, thick);
-  const walls = [
-    { axis: 'x', fixed:  wid/2, span: len, door: hasDoor,  win: false },
-    { axis: 'x', fixed: -wid/2, span: len, door: false, win: false },
-    { axis: 'z', fixed: -len/2, span: wid, door: false, win: hasWindows },
-    { axis: 'z', fixed:  len/2, span: wid, door: false, win: hasWindows },
-  ];
-
-  walls.forEach(w => {
-    const cols = Math.round(w.span / BLOCK_W);
-    const rows = Math.round(hgt / BLOCK_H);
-    for (let c = 0; c < cols; c++) {
-      for (let r = 0; r < rows; r++) {
-        const alongPos = c * BLOCK_W + BLOCK_W / 2 - w.span / 2;
-        const yPos = r * BLOCK_H + BLOCK_H / 2;
-        if (w.door && Math.abs(alongPos) < doorW / 2 && yPos < doorH) continue;
-        if (w.win && (Math.abs(alongPos - w.span/4) < winW/2 || Math.abs(alongPos + w.span/4) < winW/2) && yPos > sillY && yPos < sillY + winH) continue;
-        const m = new THREE.Mesh(geo, blockMat);
-        m.castShadow = true; m.receiveShadow = true;
-        if (w.axis === 'x') m.position.set(alongPos, yPos, w.fixed);
-        else { m.position.set(w.fixed, yPos, alongPos); m.rotation.y = Math.PI / 2; }
-        group.add(m);
-      }
-    }
-  });
-
-  if (hasDoor) {
-    const door = new THREE.Mesh(new THREE.BoxGeometry(doorW, doorH, 0.05), doorMat);
-    door.position.set(0, doorH/2, wid/2); group.add(door);
-  }
-  if (hasWindows) {
-    const winGeo = new THREE.BoxGeometry(winW, winH, 0.05);
-    const w1 = new THREE.Mesh(winGeo, glassMat); w1.position.set(-len/2, sillY + winH/2, wid/4); w1.rotation.y = Math.PI / 2; group.add(w1);
-    const w2 = new THREE.Mesh(winGeo, glassMat); w2.position.set(len/2, sillY + winH/2, wid/4); w2.rotation.y = Math.PI / 2; group.add(w2);
-  }
-}
-
-// --- ROOM ESTIMATOR ---
-let roomP = { len: 6.4, wid: 5.5, hgt: 3.7 };
-const wallsGroupRoom = new THREE.Group();
-const roofGroupRoom = new THREE.Group();
-room3D.scene.add(wallsGroupRoom, roofGroupRoom);
-
-function buildRoom() {
-  wallsGroupRoom.clear(); roofGroupRoom.clear();
-  generateBlockWalls(wallsGroupRoom, roomP.len, roomP.wid, roomP.hgt, +document.getElementById('r-thick').value || 0.225, true, true);
-  
-  const rad = (25 * Math.PI) / 180; const halfW = roomP.wid / 2; const rise = Math.tan(rad) * halfW; const overhang = 0.4;
-  const geometry = new THREE.BufferGeometry();
-  const v0 = new THREE.Vector3(-halfW - overhang, roomP.hgt,  roomP.len/2 + overhang); 
-  const v1 = new THREE.Vector3( halfW + overhang, roomP.hgt,  roomP.len/2 + overhang); 
-  const v2 = new THREE.Vector3( 0,              roomP.hgt + rise, roomP.len/2 + overhang); 
-  const v3 = new THREE.Vector3(-halfW - overhang, roomP.hgt, -roomP.len/2 - overhang); 
-  const v4 = new THREE.Vector3( halfW + overhang, roomP.hgt, -roomP.len/2 - overhang); 
-  const v5 = new THREE.Vector3( 0,              roomP.hgt + rise, -roomP.len/2 - overhang); 
-  const indices = [0, 2, 5, 0, 5, 3, 1, 4, 5, 1, 5, 2, 0, 1, 2, 3, 5, 4];
-  const vertices = new Float32Array([v0.x, v0.y, v0.z, v1.x, v1.y, v1.z, v2.x, v2.y, v2.z, v3.x, v3.y, v3.z, v4.x, v4.y, v4.z, v5.x, v5.y, v5.z]);
-  geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3)); geometry.setIndex(indices); geometry.computeVertexNormals(); 
-  const roof = new THREE.Mesh(geometry, roofMat); roof.castShadow = true; roof.receiveShadow = true; roofGroupRoom.add(roof);
-}
-
-function calcRoom() {
-  const gross = 2 * (roomP.len + roomP.wid) * roomP.hgt;
-  const net = gross - 4.5;
-  document.getElementById('r-outFloor').textContent = (roomP.len * roomP.wid).toFixed(2) + ' m²';
-  document.getElementById('r-outWall').textContent = net.toFixed(2) + ' m²';
-  document.getElementById('r-outBlocks').textContent = Math.ceil((net / 0.08) * 1.08).toLocaleString() + ' pcs';
-  document.getElementById('r-outCemMortar').textContent = Math.ceil(net * 0.12 * 1.08) + ' bags';
-  document.getElementById('r-outSand').textContent = (net * 0.012 * 1.08).toFixed(2) + ' m³';
-  document.getElementById('r-outCemPlaster').textContent = Math.ceil(net * 0.6 * 1.08) + ' bags';
-  document.getElementById('r-outTiles').textContent = Math.ceil((roomP.len * roomP.wid / 0.36) * 1.08) + ' tiles';
-}
-
-function syncRoom() {
-  roomP.len = getSliderValueMeters('r-len'); 
-  roomP.wid = getSliderValueMeters('r-wid'); 
-  roomP.hgt = getSliderValueMeters('r-hgt');
-  
-  const mult = currentUnit === 'm' ? 1 : M_TO_FT;
-  const suffix = currentUnit === 'm' ? ' m' : ' ft';
-  document.getElementById('r-lenV').textContent = (roomP.len * mult).toFixed(1) + suffix;
-  document.getElementById('r-widV').textContent = (roomP.wid * mult).toFixed(1) + suffix;
-  document.getElementById('r-hgtV').textContent = (roomP.hgt * mult).toFixed(1) + suffix;
-
-  buildRoom(); calcRoom();
-}
-
-document.getElementById('r-len').oninput = syncRoom; 
-document.getElementById('r-wid').oninput = syncRoom; 
-document.getElementById('r-hgt').oninput = syncRoom; 
-document.getElementById('r-thick').oninput = syncRoom;
-syncRoom();
-
-window.resetRoom = () => { document.getElementById('r-len').value = 6.4; document.getElementById('r-wid').value = 5.5; document.getElementById('r-hgt').value = 3.7; document.getElementById('r-thick').value = 0.225; syncRoom(); };
-
-// --- ROOF WIZARD ---
-const roofP = { len: 10, wid: 8, pitch: 25, overhang: 0.5, type: 'gable' };
-const wallsGroupRoof = new THREE.Group();
-const roofMeshGroup = new THREE.Group();
-roof3D.scene.add(wallsGroupRoof, roofMeshGroup);
-
-window.setRoofType = (type) => { roofP.type = type; document.querySelectorAll('.roof-btn').forEach(b => b.classList.remove('active')); document.querySelector(`.roof-btn[data-type="${type}"]`).classList.add('active'); syncRoof(); };
-
-function buildRoof() {
-  wallsGroupRoof.clear(); roofMeshGroup.clear();
-  generateBlockWalls(wallsGroupRoof, roofP.len, roofP.wid, 2.8, 0.225, true, true);
-  const rad = (roofP.pitch * Math.PI) / 180; const halfW = roofP.wid / 2; const rise = Math.tan(rad) * halfW;
-
-  if (roofP.type === 'flat') {
-    const slab = new THREE.Mesh(new THREE.BoxGeometry(roofP.len + roofP.overhang*2, 0.15, roofP.wid + roofP.overhang*2), roofMat);
-    slab.position.y = 2.8 + 0.075; slab.castShadow = true; roofMeshGroup.add(slab); return;
-  }
-  if (roofP.type === 'mono') {
-    const slopeLen = Math.sqrt(Math.pow(roofP.wid + roofP.overhang*2, 2) + Math.pow(rise*2, 2));
-    const mono = new THREE.Mesh(new THREE.BoxGeometry(roofP.len + roofP.overhang*2, 0.1, slopeLen), roofMat);
-    mono.position.set(0, 2.8 + rise/2, 0); mono.rotation.x = -rad; mono.castShadow = true; roofMeshGroup.add(mono); return;
-  }
-
-  const geometry = new THREE.BufferGeometry();
-  if (roofP.type === 'gable') {
-    const v0 = new THREE.Vector3(-halfW - roofP.overhang, 2.8,  roofP.len/2 + roofP.overhang); 
-    const v1 = new THREE.Vector3( halfW + roofP.overhang, 2.8,  roofP.len/2 + roofP.overhang); 
-    const v2 = new THREE.Vector3( 0,              2.8 + rise, roofP.len/2 + roofP.overhang); 
-    const v3 = new THREE.Vector3(-halfW - roofP.overhang, 2.8, -roofP.len/2 - roofP.overhang); 
-    const v4 = new THREE.Vector3( halfW + roofP.overhang, 2.8, -roofP.len/2 - roofP.overhang); 
-    const v5 = new THREE.Vector3( 0,              2.8 + rise, -roofP.len/2 - roofP.overhang); 
-    const indices = [0, 2, 5, 0, 5, 3, 1, 4, 5, 1, 5, 2, 0, 1, 2, 3, 5, 4];
-    const vertices = new Float32Array([v0.x, v0.y, v0.z, v1.x, v1.y, v1.z, v2.x, v2.y, v2.z, v3.x, v3.y, v3.z, v4.x, v4.y, v4.z, v5.x, v5.y, v5.z]);
-    geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3)); geometry.setIndex(indices); geometry.computeVertexNormals(); 
-  } else if (roofP.type === 'hip') {
-    const halfRidge = Math.max(roofP.len - roofP.wid, 0) / 2;
-    const v0 = new THREE.Vector3(-halfW - roofP.overhang, 2.8,  roofP.len/2 + roofP.overhang); 
-    const v1 = new THREE.Vector3( halfW + roofP.overhang, 2.8,  roofP.len/2 + roofP.overhang); 
-    const v2 = new THREE.Vector3(-halfW - roofP.overhang, 2.8, -roofP.len/2 - roofP.overhang); 
-    const v3 = new THREE.Vector3( halfW + roofP.overhang, 2.8, -roofP.len/2 - roofP.overhang); 
-    const tF = new THREE.Vector3(0, 2.8 + rise, halfRidge);
-    const tB = new THREE.Vector3(0, 2.8 + rise, -halfRidge);
-    const vertices = new Float32Array([v0.x, v0.y, v0.z, v1.x, v1.y, v1.z, v2.x, v2.y, v2.z, v3.x, v3.y, v3.z, tF.x, tF.y, tF.z, tB.x, tB.y, tB.z]);
-    const indices = [0, 1, 4, 2, 5, 3, 0, 4, 5, 0, 5, 2, 1, 3, 5, 1, 5, 4];
-    geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3)); geometry.setIndex(indices); geometry.computeVertexNormals();
-  }
-  const roofMesh = new THREE.Mesh(geometry, roofMat); roofMesh.castShadow = true; roofMesh.receiveShadow = true; roofMeshGroup.add(roofMesh);
-}
-
-function calcRoof() {
-  const rad = (roofP.pitch * Math.PI) / 180; const halfW = roofP.wid / 2;
-  const slopeLen = Math.sqrt(halfW * halfW + Math.pow(Math.tan(rad) * halfW, 2));
-  let area = 0;
-  if (roofP.type === 'gable' || roofP.type === 'hip') area = roofP.len * slopeLen * 2;
-  else if (roofP.type === 'mono') area = roofP.len * (roofP.wid + roofP.overhang*2) / Math.cos(rad);
-  else area = (roofP.len + roofP.overhang*2) * (roofP.wid + roofP.overhang*2); 
-  const gross = area * 1.10;
-  document.getElementById('f-outArea').textContent = gross.toFixed(1) + ' m²';
-  document.getElementById('f-outAngle').textContent = roofP.pitch + '°';
-  document.getElementById('f-outSheets').textContent = Math.ceil(gross / 2.7) + ' sheets';
-  document.getElementById('f-outRidges').textContent = Math.ceil((roofP.len + roofP.overhang*2) / 3) + ' pcs';
-  document.getElementById('f-outBattens').textContent = Math.ceil(gross / 2) + ' pcs';
-  document.getElementById('f-outScrews').textContent = Math.ceil((Math.ceil(gross / 2.7) * 12) / 100) + ' packs';
-}
-
-function syncRoof() {
-  roofP.len = +document.getElementById('f-len').value; document.getElementById('f-lenV').textContent = roofP.len.toFixed(1) + ' m';
-  roofP.wid = +document.getElementById('f-wid').value; document.getElementById('f-widV').textContent = roofP.wid.toFixed(1) + ' m';
-  roofP.pitch = +document.getElementById('f-pit').value; document.getElementById('f-pitV').textContent = roofP.pitch + '°';
-  roofP.overhang = +document.getElementById('f-overhang').value || 0.5;
-  buildRoof(); calcRoof();
-}
-document.getElementById('f-len').oninput = syncRoof; document.getElementById('f-wid').oninput = syncRoof; document.getElementById('f-pit').oninput = syncRoof; document.getElementById('f-overhang').oninput = syncRoof;
-syncRoof();
-window.resetRoof = () => { document.getElementById('f-len').value = 10; document.getElementById('f-wid').value = 8; document.getElementById('f-pit').value = 25; document.getElementById('f-overhang').value = 0.5; setRoofType('gable'); };
-
-// --- FLOOR TILES ---
-const tilesP = { len: 5, wid: 4, size: 0.36, waste: 10 };
-const wallsGroupTiles = new THREE.Group();
-const floorGroupTiles = new THREE.Group();
-tiles3D.scene.add(wallsGroupTiles, floorGroupTiles);
-
-function buildTiles() {
-  wallsGroupTiles.clear(); floorGroupTiles.clear();
-  generateBlockWalls(wallsGroupTiles, tilesP.len, tilesP.wid, 2.8, 0.225, true, true);
-
-  const tileGeo = new THREE.PlaneGeometry(tilesP.size * 0.95, tilesP.size * 0.95);
-  const cols = Math.floor(tilesP.len / tilesP.size);
-  const rows = Math.floor(tilesP.wid / tilesP.size);
-  
-  for (let c = 0; c < cols; c++) {
-    for (let r = 0; r < rows; r++) {
-      const tile = new THREE.Mesh(tileGeo, tileMat);
-      tile.rotation.x = -Math.PI / 2;
-      tile.position.set(
-        c * tilesP.size + tilesP.size / 2 - tilesP.len / 2,
-        0.01,
-        r * tilesP.size + tilesP.size / 2 - tilesP.wid / 2
-      );
-      floorGroupTiles.add(tile);
-    }
-  }
-}
-
-function calcTiles() {
-  const area = tilesP.len * tilesP.wid;
-  const gross = area * (1 + tilesP.waste / 100);
-  const tiles = Math.ceil(gross / tilesP.size);
-  
-  document.getElementById('t-outArea').textContent = area.toFixed(2) + ' m²';
-  document.getElementById('t-outTiles').textContent = tiles + ' tiles';
-  document.getElementById('t-outAdhesive').textContent = Math.ceil((gross / 4) * 1.1) + ' bags'; 
-  document.getElementById('t-outGrout').textContent = Math.ceil((gross * 0.5) / 5) + ' bags'; 
-  document.getElementById('t-outSpacers').textContent = Math.ceil(gross / 10) + ' packs';
-}
-
-function syncTiles() {
-  tilesP.len = +document.getElementById('t-len').value; document.getElementById('t-lenV').textContent = tilesP.len.toFixed(1) + ' m';
-  tilesP.wid = +document.getElementById('t-wid').value; document.getElementById('t-widV').textContent = tilesP.wid.toFixed(1) + ' m';
-  tilesP.size = +document.getElementById('t-size').value;
-  tilesP.waste = +document.getElementById('t-waste').value || 10;
-  buildTiles(); calcTiles();
-}
-document.getElementById('t-len').oninput = syncTiles; document.getElementById('t-wid').oninput = syncTiles; document.getElementById('t-size').onchange = syncTiles; document.getElementById('t-waste').oninput = syncTiles;
-syncTiles();
-window.resetTiles = () => { document.getElementById('t-len').value = 5; document.getElementById('t-wid').value = 4; document.getElementById('t-size').value = "0.36"; document.getElementById('t-waste').value = 10; syncTiles(); };
-
-// --- PDF GENERATION ---
-window.downloadRoomPDF = () => {
-  const { jsPDF } = window.jspdf; const doc = new jsPDF();
-  doc.setFillColor(30, 41, 59); doc.rect(0, 0, 210, 30, 'F');
-  doc.setTextColor(255, 255, 255); doc.setFontSize(22); doc.setFont('helvetica', 'bold'); doc.text("Calculate2Build", 14, 15);
-  doc.setFontSize(10); doc.setFont('helvetica', 'normal'); doc.text("Official Room Estimate", 14, 22);
-  doc.setTextColor(0, 0, 0); doc.setFontSize(12); doc.setFont('helvetica', 'bold'); doc.text("Project Specifications", 14, 45);
-  doc.setFontSize(10); doc.setFont('helvetica', 'normal'); doc.text(`Dimensions: ${roomP.len.toFixed(1)}m x ${roomP.wid.toFixed(1)}m x ${roomP.hgt.toFixed(1)}m`, 14, 52);
-  doc.setFontSize(12); doc.setFont('helvetica', 'bold'); doc.text("Bill of Quantities", 14, 70);
-  doc.setFontSize(10); doc.setFont('helvetica', 'normal');
-  const rows = [
-    ["Sandcrete blocks (9\")", document.getElementById('r-outBlocks').textContent],
-    ["Cement (mortar)", document.getElementById('r-outCemMortar').textContent],
-    ["Mortar sand", document.getElementById('r-outSand').textContent],
-    ["Cement (plaster)", document.getElementById('r-outCemPlaster').textContent],
-    ["Floor tiles (600x600)", document.getElementById('r-outTiles').textContent]
-  ];
-  let y = 80;
-  rows.forEach(([k, v]) => { doc.text(k, 20, y); doc.text(v, 120, y); doc.setDrawColor(230,230,230); doc.line(14, y+3, 196, y+3); y += 10; });
-  doc.save('C2B_Room_Estimate.pdf');
-};
-
-window.downloadRoofPDF = () => {
-  const { jsPDF } = window.jspdf; const doc = new jsPDF();
-  doc.setFillColor(30, 41, 59); doc.rect(0, 0, 210, 30, 'F');
-  doc.setTextColor(255, 255, 255); doc.setFontSize(22); doc.setFont('helvetica', 'bold'); doc.text("Calculate2Build", 14, 15);
-  doc.setFontSize(10); doc.setFont('helvetica', 'normal'); doc.text("Official Roof Estimate", 14, 22);
-  doc.setTextColor(0, 0, 0); doc.setFontSize(12); doc.setFont('helvetica', 'bold'); doc.text("Roof Specifications", 14, 45);
-  doc.setFontSize(10); doc.setFont('helvetica', 'normal'); doc.text(`Type: ${roofP.type.toUpperCase()} | Dimensions: ${roofP.len}m x ${roofP.wid}m | Pitch: ${roofP.pitch}°`, 14, 52);
-  doc.setFontSize(12); doc.setFont('helvetica', 'bold'); doc.text("Bill of Quantities", 14, 70);
-  doc.setFontSize(10); doc.setFont('helvetica', 'normal');
-  const rows = [
-    ["Roof Area (Slope + Waste)", document.getElementById('f-outArea').textContent],
-    ["Roofing Sheets (0.9x3m)", document.getElementById('f-outSheets').textContent],
-    ["Ridge Caps (3m)", document.getElementById('f-outRidges').textContent],
-    ["Battens (3m)", document.getElementById('f-outBattens').textContent],
-    ["Roofing Screws (Packs)", document.getElementById('f-outScrews').textContent]
-  ];
-  let y = 80;
-  rows.forEach(([k, v]) => { doc.text(k, 20, y); doc.text(v, 120, y); doc.setDrawColor(230,230,230); doc.line(14, y+3, 196, y+3); y += 10; });
-  doc.save('C2B_Roof_Estimate.pdf');
-};
-
-window.downloadTilesPDF = () => {
-  const { jsPDF } = window.jspdf; const doc = new jsPDF();
-  doc.setFillColor(30, 41, 59); doc.rect(0, 0, 210, 30, 'F');
-  doc.setTextColor(255, 255, 255); doc.setFontSize(22); doc.setFont('helvetica', 'bold'); doc.text("Calculate2Build", 14, 15);
-  doc.setFontSize(10); doc.setFont('helvetica', 'normal'); doc.text("Official Tiling Estimate", 14, 22);
-  doc.setTextColor(0, 0, 0); doc.setFontSize(12); doc.setFont('helvetica', 'bold'); doc.text("Project Specifications", 14, 45);
-  doc.setFontSize(10); doc.setFont('helvetica', 'normal'); doc.text(`Room: ${tilesP.len.toFixed(1)}m x ${tilesP.wid.toFixed(1)}m | Tile Size: ${(tilesP.size*100).toFixed(0)}x${(tilesP.size*100).toFixed(0)}mm`, 14, 52);
-  doc.setFontSize(12); doc.setFont('helvetica', 'bold'); doc.text("Bill of Quantities", 14, 70);
-  doc.setFontSize(10); doc.setFont('helvetica', 'normal');
-  const rows = [
-    ["Floor Area", document.getElementById('t-outArea').textContent],
-    ["Floor Tiles Needed", document.getElementById('t-outTiles').textContent],
-    ["Tile Adhesive (20kg bags)", document.getElementById('t-outAdhesive').textContent],
-    ["Tile Grout (5kg bags)", document.getElementById('t-outGrout').textContent],
-    ["Tile Spacers (packs)", document.getElementById('t-outSpacers').textContent]
-  ];
-  let y = 80;
-  rows.forEach(([k, v]) => { doc.text(k, 20, y); doc.text(v, 120, y); doc.setDrawColor(230,230,230); doc.line(14, y+3, 196, y+3); y += 10; });
-  doc.save('C2B_Tiling_Estimate.pdf');
-};
-
-// ANIMATION LOOP
 (function animate() {
   requestAnimationFrame(animate);
-  room3D.controls.update(); room3D.renderer.render(room3D.scene, room3D.camera);
-  roof3D.controls.update(); roof3D.renderer.render(roof3D.scene, roof3D.camera);
-  tiles3D.controls.update(); tiles3D.renderer.render(tiles3D.scene, tiles3D.camera);
+  controls.update(); renderer.render(scene, camera);
 })();
 
 new ResizeObserver(() => {
-  [room3D, roof3D, tiles3D].forEach(scene => {
-    if(scene.container.clientWidth > 0) {
-      scene.camera.aspect = scene.container.clientWidth / scene.container.clientHeight;
-      scene.camera.updateProjectionMatrix();
-      scene.renderer.setSize(scene.container.clientWidth, scene.container.clientHeight);
-    }
-  });
+  if(container.clientWidth > 0) {
+    camera.aspect = container.clientWidth / container.clientHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(container.clientWidth, container.clientHeight);
+  }
 }).observe(document.body);
 </script>
 </body>
