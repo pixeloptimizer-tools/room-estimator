@@ -72,10 +72,17 @@
   input[type=number], select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; background: var(--bg); outline: none; }
   input[type=number]:focus, select:focus { border-color: var(--text-main); background: white; }
 
+  /* Shared Walls Toggle */
+  .shared-walls { margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--border); }
+  .shared-walls p { font-size: 12px; font-weight: 600; margin-bottom: 8px; color: var(--text-muted); }
+  .wall-toggles { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .wall-toggle { padding: 8px; border: 1px solid var(--border); border-radius: 6px; background: white; font-size: 12px; font-weight: 600; cursor: pointer; text-align: center; transition: 0.2s; }
+  .wall-toggle.active { border-color: var(--text-main); background: var(--text-main); color: white; }
+
   /* Action Buttons */
   .room-actions { display: flex; gap: 10px; margin-top: 20px; }
-  .btn-save { flex: 2; padding: 14px; background: var(--text-main); color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: 0.2s; }
-  .btn-save:hover { background: #334155; }
+  .btn-save { flex: 2; padding: 14px; background: var(--brand); color: #000; border: none; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+  .btn-save:hover { background: #fbbf24; }
   .btn-clear { flex: 1; padding: 14px; background: white; color: var(--text-main); border: 1px solid var(--border); border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
 
   /* Room List */
@@ -185,11 +192,31 @@
           <div class="viewer-hint">Drag to rotate • Scroll to zoom</div>
         </div>
         <div class="card-body">
+          
           <div class="input-grid">
             <div class="input-group"><label>Length <span class="val" id="r-lenV">6.4 m</span></label><input type="range" id="r-len" min="0.5" max="50" step="0.1" value="6.4" /></div>
             <div class="input-group"><label>Width <span class="val" id="r-widV">5.5 m</span></label><input type="range" id="r-wid" min="0.5" max="50" step="0.1" value="5.5" /></div>
             <div class="input-group"><label>Height <span class="val" id="r-hgtV">3.7 m</span></label><input type="range" id="r-hgt" min="2.0" max="8.0" step="0.1" value="3.7" /></div>
-            <div class="input-group"><label>Wall Thickness</label><select id="r-thick"><option value="0.225">225 mm (9")</option><option value="0.150">150 mm (6")</option></select></div>
+            <div class="input-group">
+              <label>Block Type</label>
+              <select id="r-block">
+                <option value="0.225">9" Sandcrete (225mm)</option>
+                <option value="0.150">6" Sandcrete (150mm)</option>
+                <option value="0.125">5" Sandcrete (125mm)</option>
+                <option value="0.100">4" Sandcrete (100mm)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- SHARED WALLS LOGIC -->
+          <div class="shared-walls">
+            <p>Does this room share a wall with another room?</p>
+            <div class="wall-toggles">
+              <div class="wall-toggle" id="wall-left" onclick="toggleWall('left')">Shared Left Wall</div>
+              <div class="wall-toggle" id="wall-right" onclick="toggleWall('right')">Shared Right Wall</div>
+              <div class="wall-toggle" id="wall-top" onclick="toggleWall('top')">Shared Top Wall</div>
+              <div class="wall-toggle" id="wall-bottom" onclick="toggleWall('bottom')">Shared Bottom Wall</div>
+            </div>
           </div>
           
           <div class="room-actions">
@@ -206,7 +233,7 @@
     </div>
     <div class="right-col">
       <div class="card">
-        <div class="card-header"><h2>Comprehensive Estimate</h2><p>Indicative quantities for all saved rooms.</p></div>
+        <div class="card-header"><h2>Masonry & Substructure</h2><p>Indicative quantities for all saved rooms.</p></div>
         <div class="card-body">
           <div class="area-boxes">
             <div class="area-box"><div class="label">Total Floor Area</div><div class="val" id="r-outFloor">0.00 m²</div></div>
@@ -216,24 +243,19 @@
           <div class="material-wrapper">
             <div class="material-list blurred" id="r-materialList">
               
-              <div class="category-title">Masonry & Substructure</div>
-              <div class="mat-item"><div class="mat-info"><div class="mat-name">Sandcrete blocks (9")</div><div class="mat-desc">Includes 7% waste</div></div><div class="mat-qty" id="r-outBlocks">0</div></div>
-              <div class="mat-item"><div class="mat-info"><div class="mat-name">Cement (mortar)</div><div class="mat-desc">For laying blocks</div></div><div class="mat-qty" id="r-outCemMortar">0</div></div>
-              <div class="mat-item"><div class="mat-info"><div class="mat-name">Mortar sand</div><div class="mat-desc">Loose volume</div></div><div class="mat-qty" id="r-outSand">0</div></div>
+              <div class="category-title">Masonry (Blocks & Mortar)</div>
+              <div class="mat-item"><div class="mat-info"><div class="mat-name">Sandcrete Blocks</div><div class="mat-desc" id="r-outBlockType">9" (225mm)</div></div><div class="mat-qty" id="r-outBlocks">0 pcs</div></div>
+              <div class="mat-item"><div class="mat-info"><div class="mat-name">Cement (mortar)</div><div class="mat-desc">For laying blocks</div></div><div class="mat-qty" id="r-outCemMortar">0 bags</div></div>
+              <div class="mat-item"><div class="mat-info"><div class="mat-name">Mortar sand</div><div class="mat-desc">Loose volume</div></div><div class="mat-qty" id="r-outSand">0 m³</div></div>
 
-              <div class="category-title">Plastering & Finishes</div>
-              <div class="mat-item"><div class="mat-info"><div class="mat-name">Cement (plaster)</div><div class="mat-desc">Both faces (15mm)</div></div><div class="mat-qty" id="r-outCemPlaster">0</div></div>
-              <div class="mat-item"><div class="mat-info"><div class="mat-name">Plaster sand</div><div class="mat-desc">Loose volume</div></div><div class="mat-qty" id="r-outSandPlaster">0</div></div>
-              <div class="mat-item"><div class="mat-info"><div class="mat-name">Paint (2 coats)</div><div class="mat-desc">Interior emulsion</div></div><div class="mat-qty" id="r-outPaint">0</div></div>
+              <div class="category-title">Finishes (Plaster & Paint)</div>
+              <div class="mat-item"><div class="mat-info"><div class="mat-name">Cement (plaster)</div><div class="mat-desc">Both faces (15mm)</div></div><div class="mat-qty" id="r-outCemPlaster">0 bags</div></div>
+              <div class="mat-item"><div class="mat-info"><div class="mat-name">Plaster sand</div><div class="mat-desc">Loose volume</div></div><div class="mat-qty" id="r-outSandPlaster">0 m³</div></div>
+              <div class="mat-item"><div class="mat-info"><div class="mat-name">Paint (2 coats)</div><div class="mat-desc">Interior emulsion</div></div><div class="mat-qty" id="r-outPaint">0 L</div></div>
 
-              <div class="category-title">Flooring</div>
-              <div class="mat-item"><div class="mat-info"><div class="mat-name">Floor tiles (600x600)</div><div class="mat-desc">Includes 10% waste</div></div><div class="mat-qty" id="r-outTiles">0</div></div>
-              <div class="mat-item"><div class="mat-info"><div class="mat-name">Tile adhesive</div><div class="mat-desc">20kg bags</div></div><div class="mat-qty" id="r-outAdhesive">0</div></div>
-              <div class="mat-item"><div class="mat-info"><div class="mat-name">Grout</div><div class="mat-desc">5kg bags</div></div><div class="mat-qty" id="r-outGrout">0</div></div>
+              <div class="category-title">Ceilings</div>
+              <div class="mat-item"><div class="mat-info"><div class="mat-name">Ceiling Boards</div><div class="mat-desc">PVC or Plasterboard</div></div><div class="mat-qty" id="r-outCeiling">0 m²</div></div>
 
-              <div class="category-title">Ceilings & Roof</div>
-              <div class="mat-item"><div class="mat-info"><div class="mat-name">Ceiling Boards</div><div class="mat-desc">PVC or Plasterboard</div></div><div class="mat-qty" id="r-outCeiling">0</div></div>
-              <div class="mat-item"><div class="mat-info"><div class="mat-name">Roof Area</div><div class="mat-desc">Slope + 10% waste</div></div><div class="mat-qty" id="r-outRoof">0</div></div>
             </div>
             
             <!-- PAYWALL -->
@@ -310,8 +332,11 @@ const M_TO_FT = 3.28084;
 let savedRooms = [];
 let activeRoomId = 1;
 
-// Current active inputs (always stored in meters internally)
-const currentRoom = { len: 6.4, wid: 5.5, hgt: 3.7, thick: 0.225 };
+// Current active inputs (stored in meters internally)
+const currentRoom = { 
+  len: 6.4, wid: 5.5, hgt: 3.7, blockThick: 0.225,
+  sharedLeft: false, sharedRight: false, sharedTop: false, sharedBottom: false 
+};
 
 // ==========================================
 // UNIT TOGGLE LOGIC
@@ -324,25 +349,37 @@ window.setUnit = (unit) => {
 };
 
 // ==========================================
-// MULTI-ROOM LOGIC (The "Master Room" Architecture)
+// SHARED WALL TOGGLE
+// ==========================================
+window.toggleWall = (side) => {
+  if (side === 'left') { currentRoom.sharedLeft = !currentRoom.sharedLeft; document.getElementById('wall-left').classList.toggle('active', currentRoom.sharedLeft); }
+  if (side === 'right') { currentRoom.sharedRight = !currentRoom.sharedRight; document.getElementById('wall-right').classList.toggle('active', currentRoom.sharedRight); }
+  if (side === 'top') { currentRoom.sharedTop = !currentRoom.sharedTop; document.getElementById('wall-top').classList.toggle('active', currentRoom.sharedTop); }
+  if (side === 'bottom') { currentRoom.sharedBottom = !currentRoom.sharedBottom; document.getElementById('wall-bottom').classList.toggle('active', currentRoom.sharedBottom); }
+  updateUI(); // Recalculate totals instantly
+};
+
+// ==========================================
+// MULTI-ROOM LOGIC
 // ==========================================
 window.saveCurrentRoom = () => {
-  // 1. Save current room to memory
   savedRooms.push({ id: activeRoomId, ...currentRoom });
-  
-  // 2. Increment ID and reset current values for the next room
   activeRoomId++;
+  
+  // Reset
   currentRoom.len = 5.0;
   currentRoom.wid = 4.0;
-  currentRoom.hgt = 3.7;
-  currentRoom.thick = 0.225;
-  
-  // 3. Reset sliders
+  currentRoom.sharedLeft = false;
+  currentRoom.sharedRight = false;
+  currentRoom.sharedTop = false;
+  currentRoom.sharedBottom = false;
+  document.getElementById('wall-left').classList.remove('active');
+  document.getElementById('wall-right').classList.remove('active');
+  document.getElementById('wall-top').classList.remove('active');
+  document.getElementById('wall-bottom').classList.remove('active');
   document.getElementById('r-len').value = 5.0;
   document.getElementById('r-wid').value = 4.0;
-  document.getElementById('r-hgt').value = 3.7;
   
-  // 4. Update UI and 3D
   updateUI();
   rebuild3D();
 };
@@ -350,12 +387,14 @@ window.saveCurrentRoom = () => {
 window.clearAllRooms = () => {
   savedRooms = [];
   activeRoomId = 1;
-  currentRoom.len = 6.4;
-  currentRoom.wid = 5.5;
-  currentRoom.hgt = 3.7;
+  currentRoom.len = 6.4; currentRoom.wid = 5.5;
+  currentRoom.sharedLeft = false; currentRoom.sharedRight = false; currentRoom.sharedTop = false; currentRoom.sharedBottom = false;
+  document.getElementById('wall-left').classList.remove('active');
+  document.getElementById('wall-right').classList.remove('active');
+  document.getElementById('wall-top').classList.remove('active');
+  document.getElementById('wall-bottom').classList.remove('active');
   document.getElementById('r-len').value = 6.4;
   document.getElementById('r-wid').value = 5.5;
-  document.getElementById('r-hgt').value = 3.7;
   updateUI();
   rebuild3D();
 };
@@ -367,15 +406,12 @@ function updateUI() {
   const mult = currentUnit === 'm' ? 1 : M_TO_FT;
   const suffix = currentUnit === 'm' ? ' m' : ' ft';
 
-  // Update active room badges
   document.getElementById('activeRoomBadge').textContent = `Designing Room ${activeRoomId}`;
   
-  // Update labels
   document.getElementById('r-lenV').textContent = (currentRoom.len * mult).toFixed(1) + suffix;
   document.getElementById('r-widV').textContent = (currentRoom.wid * mult).toFixed(1) + suffix;
   document.getElementById('r-hgtV').textContent = (currentRoom.hgt * mult).toFixed(1) + suffix;
 
-  // Update room list
   const list = document.getElementById('savedRoomsList');
   if (savedRooms.length === 0) {
     list.innerHTML = '<div style="font-size: 12px; color: var(--text-muted); text-align: center;">No rooms saved yet.</div>';
@@ -392,15 +428,28 @@ function updateUI() {
 }
 
 function calcTotals() {
-  // Combine saved rooms + current active room
   let totalArea = 0;
   let totalWallArea = 0;
   const hgt = currentRoom.hgt;
 
-  // Helper for single room calculation
   const calcRoom = (r) => {
-    const gross = 2 * (r.len + r.wid) * hgt;
-    const net = gross - 4.5; // Simple assumption for door/windows
+    // Gross perimeter
+    let gross = 2 * (r.len + r.wid) * hgt;
+    
+    // Deduct shared walls to prevent overordering
+    // A shared length deducts (hgt * 1) from the gross wall area
+    let deductions = 0;
+    if (r.sharedLeft) deductions += (r.wid * hgt);
+    if (r.sharedRight) deductions += (r.wid * hgt);
+    if (r.sharedTop) deductions += (r.len * hgt);
+    if (r.sharedBottom) deductions += (r.len * hgt);
+
+    // Deduct doors/windows (assuming 1 door + 2 windows per room)
+    const openings = 4.5; 
+    
+    let net = gross - deductions - openings;
+    if (net < 0) net = 0;
+
     totalArea += (r.len * r.wid);
     totalWallArea += net;
   };
@@ -408,38 +457,28 @@ function calcTotals() {
   savedRooms.forEach(calcRoom);
   calcRoom(currentRoom);
 
-  // 1. Masonry
-  document.getElementById('r-outBlocks').textContent = Math.ceil((totalWallArea / 0.08) * 1.07).toLocaleString() + ' pcs';
+  // Masonry
+  const blockCount = Math.ceil((totalWallArea / 0.08) * 1.07);
+  document.getElementById('r-outBlocks').textContent = blockCount.toLocaleString() + ' pcs';
+  document.getElementById('r-outBlockType').textContent = document.getElementById('r-block').value === '0.225' ? '9" (225mm)' : document.getElementById('r-block').value === '0.150' ? '6" (150mm)' : 'Sandcrete';
+  
   document.getElementById('r-outCemMortar').textContent = Math.ceil(totalWallArea * 0.12 * 1.07) + ' bags';
   document.getElementById('r-outSand').textContent = (totalWallArea * 0.012 * 1.07).toFixed(2) + ' m³';
   
-  // 2. Plastering & Finishes
+  // Finishes
   document.getElementById('r-outCemPlaster').textContent = Math.ceil(totalWallArea * 0.6 * 1.07) + ' bags';
   document.getElementById('r-outSandPlaster').textContent = (totalWallArea * 0.05 * 1.07).toFixed(2) + ' m³';
   document.getElementById('r-outPaint').textContent = (totalWallArea / 8.3 * 2 * 1.05).toFixed(1) + ' L';
   
-  // 3. Flooring
-  document.getElementById('r-outTiles').textContent = Math.ceil((totalArea / 0.36) * 1.1) + ' tiles';
-  document.getElementById('r-outAdhesive').textContent = Math.ceil((totalArea / 4) * 1.1) + ' bags';
-  document.getElementById('r-outGrout').textContent = (totalArea * 0.1 * 1.1).toFixed(1) + ' kg';
-
-  // 4. Ceilings & Roof
+  // Ceilings
   document.getElementById('r-outCeiling').textContent = Math.ceil(totalArea * 1.05) + ' m²';
-  // Approx roof area based on total length and max width
-  const maxWid = Math.max(currentRoom.wid, ...savedRooms.map(r => r.wid));
-  const totalLen = savedRooms.reduce((sum, r) => sum + r.len, 0) + currentRoom.len;
-  const halfW = maxWid / 2;
-  const rise = Math.tan(25 * Math.PI / 180) * halfW;
-  const slopeLen = Math.sqrt(halfW * halfW + rise * rise);
-  const roofArea = totalLen * slopeLen * 2;
-  document.getElementById('r-outRoof').textContent = (roofArea * 1.1).toFixed(1) + ' m²';
 
   document.getElementById('r-outFloor').textContent = totalArea.toFixed(2) + ' m²';
   document.getElementById('r-outWall').textContent = totalWallArea.toFixed(2) + ' m²';
 }
 
 // ==========================================
-// 3D ENGINE (Focus on current room only)
+// 3D ENGINE
 // ==========================================
 const blockMat = new THREE.MeshStandardMaterial({ color: 0xd4cbb8, roughness: 0.9 });
 const roofMat = new THREE.MeshStandardMaterial({ color: 0x64748b, roughness: 0.6, side: THREE.DoubleSide });
@@ -472,32 +511,35 @@ scene.add(buildingGroup);
 function rebuild3D() {
   buildingGroup.clear();
   
-  const { len, wid, hgt, thick } = currentRoom;
+  const { len, wid, hgt, blockThick } = currentRoom;
   const BLOCK_W = 0.45, BLOCK_H = 0.225;
   const doorW = 0.9, doorH = 2.1;
   const winW = 1.2, winH = 1.2, sillY = 1.0;
 
-  // Smart optimization for massive rooms
+  // Smart optimization
   if (len > 15 || wid > 15 || hgt > 15) {
-    const wall1 = new THREE.Mesh(new THREE.BoxGeometry(len, hgt, thick), blockMat);
+    const wall1 = new THREE.Mesh(new THREE.BoxGeometry(len, hgt, blockThick), blockMat);
     wall1.position.set(0, hgt/2, wid/2); buildingGroup.add(wall1);
-    const wall2 = new THREE.Mesh(new THREE.BoxGeometry(len, hgt, thick), blockMat);
+    const wall2 = new THREE.Mesh(new THREE.BoxGeometry(len, hgt, blockThick), blockMat);
     wall2.position.set(0, hgt/2, -wid/2); buildingGroup.add(wall2);
-    const wall3 = new THREE.Mesh(new THREE.BoxGeometry(thick, hgt, wid), blockMat);
+    const wall3 = new THREE.Mesh(new THREE.BoxGeometry(blockThick, hgt, wid), blockMat);
     wall3.position.set(-len/2, hgt/2, 0); buildingGroup.add(wall3);
-    const wall4 = new THREE.Mesh(new THREE.BoxGeometry(thick, hgt, wid), blockMat);
+    const wall4 = new THREE.Mesh(new THREE.BoxGeometry(blockThick, hgt, wid), blockMat);
     wall4.position.set(len/2, hgt/2, 0); buildingGroup.add(wall4);
   } else {
-    // Standard block-by-block rendering
-    const geo = new THREE.BoxGeometry(BLOCK_W * 0.98, BLOCK_H * 0.98, thick);
+    const geo = new THREE.BoxGeometry(BLOCK_W * 0.98, BLOCK_H * 0.98, blockThick);
+    
+    // Hide walls if they are shared
     const walls = [
-      { axis: 'x', fixed:  wid/2, span: len, door: true,  win: false },
-      { axis: 'x', fixed: -wid/2, span: len, door: false, win: false },
-      { axis: 'z', fixed: -len/2, span: wid, door: false, win: true },
-      { axis: 'z', fixed:  len/2, span: wid, door: false, win: true },
+      { axis: 'x', fixed:  wid/2, span: len, door: true,  win: false, visible: !currentRoom.sharedTop },
+      { axis: 'x', fixed: -wid/2, span: len, door: false, win: false, visible: !currentRoom.sharedBottom },
+      { axis: 'z', fixed: -len/2, span: wid, door: false, win: true,  visible: !currentRoom.sharedLeft },
+      { axis: 'z', fixed:  len/2, span: wid, door: false, win: true,  visible: !currentRoom.sharedRight },
     ];
 
     walls.forEach(w => {
+      if (!w.visible) return; // Skip drawing if shared
+      
       const cols = Math.round(w.span / BLOCK_W);
       const rows = Math.round(hgt / BLOCK_H);
       for (let c = 0; c < cols; c++) {
@@ -515,16 +557,20 @@ function rebuild3D() {
       }
     });
     
-    // Add door and windows
-    const door = new THREE.Mesh(new THREE.BoxGeometry(doorW, doorH, 0.05), doorMat);
-    door.position.set(0, doorH/2, wid/2); buildingGroup.add(door);
+    if (!currentRoom.sharedTop) {
+      const door = new THREE.Mesh(new THREE.BoxGeometry(doorW, doorH, 0.05), doorMat);
+      door.position.set(0, doorH/2, wid/2); buildingGroup.add(door);
+    }
     
     const winGeo = new THREE.BoxGeometry(winW, winH, 0.05);
-    const w1 = new THREE.Mesh(winGeo, glassMat); w1.position.set(-len/2, sillY + winH/2, wid/4); w1.rotation.y = Math.PI / 2; buildingGroup.add(w1);
-    const w2 = new THREE.Mesh(winGeo, glassMat); w2.position.set(len/2, sillY + winH/2, wid/4); w2.rotation.y = Math.PI / 2; buildingGroup.add(w2);
+    if (!currentRoom.sharedLeft) {
+      const w1 = new THREE.Mesh(winGeo, glassMat); w1.position.set(-len/2, sillY + winH/2, wid/4); w1.rotation.y = Math.PI / 2; buildingGroup.add(w1);
+    }
+    if (!currentRoom.sharedRight) {
+      const w2 = new THREE.Mesh(winGeo, glassMat); w2.position.set(len/2, sillY + winH/2, wid/4); w2.rotation.y = Math.PI / 2; buildingGroup.add(w2);
+    }
   }
 
-  // Roof
   const rad = (25 * Math.PI) / 180; const halfW = wid / 2; const rise = Math.tan(rad) * halfW; const overhang = 0.4;
   const roofGeo = new THREE.BufferGeometry();
   const v0 = new THREE.Vector3(-halfW - overhang, hgt,  len/2 + overhang); 
@@ -538,7 +584,6 @@ function rebuild3D() {
   roofGeo.setAttribute('position', new THREE.BufferAttribute(vertices, 3)); roofGeo.setIndex(indices); roofGeo.computeVertexNormals(); 
   const roof = new THREE.Mesh(roofGeo, roofMat); roof.castShadow = true; roof.receiveShadow = true; buildingGroup.add(roof);
 
-  // Auto-center camera based on room size
   camera.position.set(len * 1.5, hgt * 2, wid * 1.5);
   controls.target.set(0, hgt * 0.5, 0);
   controls.update();
@@ -555,7 +600,7 @@ const getSliderVal = (id) => {
 document.getElementById('r-len').oninput = (e) => { currentRoom.len = getSliderVal('r-len'); updateUI(); rebuild3D(); };
 document.getElementById('r-wid').oninput = (e) => { currentRoom.wid = getSliderVal('r-wid'); updateUI(); rebuild3D(); };
 document.getElementById('r-hgt').oninput = (e) => { currentRoom.hgt = getSliderVal('r-hgt'); updateUI(); rebuild3D(); };
-document.getElementById('r-thick').onchange = (e) => { currentRoom.thick = parseFloat(e.target.value); updateUI(); rebuild3D(); };
+document.getElementById('r-block').onchange = (e) => { currentRoom.blockThick = parseFloat(e.target.value); updateUI(); rebuild3D(); };
 
 // ==========================================
 // PAYSTACK & PDF
@@ -590,18 +635,17 @@ window.downloadRoomPDF = () => {
   });
 
   y += 10;
-  doc.setFontSize(12); doc.setFont('helvetica', 'bold'); doc.text("Bill of Quantities", 14, y);
+  doc.setFontSize(12); doc.setFont('helvetica', 'bold'); doc.text("Masonry & Finishes", 14, y);
   doc.setFontSize(10); doc.setFont('helvetica', 'normal');
   
   const rows = [
-    ["Sandcrete blocks (9\")", document.getElementById('r-outBlocks').textContent],
+    ["Sandcrete Blocks", document.getElementById('r-outBlocks').textContent],
     ["Cement (mortar)", document.getElementById('r-outCemMortar').textContent],
     ["Mortar sand", document.getElementById('r-outSand').textContent],
     ["Cement (plaster)", document.getElementById('r-outCemPlaster').textContent],
+    ["Plaster sand", document.getElementById('r-outSandPlaster').textContent],
     ["Paint (2 coats)", document.getElementById('r-outPaint').textContent],
-    ["Floor tiles (600x600)", document.getElementById('r-outTiles').textContent],
-    ["Ceiling Boards", document.getElementById('r-outCeiling').textContent],
-    ["Roof Area", document.getElementById('r-outRoof').textContent]
+    ["Ceiling Boards", document.getElementById('r-outCeiling').textContent]
   ];
   y += 8;
   rows.forEach(([k, v]) => { doc.text(k, 20, y); doc.text(v, 120, y); doc.setDrawColor(230,230,230); doc.line(14, y+3, 196, y+3); y += 10; });
