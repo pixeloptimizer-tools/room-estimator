@@ -143,11 +143,13 @@
   
   .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
   .modal-overlay.active { display: flex; }
-  .modal-box { background: white; width: 100%; max-width: 600px; border-radius: 12px; padding: 32px; max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); position: relative; }
+  .modal-box { background: white; width: 100%; max-width: 700px; border-radius: 12px; padding: 32px; max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); position: relative; }
   .modal-close { position: absolute; top: 16px; right: 20px; font-size: 24px; cursor: pointer; color: var(--text-muted); border: none; background: none; }
-  .modal-box h2 { font-size: 22px; margin-bottom: 16px; }
-  .modal-box h3 { font-size: 16px; margin: 20px 0 8px; }
-  .modal-box p { font-size: 13px; line-height: 1.6; color: var(--text-muted); margin-bottom: 10px; }
+  .modal-box h2 { font-size: 22px; margin-bottom: 16px; color: var(--text-main); }
+  .modal-box h3 { font-size: 16px; margin: 24px 0 8px; color: var(--text-main); border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+  .modal-box p, .modal-box li { font-size: 13px; line-height: 1.6; color: var(--text-muted); margin-bottom: 10px; }
+  .modal-box ul { padding-left: 20px; margin-bottom: 16px; }
+  .modal-box .last-updated { font-size: 11px; color: var(--text-muted); margin-bottom: 20px; font-style: italic; }
 
   @media (max-width: 768px) {
     .nav-links { display: none; }
@@ -251,7 +253,7 @@
               <div class="mat-item"><div class="mat-info"><div class="mat-name">Mortar sand</div><div class="mat-desc">Loose volume</div></div><div class="mat-qty" id="r-outSand">0 m³</div></div>
 
               <div class="category-title">Finishes (Plaster & Paint)</div>
-              <div class="mat-item"><div class="mat-info"><div class="mat-name">Cement (plaster)</div><div class="mat-desc">Both faces (15mm)</div></div><div class="mat-qty" id="r-outCemPlaster">0 bags</div></div>
+              <div class="mat-item"><div class="mat-info"><div class="mat-name">Cement (plaster)</div><div class="mat-desc">Both faces (12mm avg)</div></div><div class="mat-qty" id="r-outCemPlaster">0 bags</div></div>
               <div class="mat-item"><div class="mat-info"><div class="mat-name">Plaster sand</div><div class="mat-desc">Loose volume</div></div><div class="mat-qty" id="r-outSandPlaster">0 m³</div></div>
               <div class="mat-item"><div class="mat-info"><div class="mat-name">Paint (2 coats)</div><div class="mat-desc">Interior emulsion</div></div><div class="mat-qty" id="r-outPaint">0 L</div></div>
 
@@ -418,9 +420,78 @@
 <div class="modal-overlay" id="legalModal">
   <div class="modal-box">
     <button class="modal-close" onclick="closeModal()">&times;</button>
-    <div id="content-privacy" style="display:none;"><h2>Privacy Policy</h2><p>Last updated: October 2026</p></div>
-    <div id="content-terms" style="display:none;"><h2>Terms of Service</h2><p>Last updated: October 2026</p></div>
-    <div id="content-contact" style="display:none;"><h2>Contact Us</h2><p>Email us at: <a href="mailto:quicktoolsapp@proton.me">quicktoolsapp@proton.me</a></p></div>
+    
+    <!-- PRIVACY POLICY -->
+    <div id="content-privacy" style="display:none;">
+      <h2>Privacy Policy</h2>
+      <p class="last-updated">Last Updated: October 2026</p>
+      
+      <h3>1. Introduction</h3>
+      <p>Calculate2Build ("C2B", "we", "us", or "our") operates the calculate2build.com website (the "Service"). This page informs you of our policies regarding the collection, use, and disclosure of personal data when you use our Service and the choices you have associated with that data.</p>
+      
+      <h3>2. Information We Collect</h3>
+      <p>We do not require you to create an account to use our estimation tools. All calculations, dimensions, and project data you enter are processed locally in your web browser and are <strong>not transmitted to our servers</strong>.</p>
+      <p>We may collect limited non-personal information automatically, such as browser type, device type, and anonymous usage statistics, to help us improve the Service.</p>
+      
+      <h3>3. Third-Party Payment Processors</h3>
+      <p>When you purchase a PDF report or Premium subscription, your payment is processed by a secure third-party provider (such as Paystack, Flutterwave, or PayPal). We do not store your credit card or mobile money details on our servers. These providers have their own privacy policies governing the handling of your financial information.</p>
+      
+      <h3>4. Cookies and Analytics</h3>
+      <p>We may use cookies and similar tracking technologies to track activity on our Service and hold certain information. You can instruct your browser to refuse all cookies or to indicate when a cookie is being sent.</p>
+      
+      <h3>5. Data Security</h3>
+      <p>The security of your data is important to us, but remember that no method of transmission over the Internet or method of electronic storage is 100% secure. While we strive to use commercially acceptable means to protect your information, we cannot guarantee its absolute security.</p>
+      
+      <h3>6. Changes to This Privacy Policy</h3>
+      <p>We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Last Updated" date.</p>
+      
+      <h3>7. Contact Us</h3>
+      <p>If you have any questions about this Privacy Policy, please contact us at <a href="mailto:quicktoolsapp@proton.me">quicktoolsapp@proton.me</a>.</p>
+    </div>
+
+    <!-- TERMS OF SERVICE -->
+    <div id="content-terms" style="display:none;">
+      <h2>Terms of Service</h2>
+      <p class="last-updated">Last Updated: October 2026</p>
+      
+      <h3>1. Acceptance of Terms</h3>
+      <p>By accessing and using Calculate2Build, you accept and agree to be bound by the terms and provisions of this agreement. If you do not agree to abide by these terms, please do not use this Service.</p>
+      
+      <h3>2. Nature of the Service</h3>
+      <p>Calculate2Build provides preliminary construction quantity and cost estimation tools. <strong>These tools are for planning and budgeting purposes only.</strong> The estimates generated do not constitute professional engineering, architectural, quantity surveying, or construction advice.</p>
+      
+      <h3>3. Limitation of Liability</h3>
+      <p>We do not guarantee the accuracy, completeness, or reliability of the estimates generated by our tools. Actual material quantities and costs may vary significantly based on site conditions, supplier pricing, workmanship, and material availability. You are solely responsible for verifying all quantities with a qualified local professional before purchasing materials or beginning any construction work.</p>
+      
+      <h3>4. Payments, Refunds & Digital Goods</h3>
+      <p>PDF reports and Premium subscriptions are digital goods delivered instantly upon payment. Because of the instantaneous nature of digital delivery, <strong>all sales are final</strong>. We do not offer refunds for successfully delivered digital products. If you experience a technical error with your download, please contact us within 24 hours for a resolution.</p>
+      
+      <h3>5. Intellectual Property</h3>
+      <p>All content, features, and functionality on this site, including but not limited to text, graphics, logos, and software, are the exclusive property of Calculate2Build and are protected by international copyright, trademark, and other intellectual property laws.</p>
+      
+      <h3>6. Governing Law</h3>
+      <p>These Terms shall be governed and construed in accordance with the laws of the Republic of Ghana, without regard to its conflict of law provisions.</p>
+      
+      <h3>7. Contact Information</h3>
+      <p>Questions about the Terms of Service should be sent to us at <a href="mailto:quicktoolsapp@proton.me">quicktoolsapp@proton.me</a>.</p>
+    </div>
+
+    <!-- CONTACT -->
+    <div id="content-contact" style="display:none;">
+      <h2>Contact Us</h2>
+      <p class="last-updated">We typically respond within 24-48 hours.</p>
+      
+      <h3>Support & Inquiries</h3>
+      <p>If you have a question about an estimate, need support with a PDF download, or want to report a bug, please reach out to us directly.</p>
+      <p><strong>Email:</strong> <a href="mailto:quicktoolsapp@proton.me">quicktoolsapp@proton.me</a></p>
+      
+      <h3>Business Hours</h3>
+      <p>Monday - Friday: 9:00 AM - 5:00 PM (GMT)<br>Saturday & Sunday: Closed</p>
+      
+      <h3>Partnerships</h3>
+      <p>If you are a construction supplier, contractor, or professional body interested in partnering with Calculate2Build, please email us with the subject line "Partnership Inquiry".</p>
+    </div>
+
   </div>
 </div>
 
@@ -574,8 +645,11 @@ function calcTotals() {
   document.getElementById('r-outBlocks').textContent = Math.ceil((totalWallArea / 0.08) * 1.07).toLocaleString() + ' pcs';
   document.getElementById('r-outCemMortar').textContent = Math.ceil(totalWallArea * 0.12 * 1.07) + ' bags';
   document.getElementById('r-outSand').textContent = (totalWallArea * 0.012 * 1.07).toFixed(2) + ' m³';
-  document.getElementById('r-outCemPlaster').textContent = Math.ceil(totalWallArea * 0.6 * 1.07) + ' bags';
-  document.getElementById('r-outSandPlaster').textContent = (totalWallArea * 0.05 * 1.07).toFixed(2) + ' m³';
+  
+  // Corrected Plaster Calculation (11 m2 per bag of cement, both faces)
+  document.getElementById('r-outCemPlaster').textContent = Math.ceil(totalWallArea / 11) + ' bags';
+  document.getElementById('r-outSandPlaster').textContent = (totalWallArea / 11 * 0.05).toFixed(2) + ' m³';
+  
   document.getElementById('r-outPaint').textContent = (totalWallArea / 8.3 * 2 * 1.05).toFixed(1) + ' L';
   document.getElementById('r-outCeiling').textContent = Math.ceil(totalArea * 1.05) + ' m²';
   document.getElementById('r-outFloor').textContent = totalArea.toFixed(2) + ' m²';
