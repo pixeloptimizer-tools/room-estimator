@@ -217,10 +217,10 @@
           <div class="shared-walls">
             <p>Does this room share a wall with another room?</p>
             <div class="wall-toggles">
+              <div class="wall-toggle" id="wall-front" onclick="toggleWall('front')">Shared Front Wall</div>
+              <div class="wall-toggle" id="wall-back" onclick="toggleWall('back')">Shared Back Wall</div>
               <div class="wall-toggle" id="wall-left" onclick="toggleWall('left')">Shared Left Wall</div>
               <div class="wall-toggle" id="wall-right" onclick="toggleWall('right')">Shared Right Wall</div>
-              <div class="wall-toggle" id="wall-top" onclick="toggleWall('top')">Shared Top Wall</div>
-              <div class="wall-toggle" id="wall-bottom" onclick="toggleWall('bottom')">Shared Bottom Wall</div>
             </div>
           </div>
           
@@ -440,7 +440,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 // ==========================================
-// STATE MANAGEMENT
+// GLOBAL STATE
 // ==========================================
 let currentUnit = 'm';
 const M_TO_FT = 3.28084;
@@ -449,11 +449,27 @@ let activeRoomId = 1;
 
 const currentRoom = { 
   len: 6.4, wid: 5.5, hgt: 3.7, blockThick: 0.225,
-  sharedLeft: false, sharedRight: false, sharedTop: false, sharedBottom: false 
+  sharedFront: false, sharedBack: false, sharedLeft: false, sharedRight: false 
 };
 
 // ==========================================
-// UNIT TOGGLE LOGIC
+// UTILITIES & HELPERS
+// ==========================================
+const getSliderVal = (id) => {
+  const val = parseFloat(document.getElementById(id).value);
+  return currentUnit === 'm' ? val : val / M_TO_FT;
+};
+
+function getBlockName(thick) {
+  if (thick === 0.225) return '9" (225mm)';
+  if (thick === 0.150) return '6" (150mm)';
+  if (thick === 0.125) return '5" (125mm)';
+  if (thick === 0.100) return '4" (100mm)';
+  return '9" (225mm)';
+}
+
+// ==========================================
+// TAB & UNIT TOGGLES
 // ==========================================
 window.setUnit = (unit) => {
   currentUnit = unit;
@@ -462,14 +478,26 @@ window.setUnit = (unit) => {
   updateUI();
 };
 
+window.switchTab = (tabId) => {
+  document.querySelectorAll('.app-section').forEach(el => el.classList.remove('active'));
+  document.getElementById(`app-${tabId}`).classList.add('active');
+  const mobileSelect = document.querySelector('.mobile-nav select');
+  if(mobileSelect) mobileSelect.value = tabId;
+  document.querySelectorAll('.nav-links a').forEach(el => {
+    if(el.textContent.toLowerCase().includes(tabId === 'room' ? 'room' : tabId === 'roof' ? 'roof' : 'tiles')) el.classList.add('active');
+    else el.classList.remove('active');
+  });
+  setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 50);
+};
+
 // ==========================================
 // SHARED WALL TOGGLE
 // ==========================================
 window.toggleWall = (side) => {
+  if (side === 'front') { currentRoom.sharedFront = !currentRoom.sharedFront; document.getElementById('wall-front').classList.toggle('active', currentRoom.sharedFront); }
+  if (side === 'back') { currentRoom.sharedBack = !currentRoom.sharedBack; document.getElementById('wall-back').classList.toggle('active', currentRoom.sharedBack); }
   if (side === 'left') { currentRoom.sharedLeft = !currentRoom.sharedLeft; document.getElementById('wall-left').classList.toggle('active', currentRoom.sharedLeft); }
   if (side === 'right') { currentRoom.sharedRight = !currentRoom.sharedRight; document.getElementById('wall-right').classList.toggle('active', currentRoom.sharedRight); }
-  if (side === 'top') { currentRoom.sharedTop = !currentRoom.sharedTop; document.getElementById('wall-top').classList.toggle('active', currentRoom.sharedTop); }
-  if (side === 'bottom') { currentRoom.sharedBottom = !currentRoom.sharedBottom; document.getElementById('wall-bottom').classList.toggle('active', currentRoom.sharedBottom); }
   updateUI(); rebuild3D();
 };
 
@@ -480,11 +508,11 @@ window.saveCurrentRoom = () => {
   savedRooms.push({ id: activeRoomId, ...currentRoom });
   activeRoomId++;
   currentRoom.len = 5.0; currentRoom.wid = 4.0;
-  currentRoom.sharedLeft = false; currentRoom.sharedRight = false; currentRoom.sharedTop = false; currentRoom.sharedBottom = false;
+  currentRoom.sharedFront = false; currentRoom.sharedBack = false; currentRoom.sharedLeft = false; currentRoom.sharedRight = false;
+  document.getElementById('wall-front').classList.remove('active');
+  document.getElementById('wall-back').classList.remove('active');
   document.getElementById('wall-left').classList.remove('active');
   document.getElementById('wall-right').classList.remove('active');
-  document.getElementById('wall-top').classList.remove('active');
-  document.getElementById('wall-bottom').classList.remove('active');
   document.getElementById('r-len').value = 5.0; document.getElementById('r-wid').value = 4.0;
   updateUI(); rebuild3D();
 };
@@ -492,11 +520,11 @@ window.saveCurrentRoom = () => {
 window.clearAllRooms = () => {
   savedRooms = []; activeRoomId = 1;
   currentRoom.len = 6.4; currentRoom.wid = 5.5;
-  currentRoom.sharedLeft = false; currentRoom.sharedRight = false; currentRoom.sharedTop = false; currentRoom.sharedBottom = false;
+  currentRoom.sharedFront = false; currentRoom.sharedBack = false; currentRoom.sharedLeft = false; currentRoom.sharedRight = false;
+  document.getElementById('wall-front').classList.remove('active');
+  document.getElementById('wall-back').classList.remove('active');
   document.getElementById('wall-left').classList.remove('active');
   document.getElementById('wall-right').classList.remove('active');
-  document.getElementById('wall-top').classList.remove('active');
-  document.getElementById('wall-bottom').classList.remove('active');
   document.getElementById('r-len').value = 6.4; document.getElementById('r-wid').value = 5.5;
   updateUI(); rebuild3D();
 };
@@ -531,10 +559,10 @@ function calcTotals() {
   const calcRoom = (r) => {
     let gross = 2 * (r.len + r.wid) * hgt;
     let deductions = 0;
+    if (r.sharedFront) deductions += (r.len * hgt);
+    if (r.sharedBack) deductions += (r.len * hgt);
     if (r.sharedLeft) deductions += (r.wid * hgt);
     if (r.sharedRight) deductions += (r.wid * hgt);
-    if (r.sharedTop) deductions += (r.len * hgt);
-    if (r.sharedBottom) deductions += (r.len * hgt);
     let net = gross - deductions - 4.5; // 4.5 is door/window approximation
     if (net < 0) net = 0;
     totalArea += (r.len * r.wid); totalWallArea += net;
@@ -552,6 +580,8 @@ function calcTotals() {
   document.getElementById('r-outCeiling').textContent = Math.ceil(totalArea * 1.05) + ' m²';
   document.getElementById('r-outFloor').textContent = totalArea.toFixed(2) + ' m²';
   document.getElementById('r-outWall').textContent = totalWallArea.toFixed(2) + ' m²';
+  
+  document.getElementById('r-outBlockType').textContent = getBlockName(currentRoom.blockThick);
 }
 
 // ==========================================
@@ -605,8 +635,8 @@ function rebuild3D() {
   } else {
     const geo = new THREE.BoxGeometry(BLOCK_W * 0.98, BLOCK_H * 0.98, blockThick);
     const walls = [
-      { axis: 'x', fixed:  wid/2, span: len, door: true,  win: false, visible: !currentRoom.sharedTop },
-      { axis: 'x', fixed: -wid/2, span: len, door: false, win: false, visible: !currentRoom.sharedBottom },
+      { axis: 'x', fixed:  wid/2, span: len, door: true,  win: false, visible: !currentRoom.sharedFront },
+      { axis: 'x', fixed: -wid/2, span: len, door: false, win: false, visible: !currentRoom.sharedBack },
       { axis: 'z', fixed: -len/2, span: wid, door: false, win: true,  visible: !currentRoom.sharedLeft },
       { axis: 'z', fixed:  len/2, span: wid, door: false, win: true,  visible: !currentRoom.sharedRight },
     ];
@@ -628,7 +658,7 @@ function rebuild3D() {
         }
       }
     });
-    if (!currentRoom.sharedTop) { const door = new THREE.Mesh(new THREE.BoxGeometry(doorW, doorH, 0.05), doorMat); door.position.set(0, doorH/2, wid/2); buildingGroup.add(door); }
+    if (!currentRoom.sharedFront) { const door = new THREE.Mesh(new THREE.BoxGeometry(doorW, doorH, 0.05), doorMat); door.position.set(0, doorH/2, wid/2); buildingGroup.add(door); }
     const winGeo = new THREE.BoxGeometry(winW, winH, 0.05);
     if (!currentRoom.sharedLeft) { const w1 = new THREE.Mesh(winGeo, glassMat); w1.position.set(-len/2, sillY + winH/2, wid/4); w1.rotation.y = Math.PI / 2; buildingGroup.add(w1); }
     if (!currentRoom.sharedRight) { const w2 = new THREE.Mesh(winGeo, glassMat); w2.position.set(len/2, sillY + winH/2, wid/4); w2.rotation.y = Math.PI / 2; buildingGroup.add(w2); }
@@ -690,7 +720,6 @@ window.setRoofType = (type) => {
 
 function buildRoof() {
   wallsGroupRoof.clear(); roofMeshGroup.clear();
-  // Draw simple base walls for context
   const wallGeo = new THREE.BoxGeometry(roofP.len, 2.8, roofP.wid);
   const wall = new THREE.Mesh(wallGeo, blockMat);
   wall.position.y = 1.4; wall.castShadow = true; wall.receiveShadow = true;
@@ -790,8 +819,6 @@ const tilesP = { len: 5, wid: 4, size: 0.36, waste: 10 };
 
 function buildTiles() {
   wallsGroupTiles.clear(); floorGroupTiles.clear();
-  
-  // Simple wall box for context
   const wallGeo = new THREE.BoxGeometry(tilesP.len, 2.8, tilesP.wid);
   const wall = new THREE.Mesh(wallGeo, blockMat);
   wall.position.y = 1.4; wall.castShadow = true; wall.receiveShadow = true;
@@ -839,11 +866,6 @@ document.getElementById('t-len').oninput = syncTiles; document.getElementById('t
 // ==========================================
 // UI LISTENERS
 // ==========================================
-const getSliderVal = (id) => {
-  const val = parseFloat(document.getElementById(id).value);
-  return currentUnit === 'm' ? val : val / M_TO_FT;
-};
-
 document.getElementById('r-len').oninput = (e) => { currentRoom.len = getSliderVal('r-len'); updateUI(); rebuild3D(); };
 document.getElementById('r-wid').oninput = (e) => { currentRoom.wid = getSliderVal('r-wid'); updateUI(); rebuild3D(); };
 document.getElementById('r-hgt').oninput = (e) => { currentRoom.hgt = getSliderVal('r-hgt'); updateUI(); rebuild3D(); };
@@ -896,7 +918,14 @@ window.downloadRoomPDF = () => {
     ["Ceiling Boards", document.getElementById('r-outCeiling').textContent]
   ];
   y += 8;
-  rows.forEach(([k, v]) => { doc.text(k, 20, y); doc.text(v, 120, y); doc.setDrawColor(230,230,230); doc.line(14, y+3, 196, y+3); y += 10; });
+  rows.forEach(([k, v]) => { 
+    doc.text(k, 20, y); 
+    if(k === "Sandcrete Blocks") {
+      doc.text(`(${getBlockName(currentRoom.blockThick)})`, 75, y);
+    }
+    doc.text(v, 120, y); 
+    doc.setDrawColor(230,230,230); doc.line(14, y+3, 196, y+3); y += 10; 
+  });
   doc.save('C2B_Building_Estimate.pdf');
 };
 
@@ -951,17 +980,6 @@ window.openModal = (type) => {
   document.getElementById(`content-${type}`).style.display = 'block';
 };
 window.closeModal = () => { document.getElementById('legalModal').classList.remove('active'); };
-window.switchTab = (tabId) => {
-  document.querySelectorAll('.app-section').forEach(el => el.classList.remove('active'));
-  document.getElementById(`app-${tabId}`).classList.add('active');
-  const mobileSelect = document.querySelector('.mobile-nav select');
-  if(mobileSelect) mobileSelect.value = tabId;
-  document.querySelectorAll('.nav-links a').forEach(el => {
-    if(el.textContent.toLowerCase().includes(tabId === 'room' ? 'room' : tabId === 'roof' ? 'roof' : 'tiles')) el.classList.add('active');
-    else el.classList.remove('active');
-  });
-  setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 50);
-};
 
 // Init
 updateUI(); rebuild3D();
