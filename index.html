@@ -553,7 +553,6 @@ const currentRoom = {
 let myReferralId = localStorage.getItem('myReferralId');
 let activeRefApp = '';
 
-// 1. On page load: Check for ?ref= and tell the database a friend arrived
 window.addEventListener('load', async () => {
   const urlParams = new URLSearchParams(window.location.search);
   const incomingRef = urlParams.get('ref');
@@ -566,13 +565,11 @@ window.addEventListener('load', async () => {
     if (!error) console.log("Referral verified:", incomingRef);
   }
   
-  // Check if the user already unlocked something earlier in this session
   ['room', 'roof', 'tiles'].forEach(app => {
     if(sessionStorage.getItem(`unlocked_${app}`) === 'true') unlockApp(app);
   });
 });
 
-// 2. Open the modal and generate a link
 window.openReferralModal = async (app) => {
   activeRefApp = app;
   document.getElementById('referralModal').classList.add('active');
@@ -581,7 +578,6 @@ window.openReferralModal = async (app) => {
     myReferralId = 'C2B-' + Math.random().toString(36).substring(2, 8).toUpperCase();
     localStorage.setItem('myReferralId', myReferralId);
     
-    // Save the new code to Supabase
     await supabase.from('referrals').insert({ 
       code: myReferralId, 
       status: 'waiting',
@@ -604,7 +600,6 @@ window.openReferralModal = async (app) => {
   startPollingReferral(myReferralId, app);
 };
 
-// 3. The Polling function (Checks Supabase every 3 seconds)
 function startPollingReferral(code, app) {
   const interval = setInterval(async () => {
     const { data, error } = await supabase
@@ -625,7 +620,6 @@ function startPollingReferral(code, app) {
   }, 3000);
 }
 
-// 4. Copy Link Helper
 window.copyReferralLink = () => {
   const link = document.getElementById('refLinkInput').value;
   navigator.clipboard.writeText(link).then(() => {
