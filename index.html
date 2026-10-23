@@ -548,11 +548,12 @@ const currentRoom = {
 };
 
 // ==========================================
-// LIVE REFERRAL ENGINE
+// LIVE REFERRAL ENGINE (Money-Safe)
 // ==========================================
 let myReferralId = localStorage.getItem('myReferralId');
 let activeRefApp = '';
 
+// On page load: Check for incoming ?ref= parameter
 window.addEventListener('load', async () => {
   const urlParams = new URLSearchParams(window.location.search);
   const incomingRef = urlParams.get('ref');
@@ -569,29 +570,28 @@ window.addEventListener('load', async () => {
     else console.log("✅ Update succeeded:", data);
   }
   
-  ['room', 'roof', 'tiles'].forEach(app => {
-    if(sessionStorage.getItem(`unlocked_${app}`) === 'true') unlockApp(app);
-  });
+  // NOTE: We deliberately DO NOT restore unlock state from sessionStorage.
+  // Every visit starts locked. User must unlock each PDF individually.
 });
 
 window.openReferralModal = async (app) => {
   activeRefApp = app;
   document.getElementById('referralModal').classList.add('active');
   
-  if (!myReferralId) {
-    myReferralId = 'C2B-' + Math.random().toString(36).substring(2, 8).toUpperCase();
-    localStorage.setItem('myReferralId', myReferralId);
-    
-    console.log("🔵 Inserting new referral:", myReferralId);
-    const { data, error } = await supabase.from('referrals').insert({ 
-      code: myReferralId, 
-      status: 'waiting',
-      unlocked_app: app 
-    }).select();
-    
-    if (error) console.error("❌ Insert failed:", error);
-    else console.log("✅ Insert succeeded:", data);
-  }
+  // CRITICAL: Generate a NEW unique referral code for THIS unlock attempt
+  // This prevents users from reusing old success codes
+  myReferralId = 'C2B-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+  localStorage.setItem('myReferralId', myReferralId);
+  
+  console.log("🔵 Inserting new referral:", myReferralId, "for app:", app);
+  const { data, error } = await supabase.from('referrals').insert({ 
+    code: myReferralId, 
+    status: 'waiting',
+    unlocked_app: app 
+  }).select();
+  
+  if (error) console.error("❌ Insert failed:", error);
+  else console.log("✅ Insert succeeded:", data);
   
   const fullLink = window.location.origin + window.location.pathname + '?ref=' + myReferralId;
   document.getElementById('refLinkInput').value = fullLink;
@@ -610,7 +610,15 @@ window.openReferralModal = async (app) => {
 
 function startPollingReferral(code, app) {
   console.log("🔵 Started polling for:", code);
+  // Use a unique interval name to prevent stale pollers from running
+  const intervalName = `poll_${code}_${Date.now()}`;
+  let checks = 0;
+  
   const interval = setInterval(async () => {
+    checks++;
+    // After 5 minutes of polling, give up
+    if (checks > 100) { clearInterval(interval); return; }
+    
     const { data, error } = await supabase
       .from('referrals')
       .select('status')
@@ -1100,14 +1108,16 @@ document.getElementById('r-hgt').oninput = (e) => { currentRoom.hgt = getSliderV
 document.getElementById('r-block').onchange = (e) => { currentRoom.blockThick = parseFloat(e.target.value); updateUI(); rebuild3D(); };
 
 // ==========================================
-// UNLOCK & PDF LOGIC
+// UNLOCK & PDF LOGIC (One-Time Per Session)
 // ==========================================
 function unlockApp(app) {
+  // NOTE: We do NOT use sessionStorage here anymore. 
+  // The unlock only exists in memory for THIS page load.
+  // If the user refreshes, they must unlock again.
   const prefix = app === 'room' ? 'r' : app === 'roof' ? 'f' : 't';
   document.getElementById(`${prefix}-materialList`).classList.remove('blurred');
   document.getElementById(`${prefix}-paywall`).style.display = 'none';
   document.getElementById(`${prefix}-actions`).style.display = 'flex';
-  sessionStorage.setItem(`unlocked_${app}`, 'true');
 }
 
 window.mockUnlock = (app) => {
@@ -1160,6 +1170,9 @@ window.downloadRoomPDF = () => {
     doc.setDrawColor(230,230,230); doc.line(14, y+3, 196, y+3); y += 10; 
   });
   doc.save('C2B_Building_Estimate.pdf');
+  
+  // Re-lock after download
+  relockApp('room');
 };
 
 window.downloadRoofPDF = () => {
@@ -1181,6 +1194,9 @@ window.downloadRoofPDF = () => {
   let y = 80;
   rows.forEach(([k, v]) => { doc.text(k, 20, y); doc.text(v, 120, y); doc.setDrawColor(230,230,230); doc.line(14, y+3, 196, y+3); y += 10; });
   doc.save('C2B_Roof_Estimate.pdf');
+  
+  // Re-lock after download
+  relockApp('roof');
 };
 
 window.downloadTilesPDF = () => {
@@ -1202,7 +1218,18 @@ window.downloadTilesPDF = () => {
   let y = 80;
   rows.forEach(([k, v]) => { doc.text(k, 20, y); doc.text(v, 120, y); doc.setDrawColor(230,230,230); doc.line(14, y+3, 196, y+3); y += 10; });
   doc.save('C2B_Tiling_Estimate.pdf');
+  
+  // Re-lock after download
+  relockApp('tiles');
 };
+
+// Helper: Re-lock the app after a PDF download so the next export needs a fresh unlock
+function relockApp(app) {
+  const prefix = app === 'room' ? 'r' : app === 'roof' ? 'f' : 't';
+  document.getElementById(`${prefix}-materialList`).classList.add('blurred');
+  document.getElementById(`${prefix}-paywall`).style.display = 'flex';
+  document.getElementById(`${prefix}-actions`).style.display = 'none';
+}
 
 // ==========================================
 // MODALS & INIT
