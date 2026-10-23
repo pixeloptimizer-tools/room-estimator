@@ -43,6 +43,685 @@
   .wall-toggle { padding: 8px; border: 1px solid var(--border); border-radius: 6px; background: white; font-size: 12px; font-weight: 600; cursor: pointer; text-align: center; transition: 0.2s; }
   .wall-toggle.active { border-color: var(--text-main); background: var(--text-main); color: white; }
   
+  /* Doors & Windows Counter */
+  .openings-control { display: flex; gap: 12px; margin-top: 16px; }
+  .counter-box { flex: 1; display: flex; align-items: center; justify-content: space-between; padding: 12px; border: 1px solid var(--border); border-radius: 8px; background: white; }
+  .counter-box span { font-size: 13px; font-weight: 600; }
+  .counter-btn { width: 32px; height: 32px; border-radius: 50%; border: none; background: var(--text-main); color: white; font-size: 18px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .counter-btn:hover { background: var(--brand); color: #000; }
+  .counter-val { font-size: 16px; font-weight: 700; min-width: 20px; text-align: center; }
+
+  .roof-toggles { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+  .roof-btn { padding: 12px; border: 1px solid var(--border); border-radius: 6px; background: white; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; text-align: center; }
+  .roof-btn.active { border-color: var(--brand); background: rgba(245, 158, 11, 0.1); color: var(--brand); }
+  .room-actions { display: flex; gap: 10px; margin-top: 20px; }
+  .btn-save { flex: 2; padding: 14px; background: var(--brand); color: #000; border: none; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+  .btn-save:hover { background: #fbbf24; }
+  .btn-clear { flex: 1; padding: 14px; background: white; color: var(--text-main); border: 1px solid var(--border); border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .room-list { margin-top: 20px; border-top: 1px solid var(--border); padding-top: 16px; }
+  .room-item { display: flex; justify-content: space-between; align-items: center; font-size: 13px; padding: 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; margin-bottom: 8px; }
+  .room-item span:first-child { font-weight: 600; color: var(--text-main); } .room-item span:last-child { color: var(--text-muted); font-size: 12px; }
+  .area-boxes { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+  .area-box { background: var(--bg); padding: 12px; border-radius: 8px; border: 1px solid var(--border); }
+  .area-box .label { font-size: 11px; color: var(--text-muted); font-weight: 500; } .area-box .val { font-size: 18px; font-weight: 700; margin-top: 4px; color: var(--text-main); }
+  .material-wrapper { position: relative; } .material-list { display: flex; flex-direction: column; transition: filter 0.3s; } .material-list.blurred { filter: blur(6px); user-select: none; pointer-events: none; }
+  .category-title { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin: 16px 0 8px; border-bottom: 1px solid var(--border); padding-bottom: 4px; } .category-title:first-child { margin-top: 0; }
+  .mat-item { display: flex; justify-content: space-between; align-items: flex-start; padding: 8px 0; border-bottom: 1px dashed var(--border); } .mat-item:last-child { border-bottom: none; }
+  .mat-info { display: flex; flex-direction: column; gap: 2px; padding-right: 12px; } .mat-name { font-size: 13px; font-weight: 600; } .mat-desc { font-size: 10px; color: var(--text-muted); }
+  .mat-qty { font-size: 13px; font-weight: 700; text-align: right; white-space: nowrap; color: var(--brand); }
+  .paywall-overlay { position: absolute; inset: -10px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(2px); z-index: 10; text-align: center; padding: 20px; border-radius: 8px; }
+  .paywall-box { background: white; padding: 24px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border: 1px solid var(--border); max-width: 340px; text-align: left; }
+  .paywall-box h3 { font-size: 16px; font-weight: 700; margin-bottom: 4px; color: var(--text-main); } .paywall-box p.subtitle { font-size: 12px; color: var(--text-muted); margin-bottom: 16px; }
+  .premium-features { list-style: none; padding: 0; margin-bottom: 20px; } .premium-features li { font-size: 12px; color: #334155; line-height: 1.4; margin-bottom: 10px; display: flex; gap: 8px; } .premium-features li span { color: var(--green); font-weight: 700; }
+  .btn-unlock { width: 100%; padding: 14px; background: var(--green); color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 8px; }
+  .btn-unlock:hover { background: #059669; }
+  .btn-share { width: 100%; padding: 12px; background: var(--blue); color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; }
+  .btn-share:hover { background: #2563eb; }
+  .warning-box { background: #fef3c7; border: 1px solid #fde68a; color: #92400e; padding: 12px; border-radius: 8px; font-size: 12px; line-height: 1.5; margin-top: 20px; }
+  .actions { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; display: none; }
+  .btn-primary { background: var(--text-main); color: white; padding: 14px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; } .btn-primary.unlocked { background: var(--green); }
+  footer { background: #0f172a; color: #94a3b8; padding: 24px; text-align: center; margin-top: 40px; font-size: 12px; }
+  footer a { color: #94a3b8; text-decoration: none; margin: 0 10px; cursor: pointer; } footer a:hover { color: white; text-decoration: underline; }
+  .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
+  .modal-overlay.active { display: flex; }
+  .modal-box { background: white; width: 100%; max-width: 700px; border-radius: 12px; padding: 32px; max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); position: relative; }
+  .modal-close { position: absolute; top: 16px; right: 20px; font-size: 24px; cursor: pointer; color: var(--text-muted); border: none; background: none; }
+  .modal-box h2 { font-size: 22px; margin-bottom: 16px; color: var(--text-main); } .modal-box h3 { font-size: 16px; margin: 24px 0 8px; color: var(--text-main); border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+  .modal-box p, .modal-box li { font-size: 13px; line-height: 1.6; color: var(--text-muted); margin-bottom: 10px; } .modal-box ul { padding-left: 20px; margin-bottom: 16px; } .modal-box .last-updated { font-size: 11px; color: var(--text-muted); margin-bottom: 20px; font-style: italic; }
+  .ref-link-box { background: var(--bg); border: 1px dashed var(--border); border-radius: 8px; padding: 12px; margin: 16px 0; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .ref-link-box input { border: none; background: transparent; font-size: 12px; color: var(--text-muted); width: 100%; outline: none; font-family: 'Courier New', monospace; }
+  .ref-link-box button { padding: 8px 16px; background: var(--text-main); color: white; border: none; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; }
+  .ref-status { background: #fef3c7; border: 1px solid #fde68a; color: #92400e; padding: 12px; border-radius: 8px; font-size: 12px; text-align: center; margin-top: 16px; }
+  @media (max-width: 768px) { .nav-links { display: none; } .mobile-nav { display: block; } .container { grid-template-columns: 1fr; margin-top: 16px; gap: 16px; } .canvas-container { height: 350px; } .input-grid { grid-template-columns: 1fr; } .roof-toggles { grid-template-columns: 1fr 1fr; } }
+</style>
+</head>
+<body>
+<nav>
+  <div class="logo">Calculate2Build <span>/ C2B</span></div>
+  <div class="nav-links">
+    <a class="active" onclick="switchTab('room')">Room Estimator</a>
+    <a onclick="switchTab('roof')">Roof Wizard</a>
+    <a onclick="switchTab('tiles')">Floor Tiles</a>
+  </div>
+</nav>
+<div class="mobile-nav" id="mobileNav">
+  <select onchange="switchTab(this.value)">
+    <option value="room">Room Estimator</option>
+    <option value="roof">Roof Wizard</option>
+    <option value="tiles">Floor Tiles</option>
+  </select>
+</div>
+
+<!-- APP 1: ROOM ESTIMATOR -->
+<div class="app-section active" id="app-room">
+  <div class="container">
+    <div class="left-col">
+      <div class="card">
+        <div class="card-header">
+          <div><h2>Build your rooms</h2><p>Measure one room, save it, then add the next.</p></div>
+          <div class="unit-toggle">
+            <button class="active" id="btn-m" onclick="setUnit('m')">Metres</button>
+            <button id="btn-ft" onclick="setUnit('ft')">Feet</button>
+          </div>
+        </div>
+        <div class="canvas-container" id="canvas-room">
+          <div class="active-room-badge" id="activeRoomBadge">Designing Room 1</div>
+          <div class="viewer-hint">Drag to rotate • Scroll to zoom</div>
+        </div>
+        <div class="card-body">
+          <div class="input-grid">
+            <div class="input-group"><label>Length <span class="val" id="r-lenV">6.4 m</span></label><input type="range" id="r-len" min="0.5" max="50" step="0.1" value="6.4" /></div>
+            <div class="input-group"><label>Width <span class="val" id="r-widV">5.5 m</span></label><input type="range" id="r-wid" min="0.5" max="50" step="0.1" value="5.5" /></div>
+            <div class="input-group"><label>Height <span class="val" id="r-hgtV">3.7 m</span></label><input type="range" id="r-hgt" min="2.0" max="8.0" step="0.1" value="3.7" /></div>
+            <div class="input-group">
+              <label>Block Type</label>
+              <select id="r-block">
+                <option value="0.225">9" Sandcrete (225mm)</option>
+                <option value="0.150">6" Sandcrete (150mm)</option>
+                <option value="0.125">5" Sandcrete (125mm)</option>
+                <option value="0.100">4" Sandcrete (100mm)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="openings-control">
+            <div class="counter-box">
+              <span>Doors</span>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <button class="counter-btn" onclick="changeCount('door', -1)">−</button>
+                <span class="counter-val" id="doorCount">1</span>
+                <button class="counter-btn" onclick="changeCount('door', 1)">+</button>
+              </div>
+            </div>
+            <div class="counter-box">
+              <span>Windows</span>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <button class="counter-btn" onclick="changeCount('window', -1)">−</button>
+                <span class="counter-val" id="windowCount">0</span>
+                <button class="counter-btn" onclick="changeCount('window', 1)">+</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="shared-walls">
+            <p>Does this room share a wall with another room?</p>
+            <div class="wall-toggles">
+              <div class="wall-toggle" id="wall-front" onclick="toggleWall('front')">Shared Front Wall</div>
+              <div class="wall-toggle" id="wall-back" onclick="toggleWall('back')">Shared Back Wall</div>
+              <div class="wall-toggle" id="wall-left" onclick="toggleWall('left')">Shared Left Wall</div>
+              <div class="wall-toggle" id="wall-right" onclick="toggleWall('right')">Shared Right Wall</div>
+            </div>
+          </div>
+          <div class="room-actions">
+            <button class="btn-save" onclick="saveCurrentRoom()">Save Room & Add Next</button>
+            <button class="btn-clear" onclick="clearAllRooms()">Clear All</button>
+          </div>
+          <div class="room-list" id="savedRoomsList"></div>
+        </div>
+      </div>
+    </div>
+    <div class="right-col">
+      <div class="card">
+        <div class="card-header"><h2>Masonry & Substructure</h2><p>Indicative quantities for all saved rooms.</p></div>
+        <div class="card-body">
+          <div class="area-boxes">
+            <div class="area-box"><div class="label">Total Floor Area</div><div class="val" id="r-outFloor">0.00 m²</div></div>
+            <div class="area-box"><div class="label">Total Wall Area</div><div class="val" id="r-outWall">0.00 m²</div></div>
+          </div>
+          <div class="material-wrapper">
+            <div class="material-list blurred" id="r-materialList">
+              <div class="category-title">Masonry (Blocks & Mortar)</div>
+              <div class="mat-item"><div class="mat-info"><div class="mat-name">Sandcrete Blocks</div><div class="mat-desc" id="r-outBlockType">9" (225mm)</div></div><div class="mat-qty" id="r-outBlocks">0 pcs</div></div>
+              <div class="mat-item"><div class="mat-info"><div class="mat-name">Cement (mortar)</div><div class="mat-desc">For laying blocks</div></div><div class="mat-qty" id="r-outCemMortar">0 bags</div></div>
+              <div class="mat-item"><div class="mat-info"><div class="mat-name">Mortar sand</div><div class="mat-desc">Loose volume</div></div><div class="mat-qty" id="r-outSand">0 m³</div></div>
+              <div class="category-title">Finishes (Plaster & Paint)</div>
+              <div class="mat-item"><div class="mat-info"><div class="mat-name">Cement (plaster)</div><div class="mat-desc">Both faces (12mm avg)</div></div><div class="mat-qty" id="r-outCemPlaster">0 bags</div></div>
+              <div class="mat-item"><div class="mat-info"><div class="mat-name">Plaster sand</div><div class="mat-desc">Loose volume</div></div><div class="mat-qty" id="r-outSandPlaster">0 m³</div></div>
+              <div class="mat-item"><div class="mat-info"><div class="mat-name">Paint (2 coats)</div><div class="mat-desc">Interior emulsion</div></div><div class="mat-qty" id="r-outPaint">0 L</div></div>
+              <div class="category-title">Ceilings</div>
+              <div class="mat-item"><div class="mat-info"><div class="mat-name">Ceiling Boards</div><div class="mat-desc">PVC or Plasterboard</div></div><div class="mat-qty" id="r-outCeiling">0 m²</div></div>
+            </div>
+            <div class="paywall-overlay" id="r-paywall">
+              <div class="paywall-box">
+                <h3>🔒 Unlock Complete Breakdown</h3>
+                <p class="subtitle">Get exact structural quantities instantly.</p>
+                <ul class="premium-features">
+                  <li><span>✅</span> <div><strong>Precision Quantities:</strong> Blocks, cement, sand, paint perfectly scaled.</div></li>
+                  <li><span>✅</span> <div><strong>Standard Waste Buffers:</strong> Multipliers included to protect against breakages.</div></li>
+                  <li><span>✅</span> <div><strong>Room Schedule:</strong> Itemized breakdown for every room in the PDF.</div></li>
+                  <li><span>✅</span> <div><strong>Shareable Blueprint:</strong> Clean PDF optimized for WhatsApp or printing.</div></li>
+                </ul>
+                <button class="btn-unlock" onclick="mockUnlock('room')">Unlock for ₵15 (Preview Mode)</button>
+                <button class="btn-share" onclick="openReferralModal('room')"><span>🔗</span> Unlock Free by Referring a Friend</button>
+              </div>
+            </div>
+          </div>
+          <div class="warning-box"><strong>Important:</strong> Verify quantities with a local professional before purchasing.</div>
+          <div class="actions" id="r-actions"><button class="btn-primary unlocked" onclick="downloadRoomPDF()">✓ Download Official PDF</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- APP 2: ROOF WIZARD -->
+<div class="app-section" id="app-roof">
+  <div class="container">
+    <div class="left-col">
+      <div class="card">
+        <div class="card-header"><h2>Build your Roof</h2><p>Select a roof type and adjust dimensions.</p></div>
+        <div class="canvas-container" id="canvas-roof">
+          <div class="viewer-hint">Drag to rotate • Scroll to zoom</div>
+        </div>
+        <div class="card-body">
+          <div class="roof-toggles">
+            <button class="roof-btn active" data-type="gable" onclick="setRoofType('gable')">Gable</button>
+            <button class="roof-btn" data-type="hip" onclick="setRoofType('hip')">Hip</button>
+            <button class="roof-btn" data-type="mono" onclick="setRoofType('mono')">Mono</button>
+            <button class="roof-btn" data-type="flat" onclick="setRoofType('flat')">Flat</button>
+          </div>
+          <div class="input-grid">
+            <div class="input-group"><label>Length <span class="val" id="f-lenV">10.0 m</span></label><input type="range" id="f-len" min="0.5" max="50" step="0.5" value="10" /></div>
+            <div class="input-group"><label>Width <span class="val" id="f-widV">8.0 m</span></label><input type="range" id="f-wid" min="0.5" max="50" step="0.5" value="8" /></div>
+            <div class="input-group"><label>Pitch <span class="val" id="f-pitV">25°</span></label><input type="range" id="f-pit" min="5" max="50" step="1" value="25" /></div>
+            <div class="input-group"><label>Overhang (m)</label><input type="number" id="f-overhang" value="0.5" step="0.1" /></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="right-col">
+      <div class="card">
+        <div class="card-header"><h2>Roofing Materials</h2><p>Indicative quantities based on your roof.</p></div>
+        <div class="card-body">
+          <div class="area-boxes">
+            <div class="area-box"><div class="label">Roof Area</div><div class="val" id="f-outArea">0.00 m²</div></div>
+            <div class="area-box"><div class="label">Angle</div><div class="val" id="f-outAngle">0°</div></div>
+          </div>
+          <div class="material-wrapper">
+            <div class="material-list blurred" id="f-materialList">
+              <div class="mat-header"><span>Material / Work Item</span><span>Qty</span></div>
+              <div class="mat-item"><div class="mat-info"><div class="mat-name">Roofing Sheets (0.9x3m)</div></div><div class="mat-qty" id="f-outSheets">0</div></div>
+              <div class="mat-item"><div class="mat-info"><div class="mat-name">Ridge Caps (3m)</div></div><div class="mat-qty" id="f-outRidges">0</div></div>
+              <div class="mat-item"><div class="mat-info"><div class="mat-name">Battens (3m)</div></div><div class="mat-qty" id="f-outBattens">0</div></div>
+              <div class="mat-item"><div class="mat-info"><div class="mat-name">Roofing Screws</div></div><div class="mat-qty" id="f-outScrews">0</div></div>
+            </div>
+            <div class="paywall-overlay" id="f-paywall">
+              <div class="paywall-box">
+                <h3>🔒 Unlock Roofing Materials</h3>
+                <p class="subtitle">Get exact quantities for sheets, battens, and screws instantly.</p>
+                <button class="btn-unlock" onclick="mockUnlock('roof')">Unlock for ₵15 (Preview Mode)</button>
+                <button class="btn-share" onclick="openReferralModal('roof')"><span>🔗</span> Unlock Free by Referring a Friend</button>
+              </div>
+            </div>
+          </div>
+          <div class="warning-box"><strong>Important:</strong> This is a preliminary geometric estimate. Verify with your contractor.</div>
+          <div class="actions" id="f-actions"><button class="btn-primary unlocked" onclick="downloadRoofPDF()">✓ Download Official PDF</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- APP 3: FLOOR TILES -->
+<div class="app-section" id="app-tiles">
+  <div class="container">
+    <div class="left-col">
+      <div class="card">
+        <div class="card-header"><h2>Floor Tiling</h2><p>Calculate tiles, adhesive, and grout.</p></div>
+        <div class="canvas-container" id="canvas-tiles">
+          <div class="viewer-hint">Drag to rotate • Scroll to zoom</div>
+        </div>
+        <div class="card-body">
+          <div class="input-grid">
+            <div class="input-group"><label>Room Length <span class="val" id="t-lenV">5.0 m</span></label><input type="range" id="t-len" min="0.5" max="50" step="0.1" value="5" /></div>
+            <div class="input-group"><label>Room Width <span class="val" id="t-widV">4.0 m</span></label><input type="range" id="t-wid" min="0.5" max="50" step="0.1" value="4" /></div>
+            <div class="input-group">
+              <label>Tile Size</label>
+              <select id="t-size">
+                <option value="0.09">300 x 300 mm</option>
+                <option value="0.16">400 x 400 mm</option>
+                <option value="0.36" selected>600 x 600 mm</option>
+                <option value="0.64">800 x 800 mm</option>
+              </select>
+            </div>
+            <div class="input-group"><label>Waste Allowance (%)</label><input type="number" id="t-waste" value="10" step="1" /></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="right-col">
+      <div class="card">
+        <div class="card-header"><h2>Tiling Materials</h2><p>Indicative quantities for your flooring.</p></div>
+        <div class="card-body">
+          <div class="area-boxes">
+            <div class="area-box"><div class="label">Floor Area</div><div class="val" id="t-outArea">0.00 m²</div></div>
+            <div class="area-box"><div class="label">Tiles Needed</div><div class="val" id="t-outTiles">0 tiles</div></div>
+          </div>
+          <div class="material-wrapper">
+            <div class="material-list blurred" id="t-materialList">
+              <div class="mat-header"><span>Material / Work Item</span><span>Qty</span></div>
+              <div class="mat-item"><div class="mat-info"><div class="mat-name">Tile Adhesive (20kg bags)</div></div><div class="mat-qty" id="t-outAdhesive">0 bags</div></div>
+              <div class="mat-item"><div class="mat-info"><div class="mat-name">Tile Grout (5kg bags)</div></div><div class="mat-qty" id="t-outGrout">0 bags</div></div>
+              <div class="mat-item"><div class="mat-info"><div class="mat-name">Tile Spacers (pack)</div></div><div class="mat-qty" id="t-outSpacers">0 packs</div></div>
+            </div>
+            <div class="paywall-overlay" id="t-paywall">
+              <div class="paywall-box">
+                <h3>🔒 Unlock Tiling Materials</h3>
+                <p class="subtitle">Get exact quantities for adhesive, grout, and spacers instantly.</p>
+                <button class="btn-unlock" onclick="mockUnlock('tiles')">Unlock for ₵15 (Preview Mode)</button>
+                <button class="btn-share" onclick="openReferralModal('tiles')"><span>🔗</span> Unlock Free by Referring a Friend</button>
+              </div>
+            </div>
+          </div>
+          <div class="warning-box"><strong>Important:</strong> This is a preliminary estimate. Actual coverage varies by tile layout and substrate.</div>
+          <div class="actions" id="t-actions"><button class="btn-primary unlocked" onclick="downloadTilesPDF()">✓ Download Official PDF</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div style="margin-bottom: 12px; font-weight: 600; color: white;">Calculate2Build / C2B</div>
+  <div><a onclick="openModal('privacy')">Privacy Policy</a> | <a onclick="openModal('terms')">Terms of Service</a> | <a onclick="openModal('contact')">Contact Us</a></div>
+  <div style="margin-top: 12px; font-size: 11px;">&copy; 2026 Calculate2Build. All rights reserved. Estimates are for planning purposes only.</div>
+</footer>
+
+<!-- LEGAL MODALS -->
+<div class="modal-overlay" id="legalModal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeModal()">&times;</button>
+    <div id="content-privacy" style="display:none;"><h2>Privacy Policy</h2><p>Last Updated: October 2026</p><p>We do not store your calculations. All data is processed locally.</p></div>
+    <div id="content-terms" style="display:none;"><h2>Terms of Service</h2><p>Last Updated: October 2026</p><p>Estimates are for planning purposes only. Verify with a professional.</p></div>
+    <div id="content-contact" style="display:none;"><h2>Contact Us</h2><p>Email: <a href="mailto:quicktoolsapp@proton.me">quicktoolsapp@proton.me</a></p></div>
+  </div>
+</div>
+
+<!-- REFERRAL MODAL -->
+<div class="modal-overlay" id="referralModal">
+  <div class="modal-box" style="max-width: 500px;">
+    <button class="modal-close" onclick="closeModal()">&times;</button>
+    <h2>Unlock Free by Referring a Friend</h2>
+    <p>Generate your unique referral link below. When a new friend opens your link and uses the tool, your PDF will unlock automatically!</p>
+    <div style="margin: 16px 0;">
+      <label style="font-size: 12px; font-weight: 600; display: block; margin-bottom: 6px;">Your Referral Link:</label>
+      <div class="ref-link-box"><input type="text" id="refLinkInput" readonly value="Generating..." /><button onclick="copyReferralLink()">Copy</button></div>
+    </div>
+    <div style="display: flex; gap: 8px; margin-top: 16px;">
+      <a id="refShareWhatsapp" class="btn-share" style="flex: 1; text-decoration: none; background: #25D366;" href="#" target="_blank">WhatsApp</a>
+      <a id="refShareTwitter" class="btn-share" style="flex: 1; text-decoration: none; background: #1DA1F2;" href="#" target="_blank">Twitter</a>
+    </div>
+    <div class="ref-status" id="refStatus">⏳ Waiting for a friend to use your link...</div>
+    <p style="font-size: 11px; text-align: center; margin-top: 16px; color: var(--text-muted);">Once your friend opens your link, this page will automatically unlock your PDF.</p>
+  </div>
+</div>
+
+<!-- Include Three.js & Supabase -->
+<script type="importmap">
+{ "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js", "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/" } }
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const SUPABASE_URL = 'https://rvejecspofxepooxukpm.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ2ZWplY3Nwb2Z4ZXBvb3h1a3BtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2MjI1ODMsImV4cCI6MjEwODE5ODU4M30.9ztBB-DG2Blj5OnJsw8CBkzi--rWHAEDAHV7qq5ESe8';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let currentUnit = 'm'; const M_TO_FT = 3.28084;
+let savedRooms = []; let activeRoomId = 1;
+const currentRoom = { 
+  len: 6.4, wid: 5.5, hgt: 3.7, blockThick: 0.225, 
+  doors: 1, windows: 1, // Now dynamic
+  sharedFront: false, sharedBack: false, sharedLeft: false, sharedRight: false 
+};
+
+window.changeCount = (type, delta) => {
+  if (type === 'door') {
+    currentRoom.doors = Math.max(0, currentRoom.doors + delta);
+    document.getElementById('doorCount').textContent = currentRoom.doors;
+  } else {
+    currentRoom.windows = Math.max(0, currentRoom.windows + delta);
+    document.getElementById('windowCount').textContent = currentRoom.windows;
+  }
+  updateUI(); rebuild3D();
+};
+
+let myReferralId = localStorage.getItem('myReferralId');
+window.addEventListener('load', async () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const incomingRef = urlParams.get('ref');
+  if (incomingRef && incomingRef !== myReferralId) {
+    await supabase.from('referrals').update({ status: 'success' }).eq('code', incomingRef);
+  }
+});
+window.openReferralModal = async (app) => {
+  document.getElementById('referralModal').classList.add('active');
+  myReferralId = 'C2B-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+  localStorage.setItem('myReferralId', myReferralId);
+  await supabase.from('referrals').insert({ code: myReferralId, status: 'waiting', unlocked_app: app });
+  const fullLink = window.location.origin + window.location.pathname + '?ref=' + myReferralId;
+  document.getElementById('refLinkInput').value = fullLink;
+  const shareMsg = encodeURIComponent("I just used Calculate2Build to estimate my building materials — it's free and saves money! Check it out: ");
+  document.getElementById('refShareWhatsapp').href = `https://wa.me/?text=${shareMsg}${encodeURIComponent(fullLink)}`;
+  document.getElementById('refShareTwitter').href = `https://twitter.com/intent/tweet?text=${shareMsg}&url=${encodeURIComponent(fullLink)}`;
+  startPollingReferral(myReferralId, app);
+};
+function startPollingReferral(code, app) {
+  const interval = setInterval(async () => {
+    const { data } = await supabase.from('referrals').select('status').eq('code', code).maybeSingle();
+    if (data && data.status === 'success') {
+      clearInterval(interval);
+      unlockApp(app);
+      document.getElementById('refStatus').innerHTML = '✅ Success! Your PDF has been unlocked.';
+      document.getElementById('refStatus').style.background = '#d1fae5';
+    }
+  }, 3000);
+}
+window.copyReferralLink = () => {
+  navigator.clipboard.writeText(document.getElementById('refLinkInput').value);
+};
+
+const getSliderVal = (id) => { const val = parseFloat(document.getElementById(id).value); return currentUnit === 'm' ? val : val / M_TO_FT; };
+function getBlockName(thick) { if (thick === 0.225) return '9" (225mm)'; if (thick === 0.150) return '6" (150mm)'; return '9" (225mm)'; }
+
+window.setUnit = (unit) => { currentUnit = unit; document.getElementById('btn-m').classList.toggle('active', unit === 'm'); document.getElementById('btn-ft').classList.toggle('active', unit === 'ft'); updateUI(); };
+window.switchTab = (tabId) => { document.querySelectorAll('.app-section').forEach(el => el.classList.remove('active')); document.getElementById(`app-${tabId}`).classList.add('active'); setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 50); };
+window.toggleWall = (side) => { if (side === 'front') { currentRoom.sharedFront = !currentRoom.sharedFront; document.getElementById('wall-front').classList.toggle('active', currentRoom.sharedFront); } if (side === 'back') { currentRoom.sharedBack = !currentRoom.sharedBack; document.getElementById('wall-back').classList.toggle('active', currentRoom.sharedBack); } if (side === 'left') { currentRoom.sharedLeft = !currentRoom.sharedLeft; document.getElementById('wall-left').classList.toggle('active', currentRoom.sharedLeft); } if (side === 'right') { currentRoom.sharedRight = !currentRoom.sharedRight; document.getElementById('wall-right').classList.toggle('active', currentRoom.sharedRight); } updateUI(); rebuild3D(); };
+
+window.saveCurrentRoom = () => {
+  savedRooms.push({ id: activeRoomId, ...currentRoom });
+  activeRoomId++;
+  currentRoom.len = 5.0; currentRoom.wid = 4.0; currentRoom.doors = 1; currentRoom.windows = 0;
+  document.getElementById('doorCount').textContent = 1; document.getElementById('windowCount').textContent = 0;
+  currentRoom.sharedFront = false; currentRoom.sharedBack = false; currentRoom.sharedLeft = false; currentRoom.sharedRight = false;
+  document.getElementById('wall-front').classList.remove('active'); document.getElementById('wall-back').classList.remove('active'); document.getElementById('wall-left').classList.remove('active'); document.getElementById('wall-right').classList.remove('active');
+  document.getElementById('r-len').value = 5.0; document.getElementById('r-wid').value = 4.0;
+  updateUI(); rebuild3D();
+};
+window.clearAllRooms = () => {
+  savedRooms = []; activeRoomId = 1; currentRoom.len = 6.4; currentRoom.wid = 5.5; currentRoom.doors = 1; currentRoom.windows = 0;
+  document.getElementById('doorCount').textContent = 1; document.getElementById('windowCount').textContent = 0;
+  document.getElementById('r-len').value = 6.4; document.getElementById('r-wid').value = 5.5;
+  updateUI(); rebuild3D();
+};
+
+function updateUI() {
+  const mult = currentUnit === 'm' ? 1 : M_TO_FT; const suffix = currentUnit === 'm' ? ' m' : ' ft';
+  document.getElementById('activeRoomBadge').textContent = `Designing Room ${activeRoomId}`;
+  document.getElementById('r-lenV').textContent = (currentRoom.len * mult).toFixed(1) + suffix;
+  document.getElementById('r-widV').textContent = (currentRoom.wid * mult).toFixed(1) + suffix;
+  document.getElementById('r-hgtV').textContent = (currentRoom.hgt * mult).toFixed(1) + suffix;
+  const list = document.getElementById('savedRoomsList');
+  list.innerHTML = savedRooms.length === 0 ? '<div style="font-size: 12px; color: var(--text-muted); text-align: center;">No rooms saved yet.</div>' : savedRooms.map((r, i) => `<div class="room-item"><span>Room ${i + 1}</span><span>${(r.len * mult).toFixed(1)} ${suffix} x ${(r.wid * mult).toFixed(1)} ${suffix}</span></div>`).join('');
+  calcTotals();
+}
+
+function calcTotals() {
+  let totalArea = 0; let totalWallArea = 0; const hgt = currentRoom.hgt;
+  const calcRoom = (r) => {
+    let gross = 2 * (r.len + r.wid) * hgt;
+    let deductions = 0;
+    if (r.sharedFront) deductions += (r.len * hgt); if (r.sharedBack) deductions += (r.len * hgt);
+    if (r.sharedLeft) deductions += (r.wid * hgt); if (r.sharedRight) deductions += (r.wid * hgt);
+    const doorArea = r.doors * (0.9 * 2.1);
+    const winArea = r.windows * (1.2 * 1.2);
+    let net = gross - deductions - doorArea - winArea;
+    if (net < 0) net = 0;
+    totalArea += (r.len * r.wid); totalWallArea += net;
+  };
+  savedRooms.forEach(calcRoom); calcRoom(currentRoom);
+
+  document.getElementById('r-outBlocks').textContent = Math.ceil((totalWallArea * 10) * 1.05).toLocaleString() + ' pcs';
+  document.getElementById('r-outCemMortar').textContent = Math.ceil(totalWallArea * 0.12 * 1.07) + ' bags';
+  document.getElementById('r-outSand').textContent = (totalWallArea * 0.012 * 1.07).toFixed(2) + ' m³';
+  document.getElementById('r-outCemPlaster').textContent = Math.ceil(totalWallArea / 11) + ' bags';
+  document.getElementById('r-outSandPlaster').textContent = (totalWallArea / 11 * 0.05).toFixed(2) + ' m³';
+  document.getElementById('r-outPaint').textContent = (totalWallArea / 8.3 * 2 * 1.05).toFixed(1) + ' L';
+  document.getElementById('r-outCeiling').textContent = Math.ceil(totalArea * 1.05) + ' m²';
+  document.getElementById('r-outFloor').textContent = totalArea.toFixed(2) + ' m²';
+  document.getElementById('r-outWall').textContent = totalWallArea.toFixed(2) + ' m²';
+  document.getElementById('r-outBlockType').textContent = getBlockName(currentRoom.blockThick);
+}
+
+// 3D ENGINE (Room) - REBUILT FOR STABILITY
+const blockMat = new THREE.MeshStandardMaterial({ color: 0xd4cbb8, roughness: 0.9 });
+const roofMat = new THREE.MeshStandardMaterial({ color: 0x64748b, roughness: 0.6, side: THREE.DoubleSide });
+const doorMat = new THREE.MeshStandardMaterial({ color: 0x8b5a2b, roughness: 0.9 });
+const glassMat = new THREE.MeshStandardMaterial({ color: 0x93c5fd, roughness: 0.1, metalness: 0.5 });
+
+const containerRoom = document.getElementById('canvas-room');
+const sceneRoom = new THREE.Scene(); sceneRoom.background = new THREE.Color(0xf1f5f9);
+const cameraRoom = new THREE.PerspectiveCamera(40, containerRoom.clientWidth / containerRoom.clientHeight, 0.1, 1000);
+cameraRoom.position.set(15, 12, 18);
+const rendererRoom = new THREE.WebGLRenderer({ antialias: true }); rendererRoom.setPixelRatio(Math.min(devicePixelRatio, 2)); rendererRoom.setSize(containerRoom.clientWidth, containerRoom.clientHeight); rendererRoom.shadowMap.enabled = true; containerRoom.appendChild(rendererRoom.domElement);
+const controlsRoom = new OrbitControls(cameraRoom, rendererRoom.domElement); controlsRoom.enableDamping = true; controlsRoom.maxPolarAngle = Math.PI / 2 - 0.05; controlsRoom.minDistance = 5; controlsRoom.maxDistance = 100; controlsRoom.target.set(0, 2, 0);
+sceneRoom.add(new THREE.AmbientLight(0xffffff, 0.6)); const dirRoom = new THREE.DirectionalLight(0xffffff, 1.2); dirRoom.position.set(20, 30, 20); dirRoom.castShadow = true; sceneRoom.add(dirRoom);
+const groundRoom = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1 })); groundRoom.rotation.x = -Math.PI / 2; groundRoom.receiveShadow = true; sceneRoom.add(groundRoom);
+const gridRoom = new THREE.GridHelper(200, 200, 0xcbd5e1, 0xe2e8f0); gridRoom.position.y = 0.01; sceneRoom.add(gridRoom);
+const buildingGroup = new THREE.Group(); sceneRoom.add(buildingGroup);
+
+function rebuild3D() {
+  buildingGroup.clear();
+  const { len, wid, hgt, blockThick, doors, windows } = currentRoom;
+  const BLOCK_W = 0.45, BLOCK_H = 0.225;
+  const doorW = 0.9, doorH = 2.1, winW = 1.2, winH = 1.2, sillY = 1.0;
+
+  if (len > 15 || wid > 15 || hgt > 15) {
+    const wall1 = new THREE.Mesh(new THREE.BoxGeometry(len, hgt, blockThick), blockMat); wall1.position.set(0, hgt/2, wid/2); buildingGroup.add(wall1);
+    const wall2 = new THREE.Mesh(new THREE.BoxGeometry(len, hgt, blockThick), blockMat); wall2.position.set(0, hgt/2, -wid/2); buildingGroup.add(wall2);
+    const wall3 = new THREE.Mesh(new THREE.BoxGeometry(blockThick, hgt, wid), blockMat); wall3.position.set(-len/2, hgt/2, 0); buildingGroup.add(wall3);
+    const wall4 = new THREE.Mesh(new THREE.BoxGeometry(blockThick, hgt, wid), blockMat); wall4.position.set(len/2, hgt/2, 0); buildingGroup.add(wall4);
+  } else {
+    const geo = new THREE.BoxGeometry(BLOCK_W * 0.98, BLOCK_H * 0.98, blockThick);
+    const walls = [
+      { axis: 'x', fixed:  wid/2, span: len, door: true,  win: false, visible: !currentRoom.sharedFront },
+      { axis: 'x', fixed: -wid/2, span: len, door: false, win: false, visible: !currentRoom.sharedBack },
+      { axis: 'z', fixed: -len/2, span: wid, door: false, win: true,  visible: !currentRoom.sharedLeft },
+      { axis: 'z', fixed:  len/2, span: wid, door: false, win: true,  visible: !currentRoom.sharedRight },
+    ];
+    
+    let totalDoors = doors;
+    let totalWindows = windows;
+    
+    walls.forEach(w => {
+      if (!w.visible) return;
+      const cols = Math.round(w.span / BLOCK_W);
+      const rows = Math.round(hgt / BLOCK_H);
+      for (let c = 0; c < cols; c++) {
+        for (let r = 0; r < rows; r++) {
+          const alongPos = c * BLOCK_W + BLOCK_W / 2 - w.span / 2;
+          const yPos = r * BLOCK_H + BLOCK_H / 2;
+          
+          let skip = false;
+          if (totalDoors > 0 && w.door && Math.abs(alongPos) < doorW / 2 && yPos < doorH) { skip = true; }
+          if (totalWindows > 0 && w.win && (Math.abs(alongPos - w.span/4) < winW/2 || Math.abs(alongPos + w.span/4) < winW/2) && yPos > sillY && yPos < sillY + winH) { skip = true; }
+          
+          if (skip) continue;
+          
+          const m = new THREE.Mesh(geo, blockMat);
+          m.castShadow = true; m.receiveShadow = true;
+          if (w.axis === 'x') m.position.set(alongPos, yPos, w.fixed);
+          else { m.position.set(w.fixed, yPos, alongPos); m.rotation.y = Math.PI / 2; }
+          buildingGroup.add(m);
+        }
+      }
+      
+      if (totalDoors > 0 && w.door) {
+        const door = new THREE.Mesh(new THREE.BoxGeometry(doorW, doorH, 0.05), doorMat);
+        door.position.set(0, doorH/2, w.fixed); buildingGroup.add(door);
+        totalDoors--;
+      }
+      
+      if (totalWindows > 0 && w.win) {
+        const winGeo = new THREE.BoxGeometry(winW, winH, 0.05);
+        const w1 = new THREE.Mesh(winGeo, glassMat); w1.position.set(-w.span/4, sillY + winH/2, w.fixed); w1.rotation.y = Math.PI / 2; buildingGroup.add(w1);
+        const w2 = new THREE.Mesh(winGeo, glassMat); w2.position.set(w.span/4, sillY + winH/2, w.fixed); w2.rotation.y = Math.PI / 2; buildingGroup.add(w2);
+        totalWindows -= 2;
+      }
+    });
+  }
+
+  const rad = (25 * Math.PI) / 180; const halfW = wid / 2; const rise = Math.tan(rad) * halfW; const overhang = 0.4;
+  const roofGeo = new THREE.BufferGeometry();
+  const v0 = new THREE.Vector3(-halfW - overhang, hgt,  len/2 + overhang); const v1 = new THREE.Vector3( halfW + overhang, hgt,  len/2 + overhang); const v2 = new THREE.Vector3( 0, hgt + rise, len/2 + overhang);
+  const v3 = new THREE.Vector3(-halfW - overhang, hgt, -len/2 - overhang); const v4 = new THREE.Vector3( halfW + overhang, hgt, -len/2 - overhang); const v5 = new THREE.Vector3( 0, hgt + rise, -len/2 - overhang);
+  const indices = [0, 2, 5, 0, 5, 3, 1, 4, 5, 1, 5, 2, 0, 1, 2, 3, 5, 4];
+  const vertices = new Float32Array([v0.x, v0.y, v0.z, v1.x, v1.y, v1.z, v2.x, v2.y, v2.z, v3.x, v3.y, v3.z, v4.x, v4.y, v4.z, v5.x, v5.y, v5.z]);
+  roofGeo.setAttribute('position', new THREE.BufferAttribute(vertices, 3)); roofGeo.setIndex(indices); roofGeo.computeVertexNormals();
+  const roof = new THREE.Mesh(roofGeo, roofMat); roof.castShadow = true; roof.receiveShadow = true; buildingGroup.add(roof);
+  cameraRoom.position.set(len * 1.5, hgt * 2, wid * 1.5); controlsRoom.target.set(0, hgt * 0.5, 0); controlsRoom.update();
+}
+
+function unlockApp(app) {
+  const prefix = app === 'room' ? 'r' : app === 'roof' ? 'f' : 't';
+  document.getElementById(`${prefix}-materialList`).classList.remove('blurred');
+  document.getElementById(`${prefix}-paywall`).style.display = 'none';
+  document.getElementById(`${prefix}-actions`).style.display = 'flex';
+}
+window.mockUnlock = (app) => { setTimeout(() => unlockApp(app), 800); };
+
+window.downloadRoomPDF = () => {
+  const { jsPDF } = window.jspdf; const doc = new jsPDF();
+  const mult = currentUnit === 'm' ? 1 : M_TO_FT; const suffix = currentUnit === 'm' ? 'm' : 'ft';
+  doc.setFillColor(30, 41, 59); doc.rect(0, 0, 210, 30, 'F');
+  doc.setTextColor(255, 255, 255); doc.setFontSize(22); doc.setFont('helvetica', 'bold'); doc.text("Calculate2Build", 14, 15);
+  doc.setFontSize(10); doc.setFont('helvetica', 'normal'); doc.text("Builder's Protection Packet", 14, 22);
+  
+  doc.setTextColor(0, 0, 0); doc.setFontSize(10); doc.text(`Ref: ${Date.now()} | Date: ${new Date().toLocaleDateString()}`, 14, 40);
+  doc.setFontSize(14); doc.setFont('helvetica', 'bold'); doc.text("1. Bill of Quantities", 14, 50);
+  doc.setFontSize(10); doc.setFont('helvetica', 'normal'); let y = 58;
+  const rows = [
+    ["Sandcrete Blocks", document.getElementById('r-outBlocks').textContent],
+    ["Cement (mortar)", document.getElementById('r-outCemMortar').textContent],
+    ["Mortar sand", document.getElementById('r-outSand').textContent],
+    ["Cement (plaster)", document.getElementById('r-outCemPlaster').textContent],
+    ["Paint (2 coats)", document.getElementById('r-outPaint').textContent],
+    ["Ceiling Boards", document.getElementById('r-outCeiling').textContent]
+  ];
+  rows.forEach(([k, v]) => { doc.text(k, 20, y); doc.text(v, 120, y); y += 8; });
+  
+  y += 10; doc.setFontSize(14); doc.setFont('helvetica', 'bold'); doc.text("2. Site Supervisor's Audit Checklist", 14, y); y += 8;
+  doc.setFontSize(9); doc.setFont('helvetica', 'normal');
+  ['- Verify block count on delivery against the BOQ above.', '- Confirm 1 bag of cement yields ~25-30 blocks during laying.', '- Measure plaster thickness; reject work above 15mm.', '- Photograph tile boxes before and after installation.'].forEach(t => { doc.text(t, 20, y); y += 6; });
+  
+  y += 10; doc.setFontSize(14); doc.setFont('helvetica', 'bold'); doc.text("3. Standard Artisan Work Agreement", 14, y); y += 8;
+  doc.setFontSize(9); doc.setFont('helvetica', 'normal');
+  ['The artisan agrees to deliver the structure within the agreed timeline.', 'Wages are payable per milestones defined below and signed by both parties.', 'Material wastage beyond 10% is the artisan\'s financial responsibility.', 'Disputes are resolved through the local trade association before litigation.', '', 'Artisan signature: ______________________   Date: ____________', 'Owner signature:   ______________________   Date: ____________'].forEach(t => { doc.text(t, 20, y); y += 6; });
+  
+  doc.save('C2B_Building_Estimate.pdf');
+  relockApp('room');
+};
+
+window.downloadRoofPDF = () => {
+  const { jsPDF } = window.jspdf; const doc = new jsPDF();
+  doc.setFillColor(30, 41, 59); doc.rect(0, 0, 210, 30, 'F');
+  doc.setTextColor(255, 255, 255); doc.setFontSize(22); doc.setFont('helvetica', 'bold'); doc.text("Calculate2Build", 14, 15);
+  doc.setFontSize(10); doc.setFont('helvetica', 'normal'); doc.text("Roofing Estimate", 14, 22);
+  doc.setTextColor(0, 0, 0); doc.setFontSize(12); doc.setFont('helvetica', 'bold'); doc.text("Roof Specifications", 14, 45);
+  doc.setFontSize(10); doc.setFont('helvetica', 'normal'); doc.text(`Type: ${roofP.type.toUpperCase()} | Dimensions: ${roofP.len}m x ${roofP.wid}m | Pitch: ${roofP.pitch}°`, 14, 52);
+  doc.setFontSize(12); doc.setFont('helvetica', 'bold'); doc.text("Bill of Quantities", 14, 70);
+  doc.setFontSize(10); doc.setFont('helvetica', 'normal');
+  const rows = [["Roof Area", document.getElementById('f-outArea').textContent],["Roofing Sheets", document.getElementById('f-outSheets').textContent],["Ridge Caps", document.getElementById('f-outRidges').textContent],["Battens", document.getElementById('f-outBattens').textContent],["Roofing Screws", document.getElementById('f-outScrews').textContent]];
+  let y = 80; rows.forEach(([k, v]) => { doc.text(k, 20, y); doc.text(v, 120, y); y += 10; });
+  doc.save('C2B_Roof_Estimate.pdf'); relockApp('roof');
+};
+
+window.downloadTilesPDF = () => {
+  const { jsPDF } = window.jspdf; const doc = new jsPDF();
+  doc.setFillColor(30, 41, 59); doc.rect(0, 0, 210, 30, 'F');
+  doc.setTextColor(255, 255, 255); doc.setFontSize(22); doc.setFont('helvetica', 'bold'); doc.text("Calculate2Build", 14, 15);
+  doc.setFontSize(10); doc.setFont('helvetica', 'normal'); doc.text("Tiling Estimate", 14, 22);
+  doc.setTextColor(0, 0, 0); doc.setFontSize(12); doc.setFont('helvetica', 'bold'); doc.text("Project Specifications", 14, 45);
+  doc.setFontSize(10); doc.setFont('helvetica', 'normal'); doc.text(`Room: ${tilesP.len.toFixed(1)}m x ${tilesP.wid.toFixed(1)}m`, 14, 52);
+  doc.setFontSize(12); doc.setFont('helvetica', 'bold'); doc.text("Bill of Quantities", 14, 70);
+  doc.setFontSize(10); doc.setFont('helvetica', 'normal');
+  const rows = [["Floor Area", document.getElementById('t-outArea').textContent],["Tiles Needed", document.getElementById('t-outTiles').textContent],["Adhesive", document.getElementById('t-outAdhesive').textContent],["Grout", document.getElementById('t-outGrout').textContent],["Spacers", document.getElementById('t-outSpacers').textContent]];
+  let y = 80; rows.forEach(([k, v]) => { doc.text(k, 20, y); doc.text(v, 120, y); y += 10; });
+  doc.save('C2B_Tiling_Estimate.pdf'); relockApp('tiles');
+};
+
+function relockApp(app) {
+  const prefix = app === 'room' ? 'r' : app === 'roof' ? 'f' : 't';
+  document.getElementById(`${prefix}-materialList`).classList.add('blurred');
+  document.getElementById(`${prefix}-paywall`).style.display = 'flex';
+  document.getElementById(`${prefix}-actions`).style.display = 'none';
+}
+
+updateUI(); rebuild3D();
+(function animate() { requestAnimationFrame(animate); controlsRoom.update(); rendererRoom.render(sceneRoom, cameraRoom); })();
+new ResizeObserver(() => { if(containerRoom.clientWidth > 0) { cameraRoom.aspect = containerRoom.clientWidth / containerRoom.clientHeight; cameraRoom.updateProjectionMatrix(); rendererRoom.setSize(containerRoom.clientWidth, containerRoom.clientHeight); } }).observe(document.body);
+</script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Calculate2Build | Professional Estimators</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+  :root { --bg: #f8fafc; --white: #ffffff; --text-main: #0f172a; --text-muted: #64748b; --border: #e2e8f0; --brand: #f59e0b; --green: #10b981; --blue: #3b82f6; }
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, sans-serif; }
+  body { background: var(--bg); color: var(--text-main); display: flex; flex-direction: column; min-height: 100vh; }
+  nav { background: #1e293b; color: white; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+  .logo { font-size: 18px; font-weight: 700; cursor: pointer; } .logo span { color: #94a3b8; font-weight: 400; }
+  .nav-links { display: flex; gap: 20px; font-size: 13px; font-weight: 500; }
+  .nav-links a { color: #94a3b8; text-decoration: none; transition: color 0.2s; cursor: pointer; padding-bottom: 4px; border-bottom: 2px solid transparent; }
+  .nav-links a.active { color: white; border-bottom-color: var(--brand); } .nav-links a:hover:not(.active) { color: white; }
+  .mobile-nav { display: none; width: 100%; padding: 10px; background: #1e293b; border-top: 1px solid #334155; }
+  .mobile-nav select { width: 100%; padding: 14px; background: #0f172a; color: white; border: 1px solid #334155; border-radius: 6px; font-size: 15px; font-weight: 600; outline: none; }
+  .app-section { display: none; } .app-section.active { display: block; }
+  .container { max-width: 1300px; margin: 24px auto; padding: 0 16px; display: grid; grid-template-columns: 1fr 450px; gap: 24px; align-items: start; width: 100%; }
+  .card { background: var(--white); border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05); overflow: hidden; margin-bottom: 20px; }
+  .card-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+  .card-header h2 { font-size: 18px; font-weight: 700; } .card-header p { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+  .card-body { padding: 20px; }
+  .canvas-container { width: 100%; height: 400px; background: #f1f5f9; position: relative; cursor: grab; border-bottom: 1px solid var(--border); touch-action: none; }
+  .viewer-hint { position: absolute; bottom: 12px; left: 12px; background: white; padding: 6px 10px; border-radius: 6px; font-size: 11px; color: var(--text-muted); box-shadow: 0 1px 3px rgba(0,0,0,0.1); pointer-events: none; border: 1px solid var(--border); }
+  .active-room-badge { position: absolute; top: 12px; left: 12px; background: var(--brand); color: #000; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; pointer-events: none; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+  .unit-toggle { display: flex; background: #e2e8f0; border-radius: 6px; padding: 4px; }
+  .unit-toggle button { padding: 8px 16px; border: none; background: transparent; font-size: 13px; font-weight: 600; cursor: pointer; border-radius: 4px; color: var(--text-muted); transition: 0.2s; }
+  .unit-toggle button.active { background: white; color: var(--text-main); box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+  .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .input-group { display: flex; flex-direction: column; gap: 6px; }
+  .input-group label { font-size: 12px; font-weight: 600; display: flex; justify-content: space-between; }
+  .input-group .val { color: var(--text-main); font-weight: 600; }
+  input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; margin: 10px 0; height: 30px; }
+  input[type=range]::-webkit-slider-runnable-track { height: 8px; background: #e2e8f0; border-radius: 4px; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 24px; width: 24px; border-radius: 50%; background: var(--text-main); cursor: pointer; margin-top: -8px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+  input[type=number], input[type=text], select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; background: var(--bg); outline: none; }
+  input[type=number]:focus, input[type=text]:focus, select:focus { border-color: var(--text-main); background: white; }
+  .shared-walls { margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--border); }
+  .shared-walls p { font-size: 12px; font-weight: 600; margin-bottom: 8px; color: var(--text-muted); }
+  .wall-toggles { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .wall-toggle { padding: 8px; border: 1px solid var(--border); border-radius: 6px; background: white; font-size: 12px; font-weight: 600; cursor: pointer; text-align: center; transition: 0.2s; }
+  .wall-toggle.active { border-color: var(--text-main); background: var(--text-main); color: white; }
+  
   /* NEW: Doors & Windows Counter */
   .openings-control { display: flex; gap: 12px; margin-top: 16px; }
   .counter-box { flex: 1; display: flex; align-items: center; justify-content: space-between; padding: 12px; border: 1px solid var(--border); border-radius: 8px; background: white; }
