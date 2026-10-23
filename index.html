@@ -548,7 +548,7 @@ const currentRoom = {
 };
 
 // ==========================================
-// LIVE REFERRAL ENGINE (WITH DEBUG LOGS)
+// LIVE REFERRAL ENGINE
 // ==========================================
 let myReferralId = localStorage.getItem('myReferralId');
 let activeRefApp = '';
@@ -615,22 +615,12 @@ function startPollingReferral(code, app) {
       .from('referrals')
       .select('status')
       .eq('code', code)
-      .maybeSingle();  // <-- CHANGED from .single() to .maybeSingle()
+      .maybeSingle();
       
-    if (error) { 
-      console.error("❌ Poll error:", error); 
-      return; 
-    }
+    if (error) { console.error("❌ Poll error:", error); return; }
+    console.log("🔵 Poll status:", data?.status || "not found");
     
-    // If the row doesn't exist yet, that's OK. It may still be inserting.
-    if (!data) {
-      console.log("🔵 Row not found yet, waiting...");
-      return;
-    }
-    
-    console.log("🔵 Poll status:", data.status);
-    
-    if (data.status === 'success') {
+    if (data && data.status === 'success') {
       clearInterval(interval);
       unlockApp(app);
       
@@ -989,7 +979,7 @@ function syncRoof() {
 document.getElementById('f-len').oninput = syncRoof; document.getElementById('f-wid').oninput = syncRoof; document.getElementById('f-pit').oninput = syncRoof; document.getElementById('f-overhang').oninput = syncRoof;
 
 // ==========================================
-// 3D ENGINE (Tiles) - DETAILED GEOMETRY
+// 3D ENGINE (Tiles)
 // ==========================================
 const containerTiles = document.getElementById('canvas-tiles');
 const sceneTiles = new THREE.Scene(); sceneTiles.background = new THREE.Color(0xf1f5f9);
