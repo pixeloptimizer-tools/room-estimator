@@ -531,7 +531,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 // SUPABASE CONFIGURATION
 // ==========================================
 const SUPABASE_URL = 'https://rvejecspofkepooxukpm.supabase.co';
-const SUPABASE_KEY = 'sb_publishable__Q24OcAXGVDeqGmhTOEmtg_KkRU3H4o';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ2ZWplY3Nwb2Z4ZXBvb3h1a3BtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2MjI1ODMsImV4cCI6MjEwODE5ODU4M30.9ztBB-DG2Blj5OnJsw8CBkzi--rWHAEDAHV7qq5ESe8';
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ==========================================
@@ -548,7 +548,7 @@ const currentRoom = {
 };
 
 // ==========================================
-// LIVE REFERRAL ENGINE
+// LIVE REFERRAL ENGINE (WITH DEBUG LOGS)
 // ==========================================
 let myReferralId = localStorage.getItem('myReferralId');
 let activeRefApp = '';
@@ -558,11 +558,15 @@ window.addEventListener('load', async () => {
   const incomingRef = urlParams.get('ref');
   
   if (incomingRef && incomingRef !== myReferralId) {
-    const { error } = await supabase
+    console.log("🔵 Incoming referral detected:", incomingRef);
+    const { data, error } = await supabase
       .from('referrals')
       .update({ status: 'success' })
-      .eq('code', incomingRef);
-    if (!error) console.log("Referral verified:", incomingRef);
+      .eq('code', incomingRef)
+      .select();
+    
+    if (error) console.error("❌ Update failed:", error);
+    else console.log("✅ Update succeeded:", data);
   }
   
   ['room', 'roof', 'tiles'].forEach(app => {
@@ -578,11 +582,15 @@ window.openReferralModal = async (app) => {
     myReferralId = 'C2B-' + Math.random().toString(36).substring(2, 8).toUpperCase();
     localStorage.setItem('myReferralId', myReferralId);
     
-    await supabase.from('referrals').insert({ 
+    console.log("🔵 Inserting new referral:", myReferralId);
+    const { data, error } = await supabase.from('referrals').insert({ 
       code: myReferralId, 
       status: 'waiting',
       unlocked_app: app 
-    });
+    }).select();
+    
+    if (error) console.error("❌ Insert failed:", error);
+    else console.log("✅ Insert succeeded:", data);
   }
   
   const fullLink = window.location.origin + window.location.pathname + '?ref=' + myReferralId;
@@ -601,6 +609,7 @@ window.openReferralModal = async (app) => {
 };
 
 function startPollingReferral(code, app) {
+  console.log("🔵 Started polling for:", code);
   const interval = setInterval(async () => {
     const { data, error } = await supabase
       .from('referrals')
@@ -608,6 +617,9 @@ function startPollingReferral(code, app) {
       .eq('code', code)
       .single();
       
+    if (error) { console.error("❌ Poll error:", error); return; }
+    console.log("🔵 Poll status:", data?.status);
+    
     if (data && data.status === 'success') {
       clearInterval(interval);
       unlockApp(app);
