@@ -517,6 +517,7 @@ function startPollingReferral(code, app) {
       unlockApp(app);
       document.getElementById('refStatus').innerHTML = '✅ Success! Your PDF has been unlocked.';
       document.getElementById('refStatus').style.background = '#d1fae5';
+      setTimeout(() => { closeModal(); }, 2000);
     }
   }, 3000);
 }
@@ -703,6 +704,18 @@ function unlockApp(app) {
 }
 window.mockUnlock = (app) => { setTimeout(() => unlockApp(app), 800); };
 
+// FIXED MODAL LOGIC
+window.openModal = (type) => {
+  document.getElementById('legalModal').classList.add('active');
+  document.querySelectorAll('#legalModal > div > div').forEach(el => el.style.display = 'none');
+  document.getElementById(`content-${type}`).style.display = 'block';
+};
+window.closeModal = () => { 
+  document.getElementById('legalModal').classList.remove('active');
+  document.getElementById('referralModal').classList.remove('active');
+};
+
+// PDF GENERATION (SAME AS BEFORE)
 window.downloadRoomPDF = () => {
   const { jsPDF } = window.jspdf; const doc = new jsPDF();
   const mult = currentUnit === 'm' ? 1 : M_TO_FT; const suffix = currentUnit === 'm' ? 'm' : 'ft';
