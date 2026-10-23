@@ -24,7 +24,7 @@
   /* APP SECTIONS */
   .app-section { display: none; } .app-section.active { display: block; }
   
-  /* MAIN GRID (LOCKED) */
+  /* MAIN GRID */
   .container { max-width: 1300px; margin: 24px auto; padding: 0 16px; display: grid; grid-template-columns: 1fr 450px; gap: 24px; align-items: start; width: 100%; }
   
   /* CARDS */
@@ -550,7 +550,7 @@ function calcTotals() {
   document.getElementById('r-outBlockType').textContent = getBlockName(currentRoom.blockThick);
 }
 
-// 3D ENGINE (Room) - FIXED
+// 3D ENGINE (Room) - CORRECTED MATH
 const blockMat = new THREE.MeshStandardMaterial({ color: 0xd4cbb8, roughness: 0.9 });
 const roofMat = new THREE.MeshStandardMaterial({ color: 0x64748b, roughness: 0.6, side: THREE.DoubleSide });
 const doorMat = new THREE.MeshStandardMaterial({ color: 0x8b5a2b, roughness: 0.9 });
@@ -580,28 +580,57 @@ function rebuild3D() {
     const wall4 = new THREE.Mesh(new THREE.BoxGeometry(blockThick, hgt, wid), blockMat); wall4.position.set(len/2, hgt/2, 0); buildingGroup.add(wall4);
   } else {
     const geo = new THREE.BoxGeometry(BLOCK_W * 0.98, BLOCK_H * 0.98, blockThick);
+    
+    // Define walls with positions for openings
     const walls = [
-      { axis: 'x', fixed:  wid/2, span: len, door: true,  win: false, visible: !currentRoom.sharedFront },
-      { axis: 'x', fixed: -wid/2, span: len, door: false, win: false, visible: !currentRoom.sharedBack },
-      { axis: 'z', fixed: -len/2, span: wid, door: false, win: true,  visible: !currentRoom.sharedLeft },
-      { axis: 'z', fixed:  len/2, span: wid, door: false, win: true,  visible: !currentRoom.sharedRight },
+      { axis: 'x', fixed:  wid/2, span: len, isFront: true,  isBack: false, isLeft: false, isRight: false, visible: !currentRoom.sharedFront },
+      { axis: 'x', fixed: -wid/2, span: len, isFront: false, isBack: true,  isLeft: false, isRight: false, visible: !currentRoom.sharedBack },
+      { axis: 'z', fixed: -len/2, span: wid, isFront: false, isBack: false, isLeft: true,  isRight: false, visible: !currentRoom.sharedLeft },
+      { axis: 'z', fixed:  len/2, span: wid, isFront: false, isBack: false, isLeft: false, isRight: true,  visible: !currentRoom.sharedRight },
     ];
     
-    let totalDoors = doors;
-    let totalWindows = windows;
+    // Distribute doors and windows
+    let remainingDoors = doors;
+    let remainingWindows = windows;
     
     walls.forEach(w => {
       if (!w.visible) return;
+      
       const cols = Math.round(w.span / BLOCK_W);
       const rows = Math.round(hgt / BLOCK_H);
+      
+      // Calculate opening positions for this specific wall
+      const openings = [];
+      
+      // Place doors on the front wall
+      if (w.isFront && remainingDoors > 0) {
+        for (let i = 0; i < remainingDoors; i++) {
+          const offset = (i - (remainingDoors - 1) / 2) * (doorW + 0.3);
+          openings.push({ type: 'door', pos: offset, width: doorW, height: doorH });
+        }
+        remainingDoors = 0;
+      }
+      
+      // Place windows evenly on side walls
+      if ((w.isLeft || w.isRight) && remainingWindows > 0) {
+        const count = Math.ceil(remainingWindows / 2);
+        for (let i = 0; i < count; i++) {
+          const offset = (i - (count - 1) / 2) * (winW + 0.5);
+          openings.push({ type: 'window', pos: offset, width: winW, height: winH, sill: sillY });
+        }
+        remainingWindows -= count;
+      }
+      
       for (let c = 0; c < cols; c++) {
         for (let r = 0; r < rows; r++) {
           const alongPos = c * BLOCK_W + BLOCK_W / 2 - w.span / 2;
           const yPos = r * BLOCK_H + BLOCK_H / 2;
           
           let skip = false;
-          if (totalDoors > 0 && w.door && Math.abs(alongPos) < doorW / 2 && yPos < doorH) { skip = true; }
-          if (totalWindows > 0 && w.win && (Math.abs(alongPos - w.span/4) < winW/2 || Math.abs(alongPos + w.span/4) < winW/2) && yPos > sillY && yPos < sillY + winH) { skip = true; }
+          for (const op of openings) {
+            if (op.type === 'door' && Math.abs(alongPos - op.pos) < op.width / 2 && yPos < op.height) { skip = true; break; }
+            if (op.type === 'window' && Math.abs(alongPos - op.pos) < op.width / 2 && yPos > op.sill && yPos < op.sill + op.height) { skip = true; break; }
+          }
           
           if (skip) continue;
           
@@ -613,18 +642,18 @@ function rebuild3D() {
         }
       }
       
-      if (totalDoors > 0 && w.door) {
-        const door = new THREE.Mesh(new THREE.BoxGeometry(doorW, doorH, 0.05), doorMat);
-        door.position.set(0, doorH/2, w.fixed); buildingGroup.add(door);
-        totalDoors--;
-      }
-      
-      if (totalWindows > 0 && w.win) {
-        const winGeo = new THREE.BoxGeometry(winW, winH, 0.05);
-        const w1 = new THREE.Mesh(winGeo, glassMat); w1.position.set(-w.span/4, sillY + winH/2, w.fixed); w1.rotation.y = Math.PI / 2; buildingGroup.add(w1);
-        const w2 = new THREE.Mesh(winGeo, glassMat); w2.position.set(w.span/4, sillY + winH/2, w.fixed); w2.rotation.y = Math.PI / 2; buildingGroup.add(w2);
-        totalWindows -= 2;
-      }
+      // Place actual door/window meshes in the openings
+      openings.forEach(op => {
+        if (op.type === 'door') {
+          const doorMesh = new THREE.Mesh(new THREE.BoxGeometry(op.width, op.height, 0.05), doorMat);
+          doorMesh.position.set(op.pos, op.height/2, w.fixed);
+          buildingGroup.add(doorMesh);
+        } else {
+          const winMesh = new THREE.Mesh(new THREE.BoxGeometry(op.width, op.height, 0.05), glassMat);
+          winMesh.position.set(op.pos, op.sill + op.height/2, w.fixed);
+          buildingGroup.add(winMesh);
+        }
+      });
     });
   }
 
