@@ -615,12 +615,22 @@ function startPollingReferral(code, app) {
       .from('referrals')
       .select('status')
       .eq('code', code)
-      .single();
+      .maybeSingle();  // <-- CHANGED from .single() to .maybeSingle()
       
-    if (error) { console.error("❌ Poll error:", error); return; }
-    console.log("🔵 Poll status:", data?.status);
+    if (error) { 
+      console.error("❌ Poll error:", error); 
+      return; 
+    }
     
-    if (data && data.status === 'success') {
+    // If the row doesn't exist yet, that's OK. It may still be inserting.
+    if (!data) {
+      console.log("🔵 Row not found yet, waiting...");
+      return;
+    }
+    
+    console.log("🔵 Poll status:", data.status);
+    
+    if (data.status === 'success') {
       clearInterval(interval);
       unlockApp(app);
       
