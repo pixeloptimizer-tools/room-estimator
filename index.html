@@ -432,6 +432,7 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let currentUnit = 'm'; const M_TO_FT = 3.28084;
 let savedRooms = []; let activeRoomId = 1;
+let currentRoomActive = true;  // is the in-progress room part of the project?
 const currentRoom = { len: 6.4, wid: 5.5, hgt: 3.7, blockThick: 0.225, doors: 1, windows: 1, sharedFront: false, sharedBack: false, sharedLeft: false, sharedRight: false };
 let lastCalc = { area: 0, wall: 0 };
 const roofP = { type: 'gable', len: 10, wid: 8, pitch: 25, overhang: 0.5 };
@@ -481,6 +482,7 @@ function getDelivery(app) { const el = document.getElementById(`delivery-${app}`
 
 // ==================== ROOM FUNCTIONS ====================
 window.changeCount = (type, delta) => {
+  currentRoomActive = true;
   if (type === 'door') { currentRoom.doors = Math.max(0, currentRoom.doors + delta); document.getElementById('doorCount').textContent = currentRoom.doors; }
   else { currentRoom.windows = Math.max(0, currentRoom.windows + delta); document.getElementById('windowCount').textContent = currentRoom.windows; }
   updateUI(); rebuild3D();
@@ -506,6 +508,7 @@ window.switchTab = (tabId) => {
 };
 
 window.toggleWall = (side) => {
+  currentRoomActive = true;
   const key = 'shared' + side.charAt(0).toUpperCase() + side.slice(1);
   currentRoom[key] = !currentRoom[key];
   document.getElementById('wall-' + side).classList.toggle('active', currentRoom[key]);
@@ -515,6 +518,7 @@ window.toggleWall = (side) => {
 window.saveCurrentRoom = () => {
   savedRooms.push({ id: activeRoomId, label: `Room ${activeRoomId}`, ...currentRoom });
   activeRoomId++;
+  currentRoomActive = false;     // ← in-progress room is NOT counted until user starts editing again
   currentRoom.len = 5.0;
   currentRoom.wid = 4.0;
   currentRoom.doors = 1;
@@ -530,7 +534,8 @@ window.saveCurrentRoom = () => {
 };
 
 window.clearAllRooms = () => {
-  savedRooms = []; activeRoomId = 1; currentRoom.len = 6.4; currentRoom.wid = 5.5; currentRoom.doors = 1; currentRoom.windows = 1;
+  savedRooms = []; activeRoomId = 1; currentRoomActive = true;
+  currentRoom.len = 6.4; currentRoom.wid = 5.5; currentRoom.doors = 1; currentRoom.windows = 1;
   document.getElementById('doorCount').textContent = 1; document.getElementById('windowCount').textContent = 1;
   document.getElementById('r-len').value = 6.4; document.getElementById('r-wid').value = 5.5;
   updateUI(); rebuild3D();
@@ -557,30 +562,26 @@ function updateUI() {
   calcTotals();
 }
 
-// ==================== BLOCK & MORTAR ENGINE ====================
-const BLOCK_FACES = {
-  0.225: { L: 0.450, H: 0.225 },
-  0.150: { L: 0.450, H: 0.225 },
-  0.125: { L: 0.450, H: 0.225 },
-  0.100: { L: 0.400, H: 0.200 }
-};
-const JOINT = 0.010;
-const BLOCK_WASTE = 0.05;
-const MORTAR_WASTE = 0.07;
+// ==================== BLOCK & MORTAR ENGINE (GHANA STANDARD) ====================
+// Ghanaian artisans use 10 blocks per m² of NET wall (joints + typical cuts already included).
+// This matches on-site practice and avoids the ~7% over-quote that "theoretical + waste" causes.
+const BLOCKS_PER_M2 = 10;         // Ghana artisan standard
+const BLOCK_WASTE = 0.05;         // +5% breakage / cutting
+const MORTAR_WASTE = 0.07;        // +7% site mixing
+const MORTAR_CEMENT_PER_M2 = 0.11; // bags per m² of wall (1:6, Ghana site average)
+const MORTAR_SAND_PER_M2 = 0.015;  // m³ per m² of wall
 
-function getBlockFace(blockThick) { return BLOCK_FACES[blockThick] || BLOCK_FACES[0.225]; }
-function blocksPerM2(blockThick) { const { L, H } = getBlockFace(blockThick); return 1 / ((L + JOINT) * (H + JOINT)); }
-function theoreticalBlocks(area, blockThick) { return Math.ceil(area * blocksPerM2(blockThick)); }
-function orderBlocks(area, blockThick) { return Math.ceil(area * blocksPerM2(blockThick) * (1 + BLOCK_WASTE)); }
-function mortarVolumePerM2(blockThick) { const { L, H } = getBlockFace(blockThick); return JOINT * ((L + H) / ((L + JOINT) * (H + JOINT))); }
-function mortarCementBags(area, blockThick, mixRatio = 6) {
-  const vol = area * mortarVolumePerM2(blockThick) * (1 + MORTAR_WASTE);
-  const bagsPerM3 = mixRatio === 5 ? 7.60 : 6.33;
-  return Math.ceil(vol * bagsPerM3);
+function theoreticalBlocks(netWallArea) {
+  return Math.ceil(netWallArea * BLOCKS_PER_M2);
 }
-function mortarSandM3(area, blockThick) {
-  const vol = area * mortarVolumePerM2(blockThick) * (1 + MORTAR_WASTE);
-  return vol * 0.85;
+function orderBlocks(netWallArea) {
+  return Math.ceil(netWallArea * BLOCKS_PER_M2 * (1 + BLOCK_WASTE));
+}
+function mortarCementBags(netWallArea) {
+  return Math.ceil(netWallArea * MORTAR_CEMENT_PER_M2 * (1 + MORTAR_WASTE));
+}
+function mortarSandM3(netWallArea) {
+  return netWallArea * MORTAR_SAND_PER_M2 * (1 + MORTAR_WASTE);
 }
 
 function calcTotals() {
@@ -601,30 +602,30 @@ function calcTotals() {
     totalWallArea += net;
   };
   savedRooms.forEach(calcRoom);
-  calcRoom(currentRoom);
+  if (currentRoomActive) calcRoom(currentRoom);   // ← only count in-progress room if user is editing it
 
-  // Blocks with transparency note
-  const blkTheoretical = theoreticalBlocks(totalWallArea, currentRoom.blockThick);
-  const blkOrder = orderBlocks(totalWallArea, currentRoom.blockThick);
-  const blkEl = document.getElementById('r-outBlocks');
-  blkEl.innerHTML = `${blkOrder.toLocaleString()} pcs <span style="font-size:10px; font-weight:500; color:var(--text-muted);">(theoretical ${blkTheoretical.toLocaleString()} + ${Math.round(BLOCK_WASTE*100)}% waste)</span>`;
+  // Blocks (theoretical = net × 10; order = +5%)
+  const blkTheoretical = theoreticalBlocks(totalWallArea);
+  const blkOrder = orderBlocks(totalWallArea);
+  document.getElementById('r-outBlocks').innerHTML =
+    `${blkOrder.toLocaleString()} pcs <span style="font-size:10px; font-weight:500; color:var(--text-muted);">(theoretical ${blkTheoretical.toLocaleString()} + ${Math.round(BLOCK_WASTE*100)}% waste)</span>`;
 
-  // Mortar cement & sand
-  document.getElementById('r-outCemMortar').textContent = mortarCementBags(totalWallArea, currentRoom.blockThick, 6) + ' bags';
-  document.getElementById('r-outSand').textContent = mortarSandM3(totalWallArea, currentRoom.blockThick).toFixed(2) + ' m³';
+  // Mortar
+  document.getElementById('r-outCemMortar').textContent = mortarCementBags(totalWallArea) + ' bags';
+  document.getElementById('r-outSand').textContent = mortarSandM3(totalWallArea).toFixed(2) + ' m³';
 
-  // Plaster & paint
+  // Plaster & paint (unchanged — sanity-checked earlier)
   document.getElementById('r-outCemPlaster').textContent = Math.ceil(totalWallArea / 11) + ' bags';
   document.getElementById('r-outSandPlaster').textContent = (totalWallArea / 11 * 0.05).toFixed(2) + ' m³';
   document.getElementById('r-outPaint').textContent = (totalWallArea / 8.3 * 2 * 1.05).toFixed(1) + ' L';
   document.getElementById('r-outCeiling').textContent = Math.ceil(totalArea * 1.05) + ' m²';
 
-  // Totals boxes
+  // Totals
   document.getElementById('r-outFloor').textContent = totalArea.toFixed(2) + ' m²';
   document.getElementById('r-outWall').textContent = totalWallArea.toFixed(2) + ' m²';
   document.getElementById('r-outBlockType').textContent = getBlockName(currentRoom.blockThick);
 
-  // ✅ Cache totals for PDF (set at END, not beginning)
+  // Cache for PDF
   lastCalc = { area: totalArea, wall: totalWallArea };
 }
 
@@ -1031,8 +1032,6 @@ function drawShoppingList(doc, projectName, materials) {
   doc.setFontSize(8); doc.setTextColor(120,120,120);
   doc.text("Generated by Calculate2Build — estimates only.", 14, 288);
 }
-
-// Shared number parser for tables (parses first numeric value in a string)
 function parseQty(txt) {
   const m = String(txt).match(/[\d.]+/);
   return m ? parseFloat(m[0]) : 0;
@@ -1110,8 +1109,8 @@ window.downloadRoomPDF = () => {
   y = y2 + 4;
 
   // Blocks transparency note
-  const blkTheo = theoreticalBlocks(lastCalc.wall, roomsForReport[0].blockThick);
-  const blkOrd = orderBlocks(lastCalc.wall, roomsForReport[0].blockThick);
+  const blkTheo = theoreticalBlocks(lastCalc.wall);
+  const blkOrd = orderBlocks(lastCalc.wall);
   doc.setFontSize(8.5); doc.setTextColor(90,90,90);
   doc.text(`Blocks: order ${blkOrd.toLocaleString()} pcs (theoretical ${blkTheo.toLocaleString()} + ${Math.round(BLOCK_WASTE*100)}% waste)`, 14, y);
   y += 6; doc.setTextColor(0,0,0);
@@ -1136,8 +1135,8 @@ window.downloadRoomPDF = () => {
 
   // 6. Assumptions
   y = drawNotes(doc, y, "6. Assumptions & Limitations", [
-    "• Block face 450×225mm with 10mm mortar joint; openings (doors 0.9×2.1m, windows 1.2×1.2m) deducted.",
-    "• Net wall area excludes shared walls you marked.",
+    "• Ghana standard 10 blocks/m² of net wall (mortar joints + typical cuts included).",
+    "• Net wall area deducts doors (0.9×2.1m) and windows (1.2×1.2m), and shared walls you marked.",
     "• Plaster thickness ~12mm per face, both faces.",
     "• Paint coverage ~8.3 m²/L per coat, 2 coats.",
     "• Figures are planning estimates only. Verify with a quantity surveyor or contractor before purchase."
@@ -1283,12 +1282,12 @@ function relockApp(app) {
 
 // ==================== WIRE UP ALL SLIDERS ====================
 function initUI() {
-  // Room
+  // Room — any input re-activates the in-progress room
   updateUI(); rebuild3D();
-  document.getElementById('r-len').addEventListener('input', e => { currentRoom.len = parseFloat(e.target.value); updateUI(); rebuild3D(); });
-  document.getElementById('r-wid').addEventListener('input', e => { currentRoom.wid = parseFloat(e.target.value); updateUI(); rebuild3D(); });
-  document.getElementById('r-hgt').addEventListener('input', e => { currentRoom.hgt = parseFloat(e.target.value); updateUI(); rebuild3D(); });
-  document.getElementById('r-block').addEventListener('change', e => { currentRoom.blockThick = parseFloat(e.target.value); updateUI(); });
+  document.getElementById('r-len').addEventListener('input', e => { currentRoomActive = true; currentRoom.len = parseFloat(e.target.value); updateUI(); rebuild3D(); });
+  document.getElementById('r-wid').addEventListener('input', e => { currentRoomActive = true; currentRoom.wid = parseFloat(e.target.value); updateUI(); rebuild3D(); });
+  document.getElementById('r-hgt').addEventListener('input', e => { currentRoomActive = true; currentRoom.hgt = parseFloat(e.target.value); updateUI(); rebuild3D(); });
+  document.getElementById('r-block').addEventListener('change', e => { currentRoomActive = true; currentRoom.blockThick = parseFloat(e.target.value); updateUI(); });
 
   // Roof
   rebuildRoof3D(); calcRoof();
