@@ -92,6 +92,9 @@
   .ref-link-box input { border: none; background: transparent; font-size: 12px; color: var(--text-muted); width: 100%; outline: none; font-family: 'Courier New', monospace; }
   .ref-link-box button { padding: 8px 16px; background: var(--text-main); color: white; border: none; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; }
   .ref-status { background: #fef3c7; border: 1px solid #fde68a; color: #92400e; padding: 12px; border-radius: 8px; font-size: 12px; text-align: center; margin-top: 16px; }
+  .pricing-block { margin-top: 16px; border-top: 1px dashed var(--border); padding-top: 16px; }
+  .pricing-block label { font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+  .pricing-block input[type=checkbox] { width: 16px; height: 16px; cursor: pointer; }
   @media (max-width: 768px) {
     .nav-links { display: none; } .mobile-nav { display: block; }
     .container { grid-template-columns: 1fr; margin-top: 16px; gap: 16px; }
@@ -204,6 +207,17 @@
               </div>
             </div>
           </div>
+          <div class="pricing-block">
+            <label><input type="checkbox" class="include-pricing" data-app="room" onchange="togglePricing('room')" /> Include price breakdown & delivery costs in PDF</label>
+            <div id="pricing-room" style="display:none; margin-top:12px;">
+              <div class="input-grid">
+                <div class="input-group"><label>Currency</label><select id="cur-room"><option>GHS</option><option>NGN</option><option>USD</option><option>GBP</option></select></div>
+                <div class="input-group"><label>Delivery cost</label><input type="number" id="delivery-room" value="0" step="1" /></div>
+              </div>
+              <p style="font-size:11px; color:var(--text-muted); margin-top:8px;">Unit prices (editable) — defaults are placeholders:</p>
+              <div id="prices-room" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;"></div>
+            </div>
+          </div>
           <div class="warning-box"><strong>Important:</strong> Verify quantities with a local professional before purchasing.</div>
           <div class="actions" id="r-actions"><button class="btn-primary unlocked" onclick="downloadRoomPDF()">✓ Download Official PDF</button></div>
         </div>
@@ -259,6 +273,17 @@
                 <button class="btn-unlock" onclick="mockUnlock('roof')">Unlock for ₵15 (Preview Mode)</button>
                 <button class="btn-share" onclick="openReferralModal('roof')"><span>🔗</span> Unlock Free by Referring a Friend</button>
               </div>
+            </div>
+          </div>
+          <div class="pricing-block">
+            <label><input type="checkbox" class="include-pricing" data-app="roof" onchange="togglePricing('roof')" /> Include price breakdown & delivery costs in PDF</label>
+            <div id="pricing-roof" style="display:none; margin-top:12px;">
+              <div class="input-grid">
+                <div class="input-group"><label>Currency</label><select id="cur-roof"><option>GHS</option><option>NGN</option><option>USD</option><option>GBP</option></select></div>
+                <div class="input-group"><label>Delivery cost</label><input type="number" id="delivery-roof" value="0" step="1" /></div>
+              </div>
+              <p style="font-size:11px; color:var(--text-muted); margin-top:8px;">Unit prices (editable) — defaults are placeholders:</p>
+              <div id="prices-roof" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;"></div>
             </div>
           </div>
           <div class="warning-box"><strong>Important:</strong> This is a preliminary geometric estimate. Verify with your contractor.</div>
@@ -317,6 +342,17 @@
                 <button class="btn-unlock" onclick="mockUnlock('tiles')">Unlock for ₵15 (Preview Mode)</button>
                 <button class="btn-share" onclick="openReferralModal('tiles')"><span>🔗</span> Unlock Free by Referring a Friend</button>
               </div>
+            </div>
+          </div>
+          <div class="pricing-block">
+            <label><input type="checkbox" class="include-pricing" data-app="tiles" onchange="togglePricing('tiles')" /> Include price breakdown & delivery costs in PDF</label>
+            <div id="pricing-tiles" style="display:none; margin-top:12px;">
+              <div class="input-grid">
+                <div class="input-group"><label>Currency</label><select id="cur-tiles"><option>GHS</option><option>NGN</option><option>USD</option><option>GBP</option></select></div>
+                <div class="input-group"><label>Delivery cost</label><input type="number" id="delivery-tiles" value="0" step="1" /></div>
+              </div>
+              <p style="font-size:11px; color:var(--text-muted); margin-top:8px;">Unit prices (editable) — defaults are placeholders:</p>
+              <div id="prices-tiles" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;"></div>
             </div>
           </div>
           <div class="warning-box"><strong>Important:</strong> This is a preliminary estimate. Actual coverage varies by tile layout and substrate.</div>
@@ -397,10 +433,50 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 let currentUnit = 'm'; const M_TO_FT = 3.28084;
 let savedRooms = []; let activeRoomId = 1;
 const currentRoom = { len: 6.4, wid: 5.5, hgt: 3.7, blockThick: 0.225, doors: 1, windows: 1, sharedFront: false, sharedBack: false, sharedLeft: false, sharedRight: false };
-
-// ROOF & TILES PARAMETERS (FIXED: proper objects)
 const roofP = { type: 'gable', len: 10, wid: 8, pitch: 25, overhang: 0.5 };
 const tilesP = { len: 5, wid: 4, tileSize: 0.36, waste: 10 };
+
+// ==================== PRICING ====================
+const DEFAULT_PRICES = {
+  room: { "Sandcrete Blocks": 6, "Cement (mortar)": 90, "Mortar sand": 180, "Cement (plaster)": 90, "Plaster sand": 180, "Paint (2 coats)": 45, "Ceiling Boards": 55 },
+  roof: { "Roofing Sheets": 320, "Ridge Caps": 95, "Battens": 40, "Roofing Screws": 0.5 },
+  tiles: { "Tile Adhesive": 85, "Tile Grout": 55, "Tile Spacers": 25 }
+};
+const UNITS = {
+  "Sandcrete Blocks":"pcs","Cement (mortar)":"bags","Mortar sand":"m³","Cement (plaster)":"bags","Plaster sand":"m³","Paint (2 coats)":"L","Ceiling Boards":"m²",
+  "Roofing Sheets":"pcs","Ridge Caps":"pcs","Battens":"pcs","Roofing Screws":"pcs",
+  "Tile Adhesive":"bags","Tile Grout":"bags","Tile Spacers":"packs"
+};
+
+window.togglePricing = (app) => {
+  const box = document.getElementById(`pricing-${app}`);
+  box.style.display = box.style.display === 'none' ? 'block' : 'none';
+  if (box.style.display === 'block') renderPriceInputs(app);
+};
+
+function renderPriceInputs(app) {
+  const wrap = document.getElementById(`prices-${app}`);
+  if (wrap.dataset.built) return;
+  wrap.innerHTML = '';
+  Object.entries(DEFAULT_PRICES[app]).forEach(([name, price]) => {
+    const g = document.createElement('div');
+    g.className = 'input-group';
+    g.innerHTML = `<label style="font-size:10px;">${name} (${UNITS[name]})</label>
+                   <input type="number" data-price-for="${name}" value="${price}" step="0.01" style="padding:6px; font-size:12px;" />`;
+    wrap.appendChild(g);
+  });
+  wrap.dataset.built = "1";
+}
+
+function getPrices(app) {
+  const out = {};
+  const inputs = document.querySelectorAll(`#prices-${app} input[data-price-for]`);
+  if (!inputs.length) return { ...DEFAULT_PRICES[app] };
+  inputs.forEach(i => out[i.dataset.priceFor] = parseFloat(i.value) || 0);
+  return out;
+}
+function getCurrency(app) { const el = document.getElementById(`cur-${app}`); return el ? el.value : 'GHS'; }
+function getDelivery(app) { const el = document.getElementById(`delivery-${app}`); return el ? (parseFloat(el.value) || 0) : 0; }
 
 // ==================== ROOM FUNCTIONS ====================
 window.changeCount = (type, delta) => {
@@ -422,8 +498,8 @@ window.switchTab = (tabId) => {
   document.querySelectorAll('.nav-links a').forEach(a => a.classList.toggle('active', a.dataset.tab === tabId));
   setTimeout(() => {
     window.dispatchEvent(new Event('resize'));
-    if (tabId === 'roof') { if (rendererRoof) { cameraRoof.aspect = containerRoof.clientWidth/containerRoof.clientHeight; cameraRoof.updateProjectionMatrix(); rendererRoof.setSize(containerRoof.clientWidth, containerRoof.clientHeight); } rebuildRoof3D(); }
-    if (tabId === 'tiles') { if (rendererTiles) { cameraTiles.aspect = containerTiles.clientWidth/containerTiles.clientHeight; cameraTiles.updateProjectionMatrix(); rendererTiles.setSize(containerTiles.clientWidth, containerTiles.clientHeight); } rebuildTiles3D(); }
+    if (tabId === 'roof' && rendererRoof) { cameraRoof.aspect = containerRoof.clientWidth/containerRoof.clientHeight; cameraRoof.updateProjectionMatrix(); rendererRoof.setSize(containerRoof.clientWidth, containerRoof.clientHeight); rebuildRoof3D(); }
+    if (tabId === 'tiles' && rendererTiles) { cameraTiles.aspect = containerTiles.clientWidth/containerTiles.clientHeight; cameraTiles.updateProjectionMatrix(); rendererTiles.setSize(containerTiles.clientWidth, containerTiles.clientHeight); rebuildTiles3D(); }
     if (tabId === 'room') rebuild3D();
   }, 100);
 };
@@ -504,7 +580,6 @@ function calcTotals() {
 const blockMat = new THREE.MeshStandardMaterial({ color: 0xd4cbb8, roughness: 0.9 });
 const roofMat = new THREE.MeshStandardMaterial({ color: 0x64748b, roughness: 0.6, side: THREE.DoubleSide });
 const doorMat = new THREE.MeshStandardMaterial({ color: 0x8b5a2b, roughness: 0.9 });
-const tileMat = new THREE.MeshStandardMaterial({ color: 0xc0c0c0, roughness: 0.3, metalness: 0.1 });
 
 const containerRoom = document.getElementById('canvas-room');
 const sceneRoom = new THREE.Scene(); sceneRoom.background = new THREE.Color(0xf1f5f9);
@@ -532,7 +607,6 @@ function rebuild3D() {
   const { len, wid, hgt, blockThick, doors, windows } = currentRoom;
   const BLOCK_W = 0.45, BLOCK_H = 0.225;
   const doorW = 0.9, doorH = 2.1, winW = 1.2, winH = 1.2, sillY = 1.0;
-
   if (len > 15 || wid > 15 || hgt > 15) {
     const wall1 = new THREE.Mesh(new THREE.BoxGeometry(len, hgt, blockThick), blockMat); wall1.position.set(0, hgt/2, wid/2); buildingGroup.add(wall1);
     const wall2 = new THREE.Mesh(new THREE.BoxGeometry(len, hgt, blockThick), blockMat); wall2.position.set(0, hgt/2, -wid/2); buildingGroup.add(wall2);
@@ -594,7 +668,7 @@ function rebuild3D() {
   cameraRoom.position.set(len * 1.5, hgt * 2, wid * 1.5); controlsRoom.target.set(0, hgt * 0.5, 0); controlsRoom.update();
 }
 
-// ==================== ROOF 3D & LOGIC (FIXED) ====================
+// ==================== ROOF 3D ====================
 const containerRoof = document.getElementById('canvas-roof');
 const sceneRoof = new THREE.Scene(); sceneRoof.background = new THREE.Color(0xf1f5f9);
 const cameraRoof = new THREE.PerspectiveCamera(40, containerRoof.clientWidth / containerRoof.clientHeight, 0.1, 1000);
@@ -625,18 +699,14 @@ function rebuildRoof3D() {
   const rise = Math.tan(rad) * (halfW + overhang);
   const roofColor = new THREE.MeshStandardMaterial({ color: 0xc0392b, roughness: 0.5, side: THREE.DoubleSide });
   const wallColor = new THREE.MeshStandardMaterial({ color: 0xd4cbb8, roughness: 0.9 });
-
-  // Simple walls
   const w1 = new THREE.Mesh(new THREE.BoxGeometry(len, wallH, 0.1), wallColor); w1.position.set(0, wallH/2, wid/2); roofGroup.add(w1);
   const w2 = new THREE.Mesh(new THREE.BoxGeometry(len, wallH, 0.1), wallColor); w2.position.set(0, wallH/2, -wid/2); roofGroup.add(w2);
   const w3 = new THREE.Mesh(new THREE.BoxGeometry(0.1, wallH, wid), wallColor); w3.position.set(-len/2, wallH/2, 0); roofGroup.add(w3);
   const w4 = new THREE.Mesh(new THREE.BoxGeometry(0.1, wallH, wid), wallColor); w4.position.set(len/2, wallH/2, 0); roofGroup.add(w4);
-
   if (type === 'flat') {
     const g = new THREE.Mesh(new THREE.BoxGeometry(len + overhang*2, 0.1, wid + overhang*2), roofColor);
     g.position.set(0, wallH + 0.1, 0); g.castShadow = true; roofGroup.add(g);
   } else if (type === 'gable') {
-    const slopeLen = Math.sqrt(Math.pow(halfW + overhang, 2) + Math.pow(rise, 2));
     const geo = new THREE.BufferGeometry();
     const v0 = new THREE.Vector3(-halfW - overhang, wallH, len/2 + overhang);
     const v1 = new THREE.Vector3(halfW + overhang, wallH, len/2 + overhang);
@@ -644,12 +714,10 @@ function rebuildRoof3D() {
     const v3 = new THREE.Vector3(-halfW - overhang, wallH, -len/2 - overhang);
     const v4 = new THREE.Vector3(halfW + overhang, wallH, -len/2 - overhang);
     const v5 = new THREE.Vector3(0, wallH + rise, -len/2 - overhang);
-    const vertices = new Float32Array([v0.x,v0.y,v0.z, v1.x,v1.y,v1.z, v2.x,v2.y,v2.z, v3.x,v3.y,v3.z, v4.x,v4.y,v4.z, v5.x,v5.y,v5.z]);
-    geo.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+    geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array([v0.x,v0.y,v0.z, v1.x,v1.y,v1.z, v2.x,v2.y,v2.z, v3.x,v3.y,v3.z, v4.x,v4.y,v4.z, v5.x,v5.y,v5.z]), 3));
     geo.setIndex([0,2,5, 0,5,3, 1,4,5, 1,5,2, 0,1,2, 3,5,4]);
     geo.computeVertexNormals();
     const mesh = new THREE.Mesh(geo, roofColor); mesh.castShadow = true; mesh.receiveShadow = true; roofGroup.add(mesh);
-    // Gable triangle ends
     const triGeo1 = new THREE.BufferGeometry();
     triGeo1.setAttribute('position', new THREE.BufferAttribute(new Float32Array([-halfW, wallH, len/2, halfW, wallH, len/2, 0, wallH+rise, len/2]), 3));
     triGeo1.computeVertexNormals();
@@ -659,7 +727,6 @@ function rebuildRoof3D() {
     triGeo2.computeVertexNormals();
     roofGroup.add(new THREE.Mesh(triGeo2, wallColor));
   } else if (type === 'hip') {
-    // Simple 4-sided pyramid
     const geo = new THREE.ConeGeometry(Math.max(len, wid) * 0.7, rise, 4, 1);
     const mesh = new THREE.Mesh(geo, roofColor);
     mesh.rotation.y = Math.PI / 4;
@@ -676,21 +743,12 @@ function rebuildRoof3D() {
     const v5 = new THREE.Vector3(halfW + overhang, wallH, -len/2 - overhang);
     const v6 = new THREE.Vector3(-halfW - overhang, wallH + rise, -len/2 - overhang);
     const v7 = new THREE.Vector3(halfW + overhang, wallH + rise, -len/2 - overhang);
-    const verts = new Float32Array([
-      v0.x,v0.y,v0.z, v1.x,v1.y,v1.z, v2.x,v2.y,v2.z, v3.x,v3.y,v3.z,
-      v4.x,v4.y,v4.z, v5.x,v5.y,v5.z, v6.x,v6.y,v6.z, v7.x,v7.y,v7.z
-    ]);
+    const verts = new Float32Array([v0.x,v0.y,v0.z, v1.x,v1.y,v1.z, v2.x,v2.y,v2.z, v3.x,v3.y,v3.z, v4.x,v4.y,v4.z, v5.x,v5.y,v5.z, v6.x,v6.y,v6.z, v7.x,v7.y,v7.z]);
     geo.setAttribute('position', new THREE.BufferAttribute(verts, 3));
-    geo.setIndex([
-      0,2,3, 0,3,1,   // front slope
-      4,5,7, 4,7,6,   // back slope
-      0,4,6, 0,6,2,   // left slope
-      1,3,7, 1,7,5    // right slope
-    ]);
+    geo.setIndex([0,2,3, 0,3,1, 4,5,7, 4,7,6, 0,4,6, 0,6,2, 1,3,7, 1,7,5]);
     geo.computeVertexNormals();
     const mesh = new THREE.Mesh(geo, roofColor); mesh.castShadow = true; roofGroup.add(mesh);
   }
-
   cameraRoof.position.set(len * 1.5, wallH * 3, wid * 1.8);
   controlsRoof.target.set(0, wallH, 0); controlsRoof.update();
 }
@@ -721,24 +779,7 @@ window.setRoofType = (type) => {
   rebuildRoof3D(); calcRoof();
 };
 
-// Wire up roof sliders
-['f-len','f-wid','f-pit'].forEach(id => {
-  document.getElementById(id).addEventListener('input', () => {
-    roofP.len = parseFloat(document.getElementById('f-len').value);
-    roofP.wid = parseFloat(document.getElementById('f-wid').value);
-    roofP.pitch = parseFloat(document.getElementById('f-pit').value);
-    document.getElementById('f-lenV').textContent = roofP.len.toFixed(1) + ' m';
-    document.getElementById('f-widV').textContent = roofP.wid.toFixed(1) + ' m';
-    document.getElementById('f-pitV').textContent = roofP.pitch + '°';
-    rebuildRoof3D(); calcRoof();
-  });
-});
-document.getElementById('f-overhang').addEventListener('input', () => {
-  roofP.overhang = parseFloat(document.getElementById('f-overhang').value) || 0.5;
-  rebuildRoof3D();
-});
-
-// ==================== TILES 3D & LOGIC (FIXED) ====================
+// ==================== TILES 3D ====================
 const containerTiles = document.getElementById('canvas-tiles');
 const sceneTiles = new THREE.Scene(); sceneTiles.background = new THREE.Color(0xf1f5f9);
 const cameraTiles = new THREE.PerspectiveCamera(40, containerTiles.clientWidth / containerTiles.clientHeight, 0.1, 1000);
@@ -767,7 +808,6 @@ function rebuildTiles3D() {
   const tileD = wid / rows;
   const tileH = 0.05;
   const tileGeo = new THREE.BoxGeometry(tileW * 0.95, tileH, tileD * 0.95);
-
   for (let i = 0; i < cols; i++) for (let j = 0; j < rows; j++) {
     const color = (i + j) % 2 === 0 ? 0xe2e8f0 : 0xcbd5e1;
     const mat = new THREE.MeshStandardMaterial({ color: color, roughness: 0.3, metalness: 0.05 });
@@ -776,14 +816,12 @@ function rebuildTiles3D() {
     tile.receiveShadow = true;
     tileGroup.add(tile);
   }
-  // Room outline walls
   const wallMat = new THREE.MeshStandardMaterial({ color: 0xd4cbb8, roughness: 0.9 });
   const wallH = 1.5;
   const w1 = new THREE.Mesh(new THREE.BoxGeometry(len, wallH, 0.05), wallMat); w1.position.set(0, wallH/2, wid/2); tileGroup.add(w1);
   const w2 = new THREE.Mesh(new THREE.BoxGeometry(len, wallH, 0.05), wallMat); w2.position.set(0, wallH/2, -wid/2); tileGroup.add(w2);
   const w3 = new THREE.Mesh(new THREE.BoxGeometry(0.05, wallH, wid), wallMat); w3.position.set(-len/2, wallH/2, 0); tileGroup.add(w3);
   const w4 = new THREE.Mesh(new THREE.BoxGeometry(0.05, wallH, wid), wallMat); w4.position.set(len/2, wallH/2, 0); tileGroup.add(w4);
-
   cameraTiles.position.set(len * 1.2, Math.max(len, wid) * 1.5, wid * 1.2);
   controlsTiles.target.set(0, 0, 0); controlsTiles.update();
 }
@@ -802,25 +840,7 @@ function calcTiles() {
   document.getElementById('t-outSpacers').textContent = spacers + ' packs';
 }
 
-['t-len','t-wid'].forEach(id => {
-  document.getElementById(id).addEventListener('input', () => {
-    tilesP.len = parseFloat(document.getElementById('t-len').value);
-    tilesP.wid = parseFloat(document.getElementById('t-wid').value);
-    document.getElementById('t-lenV').textContent = tilesP.len.toFixed(1) + ' m';
-    document.getElementById('t-widV').textContent = tilesP.wid.toFixed(1) + ' m';
-    rebuildTiles3D(); calcTiles();
-  });
-});
-document.getElementById('t-size').addEventListener('change', () => {
-  tilesP.tileSize = parseFloat(document.getElementById('t-size').value);
-  rebuildTiles3D(); calcTiles();
-});
-document.getElementById('t-waste').addEventListener('input', () => {
-  tilesP.waste = parseFloat(document.getElementById('t-waste').value) || 10;
-  calcTiles();
-});
-
-// ==================== UNLOCK / MODALS / REFERRAL ====================
+// ==================== UNLOCK / MODALS ====================
 function unlockApp(app) {
   const prefix = app === 'room' ? 'r' : app === 'roof' ? 'f' : 't';
   document.getElementById(`${prefix}-materialList`).classList.remove('blurred');
@@ -870,68 +890,294 @@ function startPollingReferral(code, app) {
 
 window.copyReferralLink = () => navigator.clipboard.writeText(document.getElementById('refLinkInput').value);
 
-window.addEventListener('load', async () => {
-  const urlParams = new URLSearchParams(window.location.search);
-  const incomingRef = urlParams.get('ref');
-  if (incomingRef && incomingRef !== myReferralId) {
-    try { await supabase.from('referrals').update({ status: 'success' }).eq('code', incomingRef); } catch(e) {}
-  }
-  initUI();
-});
+// ==================== PDF HELPERS ====================
+function drawHeader(doc, subtitle) {
+  doc.setFillColor(30, 41, 59);
+  doc.rect(0, 0, 210, 30, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(20); doc.setFont('helvetica', 'bold');
+  doc.text("Calculate2Build", 14, 14);
+  doc.setFontSize(9); doc.setFont('helvetica', 'normal');
+  doc.text(subtitle, 14, 21);
+  doc.setTextColor(0, 0, 0);
+  return 40;
+}
+function drawMetaBlock(doc, y, meta) {
+  doc.setFontSize(9); doc.setFont('helvetica', 'normal');
+  meta.forEach(([k, v]) => {
+    doc.setTextColor(90, 90, 90);
+    doc.text(`${k}:`, 14, y);
+    doc.setTextColor(0,0,0); doc.setFont('helvetica', 'bold');
+    doc.text(String(v), 60, y);
+    doc.setFont('helvetica', 'normal');
+    y += 6;
+  });
+  return y + 4;
+}
+function drawSectionTitle(doc, y, text) {
+  doc.setFontSize(12); doc.setFont('helvetica', 'bold');
+  doc.setTextColor(30, 41, 59);
+  doc.text(text, 14, y);
+  doc.setDrawColor(245, 158, 11); doc.setLineWidth(0.8);
+  doc.line(14, y + 1.5, 196, y + 1.5);
+  doc.setTextColor(0,0,0);
+  return y + 8;
+}
+function drawTable(doc, y, rows, currency, showPrices) {
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'bold');
+  doc.setFillColor(241, 245, 249);
+  doc.rect(14, y - 5, 182, 7, 'F');
+  doc.text("Material", 16, y);
+  doc.text("Qty", 100, y);
+  if (showPrices) { doc.text("Unit", 130, y); doc.text("Total", 165, y); }
+  y += 7;
+  doc.setFont('helvetica', 'normal');
+  let grand = 0;
+  rows.forEach(r => {
+    const [name, qty, unitPrice] = r;
+    doc.text(name, 16, y);
+    doc.text(String(qty), 100, y);
+    if (showPrices && unitPrice != null) {
+      const lineTotal = qty * unitPrice;
+      grand += lineTotal;
+      doc.text(`${currency} ${unitPrice.toFixed(2)}`, 130, y);
+      doc.text(`${currency} ${lineTotal.toFixed(2)}`, 165, y);
+    }
+    y += 6;
+    if (y > 270) { doc.addPage(); y = 20; }
+  });
+  return { y, grand };
+}
+function drawNotes(doc, y, title, lines) {
+  y = drawSectionTitle(doc, y, title);
+  doc.setFontSize(8.5); doc.setFont('helvetica', 'normal');
+  doc.setTextColor(80, 80, 80);
+  lines.forEach(l => {
+    const wrapped = doc.splitTextToSize(l, 180);
+    wrapped.forEach(w => { doc.text(w, 16, y); y += 4.5; });
+    y += 1;
+  });
+  doc.setTextColor(0,0,0);
+  return y + 4;
+}
+function drawShoppingList(doc, projectName, materials) {
+  doc.addPage();
+  let sy = drawHeader(doc, "Shopping List — Tick items off as you buy");
+  sy = drawMetaBlock(doc, sy, [["Project", projectName], ["Date", new Date().toLocaleDateString()]]);
+  doc.setFontSize(10); doc.setFont('helvetica', 'bold');
+  doc.text("☐   Item", 18, sy);
+  doc.text("Qty", 150, sy); sy += 7;
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(11);
+  materials.forEach(([n, q]) => {
+    doc.rect(14, sy - 4, 4, 4);
+    doc.text(n, 22, sy);
+    doc.text(`${q} ${UNITS[n] || ''}`, 150, sy);
+    sy += 8;
+    if (sy > 275) { doc.addPage(); sy = 20; }
+  });
+  doc.setFontSize(8); doc.setTextColor(120,120,120);
+  doc.text("Generated by Calculate2Build — estimates only.", 14, 288);
+}
 
-// ==================== PDF DOWNLOADS ====================
+// ==================== PDF: ROOM ====================
 window.downloadRoomPDF = () => {
   const { jsPDF } = window.jspdf; const doc = new jsPDF();
-  doc.setFillColor(30, 41, 59); doc.rect(0, 0, 210, 30, 'F');
-  doc.setTextColor(255, 255, 255); doc.setFontSize(22); doc.setFont('helvetica', 'bold'); doc.text("Calculate2Build", 14, 15);
-  doc.setFontSize(10); doc.setFont('helvetica', 'normal'); doc.text("Builder's Protection Packet", 14, 22);
-  doc.setTextColor(0, 0, 0); doc.setFontSize(10); doc.text(`Ref: ${Date.now()} | Date: ${new Date().toLocaleDateString()}`, 14, 40);
-  doc.setFontSize(14); doc.setFont('helvetica', 'bold'); doc.text("1. Bill of Quantities", 14, 50);
-  doc.setFontSize(10); doc.setFont('helvetica', 'normal'); let y = 58;
-  const rows = [
-    ["Sandcrete Blocks", document.getElementById('r-outBlocks').textContent],
-    ["Cement (mortar)", document.getElementById('r-outCemMortar').textContent],
-    ["Mortar sand", document.getElementById('r-outSand').textContent],
-    ["Cement (plaster)", document.getElementById('r-outCemPlaster').textContent],
-    ["Paint (2 coats)", document.getElementById('r-outPaint').textContent],
-    ["Ceiling Boards", document.getElementById('r-outCeiling').textContent]
+  const mult = currentUnit === 'm' ? 1 : M_TO_FT;
+  const u = currentUnit === 'm' ? 'm' : 'ft';
+  const showPrices = document.querySelector('.include-pricing[data-app="room"]')?.checked;
+  const currency = getCurrency('room');
+  const prices = getPrices('room');
+  const delivery = getDelivery('room');
+  const projectName = `Room ${activeRoomId} – ${(currentRoom.len*mult).toFixed(1)}${u} × ${(currentRoom.wid*mult).toFixed(1)}${u}`;
+  let y = drawHeader(doc, "Builder's Protection Packet");
+  y = drawMetaBlock(doc, y, [
+    ["Project", projectName],
+    ["Date", new Date().toLocaleString()],
+    ["Unit", currentUnit === 'm' ? 'Metres' : 'Feet'],
+    ["Rooms Saved", savedRooms.length + 1],
+    ["Block Type", getBlockName(currentRoom.blockThick)]
+  ]);
+  y = drawSectionTitle(doc, y, "1. Dimensions (User Input)");
+  y = drawMetaBlock(doc, y, [
+    ["Length", (currentRoom.len * mult).toFixed(2) + ' ' + u],
+    ["Width", (currentRoom.wid * mult).toFixed(2) + ' ' + u],
+    ["Height", (currentRoom.hgt * mult).toFixed(2) + ' ' + u],
+    ["Doors", currentRoom.doors],
+    ["Windows", currentRoom.windows],
+    ["Shared Walls", ['Front','Back','Left','Right'].filter(s => currentRoom['shared'+s]).join(', ') || 'None']
+  ]);
+  y = drawSectionTitle(doc, y, "2. Calculation Results");
+  y = drawMetaBlock(doc, y, [
+    ["Total Floor Area", document.getElementById('r-outFloor').textContent],
+    ["Total Wall Area (net)", document.getElementById('r-outWall').textContent]
+  ]);
+  y = drawSectionTitle(doc, y, "3. Material Quantities");
+  const num = (txt) => parseFloat(String(txt).replace(/[^\d.]/g,'')) || 0;
+  const materials = [
+    ["Sandcrete Blocks", num(document.getElementById('r-outBlocks').textContent)],
+    ["Cement (mortar)", num(document.getElementById('r-outCemMortar').textContent)],
+    ["Mortar sand", num(document.getElementById('r-outSand').textContent)],
+    ["Cement (plaster)", num(document.getElementById('r-outCemPlaster').textContent)],
+    ["Plaster sand", num(document.getElementById('r-outSandPlaster').textContent)],
+    ["Paint (2 coats)", num(document.getElementById('r-outPaint').textContent)],
+    ["Ceiling Boards", num(document.getElementById('r-outCeiling').textContent)]
   ];
-  rows.forEach(([k, v]) => { doc.text(k, 20, y); doc.text(v, 120, y); y += 8; });
-  y += 10; doc.setFontSize(14); doc.setFont('helvetica', 'bold'); doc.text("2. Site Supervisor's Audit Checklist", 14, y); y += 8;
-  doc.setFontSize(9); doc.setFont('helvetica', 'normal');
-  ['- Verify block count on delivery against the BOQ above.', '- Confirm 1 bag of cement yields ~25-30 blocks during laying.', '- Measure plaster thickness; reject work above 15mm.', '- Photograph tile boxes before and after installation.'].forEach(t => { doc.text(t, 20, y); y += 6; });
-  y += 10; doc.setFontSize(14); doc.setFont('helvetica', 'bold'); doc.text("3. Standard Artisan Work Agreement", 14, y); y += 8;
-  doc.setFontSize(9); doc.setFont('helvetica', 'normal');
-  ['The artisan agrees to deliver the structure within the agreed timeline.', 'Wages are payable per milestones defined below and signed by both parties.', 'Material wastage beyond 10% is the artisan\'s financial responsibility.', 'Disputes are resolved through the local trade association before litigation.', '', 'Artisan signature: ______________________   Date: ____________', 'Owner signature:   ______________________   Date: ____________'].forEach(t => { doc.text(t, 20, y); y += 6; });
-  doc.save('C2B_Building_Estimate.pdf'); relockApp('room');
+  const rows = materials.map(([n, q]) => [n, `${q} ${UNITS[n]}`, showPrices ? prices[n] : null]);
+  const { y: y2, grand } = drawTable(doc, y, rows, currency, showPrices);
+  y = y2 + 4;
+  if (showPrices) {
+    y = drawSectionTitle(doc, y, "4. Price Breakdown");
+    y = drawMetaBlock(doc, y, [
+      ["Materials Subtotal", `${currency} ${grand.toFixed(2)}`],
+      ["Delivery", `${currency} ${delivery.toFixed(2)}`],
+      ["Grand Total", `${currency} ${(grand + delivery).toFixed(2)}`]
+    ]);
+  }
+  y = drawNotes(doc, y, "5. Wastage Allowance Applied", [
+    "• Blocks: +5% (breakage, cuts, transport loss).",
+    "• Cement & sand (mortar): +7% (site mixing loss).",
+    "• Paint: +5% (roller absorption & touch-ups).",
+    "• Ceiling boards: +5% (off-cuts, mis-cuts)."
+  ]);
+  y = drawNotes(doc, y, "6. Assumptions & Limitations", [
+    "• Block size assumed 450×225mm; wall openings (doors 0.9×2.1m, windows 1.2×1.2m) deducted.",
+    "• Net wall area excludes shared walls you marked.",
+    "• Plaster thickness ~12mm per face, both faces.",
+    "• Paint coverage ~8.3 m²/L per coat, 2 coats.",
+    "• Figures are planning estimates only. Always verify with a quantity surveyor or your contractor before purchase."
+  ]);
+  drawShoppingList(doc, projectName, materials);
+  doc.save(`C2B_Room_${Date.now()}.pdf`);
+  relockApp('room');
 };
 
+// ==================== PDF: ROOF ====================
 window.downloadRoofPDF = () => {
   const { jsPDF } = window.jspdf; const doc = new jsPDF();
-  doc.setFillColor(30, 41, 59); doc.rect(0, 0, 210, 30, 'F');
-  doc.setTextColor(255, 255, 255); doc.setFontSize(22); doc.setFont('helvetica', 'bold'); doc.text("Calculate2Build", 14, 15);
-  doc.setFontSize(10); doc.setFont('helvetica', 'normal'); doc.text("Roofing Estimate", 14, 22);
-  doc.setTextColor(0, 0, 0); doc.setFontSize(12); doc.setFont('helvetica', 'bold'); doc.text("Roof Specifications", 14, 45);
-  doc.setFontSize(10); doc.setFont('helvetica', 'normal'); doc.text(`Type: ${roofP.type.toUpperCase()} | Dimensions: ${roofP.len}m x ${roofP.wid}m | Pitch: ${roofP.pitch}°`, 14, 52);
-  doc.setFontSize(12); doc.setFont('helvetica', 'bold'); doc.text("Bill of Quantities", 14, 70);
-  doc.setFontSize(10); doc.setFont('helvetica', 'normal');
-  const rows = [["Roof Area", document.getElementById('f-outArea').textContent],["Roofing Sheets", document.getElementById('f-outSheets').textContent],["Ridge Caps", document.getElementById('f-outRidges').textContent],["Battens", document.getElementById('f-outBattens').textContent],["Roofing Screws", document.getElementById('f-outScrews').textContent]];
-  let y = 80; rows.forEach(([k, v]) => { doc.text(k, 20, y); doc.text(v, 120, y); y += 10; });
-  doc.save('C2B_Roof_Estimate.pdf'); relockApp('roof');
+  const showPrices = document.querySelector('.include-pricing[data-app="roof"]')?.checked;
+  const currency = getCurrency('roof');
+  const prices = getPrices('roof');
+  const delivery = getDelivery('roof');
+  const projectName = `Roof – ${roofP.type.toUpperCase()} ${roofP.len}m × ${roofP.wid}m @ ${roofP.pitch}°`;
+  let y = drawHeader(doc, "Roof Wizard Report");
+  y = drawMetaBlock(doc, y, [
+    ["Project", projectName],
+    ["Date", new Date().toLocaleString()],
+    ["Roof Type", roofP.type.toUpperCase()],
+    ["Pitch", roofP.pitch + '°'],
+    ["Overhang", roofP.overhang + ' m']
+  ]);
+  y = drawSectionTitle(doc, y, "1. Dimensions (User Input)");
+  y = drawMetaBlock(doc, y, [
+    ["Length", roofP.len + ' m'],
+    ["Width", roofP.wid + ' m'],
+    ["Pitch", roofP.pitch + '°'],
+    ["Overhang", roofP.overhang + ' m']
+  ]);
+  y = drawSectionTitle(doc, y, "2. Calculation Results");
+  y = drawMetaBlock(doc, y, [
+    ["Roof Area", document.getElementById('f-outArea').textContent],
+    ["Angle", document.getElementById('f-outAngle').textContent]
+  ]);
+  y = drawSectionTitle(doc, y, "3. Material Quantities");
+  const num = (t) => parseFloat(String(t).replace(/[^\d.]/g,'')) || 0;
+  const materials = [
+    ["Roofing Sheets", num(document.getElementById('f-outSheets').textContent)],
+    ["Ridge Caps", num(document.getElementById('f-outRidges').textContent)],
+    ["Battens", num(document.getElementById('f-outBattens').textContent)],
+    ["Roofing Screws", num(document.getElementById('f-outScrews').textContent)]
+  ];
+  const rows = materials.map(([n, q]) => [n, `${q} ${UNITS[n]}`, showPrices ? prices[n] : null]);
+  const { y: y2, grand } = drawTable(doc, y, rows, currency, showPrices);
+  y = y2 + 4;
+  if (showPrices) {
+    y = drawSectionTitle(doc, y, "4. Price Breakdown");
+    y = drawMetaBlock(doc, y, [
+      ["Materials Subtotal", `${currency} ${grand.toFixed(2)}`],
+      ["Delivery", `${currency} ${delivery.toFixed(2)}`],
+      ["Grand Total", `${currency} ${(grand + delivery).toFixed(2)}`]
+    ]);
+  }
+  y = drawNotes(doc, y, "5. Wastage Allowance Applied", [
+    "• Roofing sheets: +10% (overlap, cuts at hips/valleys).",
+    "• Battens: +5% (spacing tolerance).",
+    "• Screws: 8 pcs/m² (industry standard)."
+  ]);
+  y = drawNotes(doc, y, "6. Assumptions & Limitations", [
+    "• Sheet size assumed 0.9m × 3m.",
+    "• Slope area = plan area ÷ cos(pitch) for gable/mono.",
+    "• Hip roofs add ~10% for hip surfaces.",
+    "• Ridge length estimated from roof type.",
+    "• Excludes fascia, gutters, underlay, and labour.",
+    "• Verify with your roofing contractor before ordering."
+  ]);
+  drawShoppingList(doc, projectName, materials);
+  doc.save(`C2B_Roof_${Date.now()}.pdf`);
+  relockApp('roof');
 };
 
+// ==================== PDF: TILES ====================
 window.downloadTilesPDF = () => {
   const { jsPDF } = window.jspdf; const doc = new jsPDF();
-  doc.setFillColor(30, 41, 59); doc.rect(0, 0, 210, 30, 'F');
-  doc.setTextColor(255, 255, 255); doc.setFontSize(22); doc.setFont('helvetica', 'bold'); doc.text("Calculate2Build", 14, 15);
-  doc.setFontSize(10); doc.setFont('helvetica', 'normal'); doc.text("Tiling Estimate", 14, 22);
-  doc.setTextColor(0, 0, 0); doc.setFontSize(12); doc.setFont('helvetica', 'bold'); doc.text("Project Specifications", 14, 45);
-  doc.setFontSize(10); doc.setFont('helvetica', 'normal'); doc.text(`Room: ${tilesP.len.toFixed(1)}m x ${tilesP.wid.toFixed(1)}m`, 14, 52);
-  doc.setFontSize(12); doc.setFont('helvetica', 'bold'); doc.text("Bill of Quantities", 14, 70);
-  doc.setFontSize(10); doc.setFont('helvetica', 'normal');
-  const rows = [["Floor Area", document.getElementById('t-outArea').textContent],["Tiles Needed", document.getElementById('t-outTiles').textContent],["Adhesive", document.getElementById('t-outAdhesive').textContent],["Grout", document.getElementById('t-outGrout').textContent],["Spacers", document.getElementById('t-outSpacers').textContent]];
-  let y = 80; rows.forEach(([k, v]) => { doc.text(k, 20, y); doc.text(v, 120, y); y += 10; });
-  doc.save('C2B_Tiling_Estimate.pdf'); relockApp('tiles');
+  const showPrices = document.querySelector('.include-pricing[data-app="tiles"]')?.checked;
+  const currency = getCurrency('tiles');
+  const prices = getPrices('tiles');
+  const delivery = getDelivery('tiles');
+  const projectName = `Tiles – ${tilesP.len}m × ${tilesP.wid}m`;
+  let y = drawHeader(doc, "Floor Tiles Report");
+  y = drawMetaBlock(doc, y, [
+    ["Project", projectName],
+    ["Date", new Date().toLocaleString()],
+    ["Tile Size", document.getElementById('t-size').selectedOptions[0].text],
+    ["Waste Allowance", tilesP.waste + '%']
+  ]);
+  y = drawSectionTitle(doc, y, "1. Dimensions (User Input)");
+  y = drawMetaBlock(doc, y, [
+    ["Length", tilesP.len + ' m'],
+    ["Width", tilesP.wid + ' m'],
+    ["Tile Size", document.getElementById('t-size').selectedOptions[0].text],
+    ["Waste Allowance", tilesP.waste + '%']
+  ]);
+  y = drawSectionTitle(doc, y, "2. Calculation Results");
+  y = drawMetaBlock(doc, y, [
+    ["Floor Area", document.getElementById('t-outArea').textContent],
+    ["Tiles Needed (incl. waste)", document.getElementById('t-outTiles').textContent]
+  ]);
+  y = drawSectionTitle(doc, y, "3. Material Quantities");
+  const num = (t) => parseFloat(String(t).replace(/[^\d.]/g,'')) || 0;
+  const materials = [
+    ["Tile Adhesive", num(document.getElementById('t-outAdhesive').textContent)],
+    ["Tile Grout", num(document.getElementById('t-outGrout').textContent)],
+    ["Tile Spacers", num(document.getElementById('t-outSpacers').textContent)]
+  ];
+  const rows = materials.map(([n, q]) => [n, `${q} ${UNITS[n]}`, showPrices ? prices[n] : null]);
+  const { y: y2, grand } = drawTable(doc, y, rows, currency, showPrices);
+  y = y2 + 4;
+  if (showPrices) {
+    y = drawSectionTitle(doc, y, "4. Price Breakdown");
+    y = drawMetaBlock(doc, y, [
+      ["Materials Subtotal", `${currency} ${grand.toFixed(2)}`],
+      ["Delivery", `${currency} ${delivery.toFixed(2)}`],
+      ["Grand Total", `${currency} ${(grand + delivery).toFixed(2)}`]
+    ]);
+  }
+  y = drawNotes(doc, y, "5. Wastage Allowance Applied", [
+    `• Tile waste: ${tilesP.waste}% (cuts, edge trims, breakage).`,
+    "• Adhesive: 4 kg/m² (industry average for 6mm bed).",
+    "• Grout: 0.5 kg/m²."
+  ]);
+  y = drawNotes(doc, y, "6. Assumptions & Limitations", [
+    "• Assumes standard square/rectangular layout with straight cuts.",
+    "• Excludes skirting tiles and threshold strips.",
+    "• Substrate assumed level; extra adhesive may be needed on uneven floors.",
+    "• Actual coverage varies by tile size, layout pattern, and substrate.",
+    "• Verify with your tiler before purchase."
+  ]);
+  const tileBoxes = num(document.getElementById('t-outTiles').textContent);
+  drawShoppingList(doc, projectName, [...materials, ["Tile boxes (tiles to buy)", tileBoxes]]);
+  doc.save(`C2B_Tiles_${Date.now()}.pdf`);
+  relockApp('tiles');
 };
 
 function relockApp(app) {
@@ -941,23 +1187,57 @@ function relockApp(app) {
   document.getElementById(`${prefix}-actions`).style.display = 'none';
 }
 
-// ==================== BOOT ====================
+// ==================== WIRE UP ALL SLIDERS ====================
 function initUI() {
+  // Room
   updateUI(); rebuild3D();
-  // Room sliders
   document.getElementById('r-len').addEventListener('input', e => { currentRoom.len = parseFloat(e.target.value); updateUI(); rebuild3D(); });
   document.getElementById('r-wid').addEventListener('input', e => { currentRoom.wid = parseFloat(e.target.value); updateUI(); rebuild3D(); });
   document.getElementById('r-hgt').addEventListener('input', e => { currentRoom.hgt = parseFloat(e.target.value); updateUI(); rebuild3D(); });
   document.getElementById('r-block').addEventListener('change', e => { currentRoom.blockThick = parseFloat(e.target.value); updateUI(); });
+
   // Roof
   rebuildRoof3D(); calcRoof();
   document.getElementById('f-lenV').textContent = roofP.len.toFixed(1) + ' m';
   document.getElementById('f-widV').textContent = roofP.wid.toFixed(1) + ' m';
   document.getElementById('f-pitV').textContent = roofP.pitch + '°';
+  ['f-len','f-wid','f-pit'].forEach(id => {
+    document.getElementById(id).addEventListener('input', () => {
+      roofP.len = parseFloat(document.getElementById('f-len').value);
+      roofP.wid = parseFloat(document.getElementById('f-wid').value);
+      roofP.pitch = parseFloat(document.getElementById('f-pit').value);
+      document.getElementById('f-lenV').textContent = roofP.len.toFixed(1) + ' m';
+      document.getElementById('f-widV').textContent = roofP.wid.toFixed(1) + ' m';
+      document.getElementById('f-pitV').textContent = roofP.pitch + '°';
+      rebuildRoof3D(); calcRoof();
+    });
+  });
+  document.getElementById('f-overhang').addEventListener('input', () => {
+    roofP.overhang = parseFloat(document.getElementById('f-overhang').value) || 0.5;
+    rebuildRoof3D();
+  });
+
   // Tiles
   rebuildTiles3D(); calcTiles();
   document.getElementById('t-lenV').textContent = tilesP.len.toFixed(1) + ' m';
   document.getElementById('t-widV').textContent = tilesP.wid.toFixed(1) + ' m';
+  ['t-len','t-wid'].forEach(id => {
+    document.getElementById(id).addEventListener('input', () => {
+      tilesP.len = parseFloat(document.getElementById('t-len').value);
+      tilesP.wid = parseFloat(document.getElementById('t-wid').value);
+      document.getElementById('t-lenV').textContent = tilesP.len.toFixed(1) + ' m';
+      document.getElementById('t-widV').textContent = tilesP.wid.toFixed(1) + ' m';
+      rebuildTiles3D(); calcTiles();
+    });
+  });
+  document.getElementById('t-size').addEventListener('change', () => {
+    tilesP.tileSize = parseFloat(document.getElementById('t-size').value);
+    rebuildTiles3D(); calcTiles();
+  });
+  document.getElementById('t-waste').addEventListener('input', () => {
+    tilesP.waste = parseFloat(document.getElementById('t-waste').value) || 10;
+    calcTiles();
+  });
 }
 
 // Resize handler
@@ -968,6 +1248,16 @@ function resizeAll() {
 }
 new ResizeObserver(resizeAll).observe(document.body);
 window.addEventListener('resize', resizeAll);
+
+// ==================== BOOT ====================
+window.addEventListener('load', async () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const incomingRef = urlParams.get('ref');
+  if (incomingRef && incomingRef !== myReferralId) {
+    try { await supabase.from('referrals').update({ status: 'success' }).eq('code', incomingRef); } catch(e) {}
+  }
+  initUI();
+});
 
 // Animation loop
 (function animate() {
