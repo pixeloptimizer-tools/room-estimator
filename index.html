@@ -9,41 +9,25 @@
   :root { --bg: #f8fafc; --white: #ffffff; --text-main: #0f172a; --text-muted: #64748b; --border: #e2e8f0; --brand: #f59e0b; --green: #10b981; --blue: #3b82f6; }
   * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, sans-serif; }
   body { background: var(--bg); color: var(--text-main); display: flex; flex-direction: column; min-height: 100vh; }
-  
-  /* NAV */
   nav { background: #1e293b; color: white; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
   .logo { font-size: 18px; font-weight: 700; cursor: pointer; } .logo span { color: #94a3b8; font-weight: 400; }
   .nav-links { display: flex; gap: 20px; font-size: 13px; font-weight: 500; }
   .nav-links a { color: #94a3b8; text-decoration: none; transition: color 0.2s; cursor: pointer; padding-bottom: 4px; border-bottom: 2px solid transparent; }
   .nav-links a.active { color: white; border-bottom-color: var(--brand); } .nav-links a:hover:not(.active) { color: white; }
-  
-  /* MOBILE NAV */
   .mobile-nav { display: none; width: 100%; padding: 10px; background: #1e293b; border-top: 1px solid #334155; }
   .mobile-nav select { width: 100%; padding: 14px; background: #0f172a; color: white; border: 1px solid #334155; border-radius: 6px; font-size: 15px; font-weight: 600; outline: none; }
-  
-  /* APP SECTIONS */
   .app-section { display: none; } .app-section.active { display: block; }
-  
-  /* MAIN GRID */
   .container { max-width: 1300px; margin: 24px auto; padding: 0 16px; display: grid; grid-template-columns: 1fr 450px; gap: 24px; align-items: start; width: 100%; }
-  
-  /* CARDS */
   .card { background: var(--white); border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05); overflow: hidden; margin-bottom: 20px; }
   .card-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
   .card-header h2 { font-size: 18px; font-weight: 700; } .card-header p { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
   .card-body { padding: 20px; }
-  
-  /* 3D CANVAS */
   .canvas-container { width: 100%; height: 400px; background: #f1f5f9; position: relative; cursor: grab; border-bottom: 1px solid var(--border); touch-action: none; display: block; }
   .viewer-hint { position: absolute; bottom: 12px; left: 12px; background: white; padding: 6px 10px; border-radius: 6px; font-size: 11px; color: var(--text-muted); box-shadow: 0 1px 3px rgba(0,0,0,0.1); pointer-events: none; border: 1px solid var(--border); }
   .active-room-badge { position: absolute; top: 12px; left: 12px; background: var(--brand); color: #000; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; pointer-events: none; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-  
-  /* UNIT TOGGLE */
   .unit-toggle { display: flex; background: #e2e8f0; border-radius: 6px; padding: 4px; }
   .unit-toggle button { padding: 8px 16px; border: none; background: transparent; font-size: 13px; font-weight: 600; cursor: pointer; border-radius: 4px; color: var(--text-muted); transition: 0.2s; }
   .unit-toggle button.active { background: white; color: var(--text-main); box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
-  
-  /* INPUTS */
   .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   .input-group { display: flex; flex-direction: column; gap: 6px; }
   .input-group label { font-size: 12px; font-weight: 600; display: flex; justify-content: space-between; }
@@ -53,44 +37,30 @@
   input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 24px; width: 24px; border-radius: 50%; background: var(--text-main); cursor: pointer; margin-top: -8px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
   input[type=number], input[type=text], select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; background: var(--bg); outline: none; }
   input[type=number]:focus, input[type=text]:focus, select:focus { border-color: var(--text-main); background: white; }
-  
-  /* SHARED WALLS */
   .shared-walls { margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--border); }
   .shared-walls p { font-size: 12px; font-weight: 600; margin-bottom: 8px; color: var(--text-muted); }
   .wall-toggles { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .wall-toggle { padding: 8px; border: 1px solid var(--border); border-radius: 6px; background: white; font-size: 12px; font-weight: 600; cursor: pointer; text-align: center; transition: 0.2s; }
   .wall-toggle.active { border-color: var(--text-main); background: var(--text-main); color: white; }
-  
-  /* DOORS & WINDOWS COUNTER */
   .openings-control { display: flex; gap: 12px; margin-top: 16px; }
   .counter-box { flex: 1; display: flex; align-items: center; justify-content: space-between; padding: 12px; border: 1px solid var(--border); border-radius: 8px; background: white; }
   .counter-box span { font-size: 13px; font-weight: 600; }
   .counter-btn { width: 32px; height: 32px; border-radius: 50%; border: none; background: var(--text-main); color: white; font-size: 18px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; }
   .counter-btn:hover { background: var(--brand); color: #000; }
   .counter-val { font-size: 16px; font-weight: 700; min-width: 20px; text-align: center; }
-  
-  /* ROOF TOGGLES */
   .roof-toggles { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; margin-bottom: 16px; }
   .roof-btn { padding: 12px; border: 1px solid var(--border); border-radius: 6px; background: white; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; text-align: center; }
   .roof-btn.active { border-color: var(--brand); background: rgba(245, 158, 11, 0.1); color: var(--brand); }
-  
-  /* ROOM ACTIONS */
   .room-actions { display: flex; gap: 10px; margin-top: 20px; }
   .btn-save { flex: 2; padding: 14px; background: var(--brand); color: #000; border: none; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; transition: 0.2s; }
   .btn-save:hover { background: #fbbf24; }
   .btn-clear { flex: 1; padding: 14px; background: white; color: var(--text-main); border: 1px solid var(--border); border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
-  
-  /* ROOM LIST */
   .room-list { margin-top: 20px; border-top: 1px solid var(--border); padding-top: 16px; }
   .room-item { display: flex; justify-content: space-between; align-items: center; font-size: 13px; padding: 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; margin-bottom: 8px; }
   .room-item span:first-child { font-weight: 600; color: var(--text-main); } .room-item span:last-child { color: var(--text-muted); font-size: 12px; }
-  
-  /* MATERIAL AREA BOXES */
   .area-boxes { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
   .area-box { background: var(--bg); padding: 12px; border-radius: 8px; border: 1px solid var(--border); }
   .area-box .label { font-size: 11px; color: var(--text-muted); font-weight: 500; } .area-box .val { font-size: 18px; font-weight: 700; margin-top: 4px; color: var(--text-main); }
-  
-  /* MATERIAL LIST & BLUR */
   .material-wrapper { position: relative; }
   .material-list { display: flex; flex-direction: column; transition: filter 0.3s; }
   .material-list.blurred { filter: blur(6px); user-select: none; pointer-events: none; }
@@ -99,8 +69,6 @@
   .mat-item { display: flex; justify-content: space-between; align-items: flex-start; padding: 8px 0; border-bottom: 1px dashed var(--border); } .mat-item:last-child { border-bottom: none; }
   .mat-info { display: flex; flex-direction: column; gap: 2px; padding-right: 12px; } .mat-name { font-size: 13px; font-weight: 600; } .mat-desc { font-size: 10px; color: var(--text-muted); }
   .mat-qty { font-size: 13px; font-weight: 700; text-align: right; white-space: nowrap; color: var(--brand); }
-  
-  /* PAYWALL */
   .paywall-overlay { position: absolute; inset: -10px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(2px); z-index: 10; text-align: center; padding: 20px; border-radius: 8px; }
   .paywall-box { background: white; padding: 24px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border: 1px solid var(--border); max-width: 340px; text-align: left; }
   .paywall-box h3 { font-size: 16px; font-weight: 700; margin-bottom: 4px; color: var(--text-main); } .paywall-box p.subtitle { font-size: 12px; color: var(--text-muted); margin-bottom: 16px; }
@@ -109,13 +77,9 @@
   .btn-unlock:hover { background: #059669; }
   .btn-share { width: 100%; padding: 12px; background: var(--blue); color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; }
   .btn-share:hover { background: #2563eb; }
-  
-  /* WARNING & ACTIONS */
   .warning-box { background: #fef3c7; border: 1px solid #fde68a; color: #92400e; padding: 12px; border-radius: 8px; font-size: 12px; line-height: 1.5; margin-top: 20px; }
   .actions { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; display: none; }
   .btn-primary { background: var(--text-main); color: white; padding: 14px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; } .btn-primary.unlocked { background: var(--green); }
-  
-  /* FOOTER & MODALS */
   footer { background: #0f172a; color: #94a3b8; padding: 24px; text-align: center; margin-top: 40px; font-size: 12px; }
   footer a { color: #94a3b8; text-decoration: none; margin: 0 10px; cursor: pointer; } footer a:hover { color: white; text-decoration: underline; }
   .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
@@ -128,8 +92,6 @@
   .ref-link-box input { border: none; background: transparent; font-size: 12px; color: var(--text-muted); width: 100%; outline: none; font-family: 'Courier New', monospace; }
   .ref-link-box button { padding: 8px 16px; background: var(--text-main); color: white; border: none; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; }
   .ref-status { background: #fef3c7; border: 1px solid #fde68a; color: #92400e; padding: 12px; border-radius: 8px; font-size: 12px; text-align: center; margin-top: 16px; }
-  
-  /* RESPONSIVE */
   @media (max-width: 768px) {
     .nav-links { display: none; } .mobile-nav { display: block; }
     .container { grid-template-columns: 1fr; margin-top: 16px; gap: 16px; }
@@ -141,9 +103,9 @@
 <nav>
   <div class="logo">Calculate2Build <span>/ C2B</span></div>
   <div class="nav-links">
-    <a class="active" onclick="switchTab('room')">Room Estimator</a>
-    <a onclick="switchTab('roof')">Roof Wizard</a>
-    <a onclick="switchTab('tiles')">Floor Tiles</a>
+    <a class="active" data-tab="room" onclick="switchTab('room')">Room Estimator</a>
+    <a data-tab="roof" onclick="switchTab('roof')">Roof Wizard</a>
+    <a data-tab="tiles" onclick="switchTab('tiles')">Floor Tiles</a>
   </div>
 </nav>
 <div class="mobile-nav" id="mobileNav">
@@ -185,26 +147,10 @@
               </select>
             </div>
           </div>
-
           <div class="openings-control">
-            <div class="counter-box">
-              <span>Doors</span>
-              <div style="display:flex; align-items:center; gap:8px;">
-                <button class="counter-btn" onclick="changeCount('door', -1)">−</button>
-                <span class="counter-val" id="doorCount">1</span>
-                <button class="counter-btn" onclick="changeCount('door', 1)">+</button>
-              </div>
-            </div>
-            <div class="counter-box">
-              <span>Windows</span>
-              <div style="display:flex; align-items:center; gap:8px;">
-                <button class="counter-btn" onclick="changeCount('window', -1)">−</button>
-                <span class="counter-val" id="windowCount">1</span>
-                <button class="counter-btn" onclick="changeCount('window', 1)">+</button>
-              </div>
-            </div>
+            <div class="counter-box"><span>Doors</span><div style="display:flex; align-items:center; gap:8px;"><button class="counter-btn" onclick="changeCount('door', -1)">−</button><span class="counter-val" id="doorCount">1</span><button class="counter-btn" onclick="changeCount('door', 1)">+</button></div></div>
+            <div class="counter-box"><span>Windows</span><div style="display:flex; align-items:center; gap:8px;"><button class="counter-btn" onclick="changeCount('window', -1)">−</button><span class="counter-val" id="windowCount">1</span><button class="counter-btn" onclick="changeCount('window', 1)">+</button></div></div>
           </div>
-
           <div class="shared-walls">
             <p>Does this room share a wall with another room?</p>
             <div class="wall-toggles">
@@ -301,7 +247,6 @@
           </div>
           <div class="material-wrapper">
             <div class="material-list blurred" id="f-materialList">
-              <div class="mat-header"><span>Material / Work Item</span><span>Qty</span></div>
               <div class="mat-item"><div class="mat-info"><div class="mat-name">Roofing Sheets (0.9x3m)</div></div><div class="mat-qty" id="f-outSheets">0</div></div>
               <div class="mat-item"><div class="mat-info"><div class="mat-name">Ridge Caps (3m)</div></div><div class="mat-qty" id="f-outRidges">0</div></div>
               <div class="mat-item"><div class="mat-info"><div class="mat-name">Battens (3m)</div></div><div class="mat-qty" id="f-outBattens">0</div></div>
@@ -361,7 +306,6 @@
           </div>
           <div class="material-wrapper">
             <div class="material-list blurred" id="t-materialList">
-              <div class="mat-header"><span>Material / Work Item</span><span>Qty</span></div>
               <div class="mat-item"><div class="mat-info"><div class="mat-name">Tile Adhesive (20kg bags)</div></div><div class="mat-qty" id="t-outAdhesive">0 bags</div></div>
               <div class="mat-item"><div class="mat-info"><div class="mat-name">Tile Grout (5kg bags)</div></div><div class="mat-qty" id="t-outGrout">0 bags</div></div>
               <div class="mat-item"><div class="mat-info"><div class="mat-name">Tile Spacers (pack)</div></div><div class="mat-qty" id="t-outSpacers">0 packs</div></div>
@@ -383,60 +327,41 @@
   </div>
 </div>
 
-<!-- FOOTER -->
 <footer>
   <div style="margin-bottom: 12px; font-weight: 600; color: white;">Calculate2Build / C2B</div>
   <div><a onclick="openModal('privacy')">Privacy Policy</a> | <a onclick="openModal('terms')">Terms of Service</a> | <a onclick="openModal('contact')">Contact Us</a></div>
   <div style="margin-top: 12px; font-size: 11px;">&copy; 2026 Calculate2Build. All rights reserved. Estimates are for planning purposes only.</div>
 </footer>
 
-<!-- LEGAL MODALS (FIXED STRUCTURE) -->
 <div class="modal-overlay" id="legalModal">
   <div class="modal-box">
     <button class="modal-close" onclick="closeModal()">&times;</button>
     <div id="content-privacy" style="display:none;">
-      <h2>Privacy Policy</h2>
-      <p class="last-updated">Last Updated: October 2026</p>
-      <h3>1. Introduction</h3>
-      <p>Calculate2Build ("C2B", "we", "us", or "our") operates the calculate2build.com website. This page informs you of our policies regarding the collection, use, and disclosure of personal data when you use our Service.</p>
-      <h3>2. Information We Collect</h3>
-      <p>We do not require you to create an account. All calculations, dimensions, and project data you enter are processed locally in your browser and are <strong>not transmitted to our servers</strong>.</p>
-      <h3>3. Third-Party Payment Processors</h3>
-      <p>When you purchase a PDF report, your payment is processed by a secure third-party provider (such as Paystack or Flutterwave). We do not store your payment details.</p>
-      <h3>4. Cookies and Analytics</h3>
-      <p>We may use cookies and similar tracking technologies to track activity on our Service to help us improve the product.</p>
-      <h3>5. Contact Us</h3>
-      <p>If you have any questions about this Privacy Policy, please contact us at <a href="mailto:quicktoolsapp@proton.me">quicktoolsapp@proton.me</a>.</p>
+      <h2>Privacy Policy</h2><p class="last-updated">Last Updated: October 2026</p>
+      <h3>1. Introduction</h3><p>Calculate2Build ("C2B", "we", "us", or "our") operates the calculate2build.com website. This page informs you of our policies regarding the collection, use, and disclosure of personal data when you use our Service.</p>
+      <h3>2. Information We Collect</h3><p>We do not require you to create an account. All calculations, dimensions, and project data you enter are processed locally in your browser and are <strong>not transmitted to our servers</strong>.</p>
+      <h3>3. Third-Party Payment Processors</h3><p>When you purchase a PDF report, your payment is processed by a secure third-party provider (such as Paystack or Flutterwave). We do not store your payment details.</p>
+      <h3>4. Cookies and Analytics</h3><p>We may use cookies and similar tracking technologies to track activity on our Service to help us improve the product.</p>
+      <h3>5. Contact Us</h3><p>If you have any questions about this Privacy Policy, please contact us at <a href="mailto:quicktoolsapp@proton.me">quicktoolsapp@proton.me</a>.</p>
     </div>
     <div id="content-terms" style="display:none;">
-      <h2>Terms of Service</h2>
-      <p class="last-updated">Last Updated: October 2026</p>
-      <h3>1. Acceptance of Terms</h3>
-      <p>By accessing and using Calculate2Build, you accept and agree to be bound by the terms and provisions of this agreement.</p>
-      <h3>2. Nature of the Service</h3>
-      <p>Calculate2Build provides preliminary construction quantity and cost estimation tools. <strong>These tools are for planning and budgeting purposes only.</strong></p>
-      <h3>3. Limitation of Liability</h3>
-      <p>We do not guarantee the accuracy of the estimates generated. You are solely responsible for verifying all quantities with a qualified local professional before purchasing materials.</p>
-      <h3>4. Payments & Refunds</h3>
-      <p>PDF reports and Premium subscriptions are digital goods delivered instantly upon payment. Because of the instantaneous nature of digital delivery, <strong>all sales are final</strong>.</p>
-      <h3>5. Governing Law</h3>
-      <p>These Terms shall be governed and construed in accordance with the laws of the Republic of Ghana.</p>
-      <h3>6. Contact Information</h3>
-      <p>Questions about the Terms of Service should be sent to us at <a href="mailto:quicktoolsapp@proton.me">quicktoolsapp@proton.me</a>.</p>
+      <h2>Terms of Service</h2><p class="last-updated">Last Updated: October 2026</p>
+      <h3>1. Acceptance of Terms</h3><p>By accessing and using Calculate2Build, you accept and agree to be bound by the terms and provisions of this agreement.</p>
+      <h3>2. Nature of the Service</h3><p>Calculate2Build provides preliminary construction quantity and cost estimation tools. <strong>These tools are for planning and budgeting purposes only.</strong></p>
+      <h3>3. Limitation of Liability</h3><p>We do not guarantee the accuracy of the estimates generated. You are solely responsible for verifying all quantities with a qualified local professional before purchasing materials.</p>
+      <h3>4. Payments & Refunds</h3><p>PDF reports and Premium subscriptions are digital goods delivered instantly upon payment. Because of the instantaneous nature of digital delivery, <strong>all sales are final</strong>.</p>
+      <h3>5. Governing Law</h3><p>These Terms shall be governed and construed in accordance with the laws of the Republic of Ghana.</p>
+      <h3>6. Contact Information</h3><p>Questions about the Terms of Service should be sent to us at <a href="mailto:quicktoolsapp@proton.me">quicktoolsapp@proton.me</a>.</p>
     </div>
     <div id="content-contact" style="display:none;">
-      <h2>Contact Us</h2>
-      <p class="last-updated">We typically respond within 24-48 hours.</p>
-      <h3>Support & Inquiries</h3>
-      <p>If you have a question about an estimate or need support with a PDF download, please reach out to us directly.</p>
+      <h2>Contact Us</h2><p class="last-updated">We typically respond within 24-48 hours.</p>
+      <h3>Support & Inquiries</h3><p>If you have a question about an estimate or need support with a PDF download, please reach out to us directly.</p>
       <p><strong>Email:</strong> <a href="mailto:quicktoolsapp@proton.me">quicktoolsapp@proton.me</a></p>
-      <h3>Business Hours</h3>
-      <p>Monday - Friday: 9:00 AM - 5:00 PM (GMT)</p>
+      <h3>Business Hours</h3><p>Monday - Friday: 9:00 AM - 5:00 PM (GMT)</p>
     </div>
   </div>
 </div>
 
-<!-- REFERRAL MODAL -->
 <div class="modal-overlay" id="referralModal">
   <div class="modal-box" style="max-width: 500px;">
     <button class="modal-close" onclick="closeModal()">&times;</button>
@@ -455,7 +380,6 @@
   </div>
 </div>
 
-<!-- Include Three.js & Supabase -->
 <script type="importmap">
 { "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js", "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/" } }
 </script>
@@ -472,76 +396,56 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let currentUnit = 'm'; const M_TO_FT = 3.28084;
 let savedRooms = []; let activeRoomId = 1;
-const currentRoom = { 
-  len: 6.4, wid: 5.5, hgt: 3.7, blockThick: 0.225, 
-  doors: 1, windows: 1,
-  sharedFront: false, sharedBack: false, sharedLeft: false, sharedRight: false 
-};
+const currentRoom = { len: 6.4, wid: 5.5, hgt: 3.7, blockThick: 0.225, doors: 1, windows: 1, sharedFront: false, sharedBack: false, sharedLeft: false, sharedRight: false };
 
+// ROOF & TILES PARAMETERS (FIXED: proper objects)
+const roofP = { type: 'gable', len: 10, wid: 8, pitch: 25, overhang: 0.5 };
+const tilesP = { len: 5, wid: 4, tileSize: 0.36, waste: 10 };
+
+// ==================== ROOM FUNCTIONS ====================
 window.changeCount = (type, delta) => {
-  if (type === 'door') {
-    currentRoom.doors = Math.max(0, currentRoom.doors + delta);
-    document.getElementById('doorCount').textContent = currentRoom.doors;
-  } else {
-    currentRoom.windows = Math.max(0, currentRoom.windows + delta);
-    document.getElementById('windowCount').textContent = currentRoom.windows;
-  }
+  if (type === 'door') { currentRoom.doors = Math.max(0, currentRoom.doors + delta); document.getElementById('doorCount').textContent = currentRoom.doors; }
+  else { currentRoom.windows = Math.max(0, currentRoom.windows + delta); document.getElementById('windowCount').textContent = currentRoom.windows; }
   updateUI(); rebuild3D();
 };
 
-let myReferralId = localStorage.getItem('myReferralId');
-window.addEventListener('load', async () => {
-  const urlParams = new URLSearchParams(window.location.search);
-  const incomingRef = urlParams.get('ref');
-  if (incomingRef && incomingRef !== myReferralId) {
-    await supabase.from('referrals').update({ status: 'success' }).eq('code', incomingRef);
-  }
-});
-window.openReferralModal = async (app) => {
-  document.getElementById('referralModal').classList.add('active');
-  myReferralId = 'C2B-' + Math.random().toString(36).substring(2, 8).toUpperCase();
-  localStorage.setItem('myReferralId', myReferralId);
-  await supabase.from('referrals').insert({ code: myReferralId, status: 'waiting', unlocked_app: app });
-  const fullLink = window.location.origin + window.location.pathname + '?ref=' + myReferralId;
-  document.getElementById('refLinkInput').value = fullLink;
-  const shareMsg = encodeURIComponent("I just used Calculate2Build to estimate my building materials — it's free and saves money! Check it out: ");
-  document.getElementById('refShareWhatsapp').href = `https://wa.me/?text=${shareMsg}${encodeURIComponent(fullLink)}`;
-  document.getElementById('refShareTwitter').href = `https://twitter.com/intent/tweet?text=${shareMsg}&url=${encodeURIComponent(fullLink)}`;
-  startPollingReferral(myReferralId, app);
-};
-function startPollingReferral(code, app) {
-  const interval = setInterval(async () => {
-    const { data } = await supabase.from('referrals').select('status').eq('code', code).maybeSingle();
-    if (data && data.status === 'success') {
-      clearInterval(interval);
-      unlockApp(app);
-      document.getElementById('refStatus').innerHTML = '✅ Success! Your PDF has been unlocked.';
-      document.getElementById('refStatus').style.background = '#d1fae5';
-      setTimeout(() => { closeModal(); }, 2000);
-    }
-  }, 3000);
-}
-window.copyReferralLink = () => {
-  navigator.clipboard.writeText(document.getElementById('refLinkInput').value);
+window.setUnit = (unit) => {
+  currentUnit = unit;
+  document.getElementById('btn-m').classList.toggle('active', unit === 'm');
+  document.getElementById('btn-ft').classList.toggle('active', unit === 'ft');
+  updateUI();
 };
 
-const getSliderVal = (id) => { const val = parseFloat(document.getElementById(id).value); return currentUnit === 'm' ? val : val / M_TO_FT; };
-function getBlockName(thick) { if (thick === 0.225) return '9" (225mm)'; if (thick === 0.150) return '6" (150mm)'; return '9" (225mm)'; }
+window.switchTab = (tabId) => {
+  document.querySelectorAll('.app-section').forEach(el => el.classList.remove('active'));
+  document.getElementById(`app-${tabId}`).classList.add('active');
+  document.querySelectorAll('.nav-links a').forEach(a => a.classList.toggle('active', a.dataset.tab === tabId));
+  setTimeout(() => {
+    window.dispatchEvent(new Event('resize'));
+    if (tabId === 'roof') { if (rendererRoof) { cameraRoof.aspect = containerRoof.clientWidth/containerRoof.clientHeight; cameraRoof.updateProjectionMatrix(); rendererRoof.setSize(containerRoof.clientWidth, containerRoof.clientHeight); } rebuildRoof3D(); }
+    if (tabId === 'tiles') { if (rendererTiles) { cameraTiles.aspect = containerTiles.clientWidth/containerTiles.clientHeight; cameraTiles.updateProjectionMatrix(); rendererTiles.setSize(containerTiles.clientWidth, containerTiles.clientHeight); } rebuildTiles3D(); }
+    if (tabId === 'room') rebuild3D();
+  }, 100);
+};
 
-window.setUnit = (unit) => { currentUnit = unit; document.getElementById('btn-m').classList.toggle('active', unit === 'm'); document.getElementById('btn-ft').classList.toggle('active', unit === 'ft'); updateUI(); };
-window.switchTab = (tabId) => { document.querySelectorAll('.app-section').forEach(el => el.classList.remove('active')); document.getElementById(`app-${tabId}`).classList.add('active'); setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 50); };
-window.toggleWall = (side) => { if (side === 'front') { currentRoom.sharedFront = !currentRoom.sharedFront; document.getElementById('wall-front').classList.toggle('active', currentRoom.sharedFront); } if (side === 'back') { currentRoom.sharedBack = !currentRoom.sharedBack; document.getElementById('wall-back').classList.toggle('active', currentRoom.sharedBack); } if (side === 'left') { currentRoom.sharedLeft = !currentRoom.sharedLeft; document.getElementById('wall-left').classList.toggle('active', currentRoom.sharedLeft); } if (side === 'right') { currentRoom.sharedRight = !currentRoom.sharedRight; document.getElementById('wall-right').classList.toggle('active', currentRoom.sharedRight); } updateUI(); rebuild3D(); };
+window.toggleWall = (side) => {
+  const key = 'shared' + side.charAt(0).toUpperCase() + side.slice(1);
+  currentRoom[key] = !currentRoom[key];
+  document.getElementById('wall-' + side).classList.toggle('active', currentRoom[key]);
+  updateUI(); rebuild3D();
+};
 
 window.saveCurrentRoom = () => {
   savedRooms.push({ id: activeRoomId, ...currentRoom });
   activeRoomId++;
   currentRoom.len = 5.0; currentRoom.wid = 4.0; currentRoom.doors = 1; currentRoom.windows = 1;
   document.getElementById('doorCount').textContent = 1; document.getElementById('windowCount').textContent = 1;
-  currentRoom.sharedFront = false; currentRoom.sharedBack = false; currentRoom.sharedLeft = false; currentRoom.sharedRight = false;
-  document.getElementById('wall-front').classList.remove('active'); document.getElementById('wall-back').classList.remove('active'); document.getElementById('wall-left').classList.remove('active'); document.getElementById('wall-right').classList.remove('active');
+  currentRoom.sharedFront = currentRoom.sharedBack = currentRoom.sharedLeft = currentRoom.sharedRight = false;
+  ['front','back','left','right'].forEach(s => document.getElementById('wall-' + s).classList.remove('active'));
   document.getElementById('r-len').value = 5.0; document.getElementById('r-wid').value = 4.0;
   updateUI(); rebuild3D();
 };
+
 window.clearAllRooms = () => {
   savedRooms = []; activeRoomId = 1; currentRoom.len = 6.4; currentRoom.wid = 5.5; currentRoom.doors = 1; currentRoom.windows = 1;
   document.getElementById('doorCount').textContent = 1; document.getElementById('windowCount').textContent = 1;
@@ -549,14 +453,24 @@ window.clearAllRooms = () => {
   updateUI(); rebuild3D();
 };
 
+function getBlockName(thick) {
+  if (thick === 0.225) return '9" (225mm)';
+  if (thick === 0.150) return '6" (150mm)';
+  if (thick === 0.125) return '5" (125mm)';
+  return '4" (100mm)';
+}
+
 function updateUI() {
-  const mult = currentUnit === 'm' ? 1 : M_TO_FT; const suffix = currentUnit === 'm' ? ' m' : ' ft';
+  const mult = currentUnit === 'm' ? 1 : M_TO_FT;
+  const suffix = currentUnit === 'm' ? ' m' : ' ft';
   document.getElementById('activeRoomBadge').textContent = `Designing Room ${activeRoomId}`;
   document.getElementById('r-lenV').textContent = (currentRoom.len * mult).toFixed(1) + suffix;
   document.getElementById('r-widV').textContent = (currentRoom.wid * mult).toFixed(1) + suffix;
   document.getElementById('r-hgtV').textContent = (currentRoom.hgt * mult).toFixed(1) + suffix;
   const list = document.getElementById('savedRoomsList');
-  list.innerHTML = savedRooms.length === 0 ? '<div style="font-size: 12px; color: var(--text-muted); text-align: center;">No rooms saved yet.</div>' : savedRooms.map((r, i) => `<div class="room-item"><span>Room ${i + 1}</span><span>${(r.len * mult).toFixed(1)} ${suffix} x ${(r.wid * mult).toFixed(1)} ${suffix}</span></div>`).join('');
+  list.innerHTML = savedRooms.length === 0
+    ? '<div style="font-size: 12px; color: var(--text-muted); text-align: center;">No rooms saved yet.</div>'
+    : savedRooms.map((r, i) => `<div class="room-item"><span>Room ${i + 1}</span><span>${(r.len * mult).toFixed(1)}${suffix} x ${(r.wid * mult).toFixed(1)}${suffix}</span></div>`).join('');
   calcTotals();
 }
 
@@ -565,16 +479,15 @@ function calcTotals() {
   const calcRoom = (r) => {
     let gross = 2 * (r.len + r.wid) * hgt;
     let deductions = 0;
-    if (r.sharedFront) deductions += (r.len * hgt); if (r.sharedBack) deductions += (r.len * hgt);
-    if (r.sharedLeft) deductions += (r.wid * hgt); if (r.sharedRight) deductions += (r.wid * hgt);
-    const doorArea = r.doors * (0.9 * 2.1);
-    const winArea = r.windows * (1.2 * 1.2);
-    let net = gross - deductions - doorArea - winArea;
+    if (r.sharedFront) deductions += (r.len * hgt);
+    if (r.sharedBack) deductions += (r.len * hgt);
+    if (r.sharedLeft) deductions += (r.wid * hgt);
+    if (r.sharedRight) deductions += (r.wid * hgt);
+    let net = gross - deductions - r.doors * (0.9 * 2.1) - r.windows * (1.2 * 1.2);
     if (net < 0) net = 0;
     totalArea += (r.len * r.wid); totalWallArea += net;
   };
   savedRooms.forEach(calcRoom); calcRoom(currentRoom);
-
   document.getElementById('r-outBlocks').textContent = Math.ceil((totalWallArea * 10) * 1.05).toLocaleString() + ' pcs';
   document.getElementById('r-outCemMortar').textContent = Math.ceil(totalWallArea * 0.12 * 1.07) + ' bags';
   document.getElementById('r-outSand').textContent = (totalWallArea * 0.012 * 1.07).toFixed(2) + ' m³';
@@ -587,20 +500,31 @@ function calcTotals() {
   document.getElementById('r-outBlockType').textContent = getBlockName(currentRoom.blockThick);
 }
 
-// 3D ENGINE (Room) - CLEAN OPENINGS
+// ==================== ROOM 3D ====================
 const blockMat = new THREE.MeshStandardMaterial({ color: 0xd4cbb8, roughness: 0.9 });
 const roofMat = new THREE.MeshStandardMaterial({ color: 0x64748b, roughness: 0.6, side: THREE.DoubleSide });
 const doorMat = new THREE.MeshStandardMaterial({ color: 0x8b5a2b, roughness: 0.9 });
+const tileMat = new THREE.MeshStandardMaterial({ color: 0xc0c0c0, roughness: 0.3, metalness: 0.1 });
 
 const containerRoom = document.getElementById('canvas-room');
 const sceneRoom = new THREE.Scene(); sceneRoom.background = new THREE.Color(0xf1f5f9);
 const cameraRoom = new THREE.PerspectiveCamera(40, containerRoom.clientWidth / containerRoom.clientHeight, 0.1, 1000);
 cameraRoom.position.set(15, 12, 18);
-const rendererRoom = new THREE.WebGLRenderer({ antialias: true }); rendererRoom.setPixelRatio(Math.min(devicePixelRatio, 2)); rendererRoom.setSize(containerRoom.clientWidth, containerRoom.clientHeight); rendererRoom.shadowMap.enabled = true; containerRoom.appendChild(rendererRoom.domElement);
-const controlsRoom = new OrbitControls(cameraRoom, rendererRoom.domElement); controlsRoom.enableDamping = true; controlsRoom.maxPolarAngle = Math.PI / 2 - 0.05; controlsRoom.minDistance = 5; controlsRoom.maxDistance = 100; controlsRoom.target.set(0, 2, 0);
-sceneRoom.add(new THREE.AmbientLight(0xffffff, 0.6)); const dirRoom = new THREE.DirectionalLight(0xffffff, 1.2); dirRoom.position.set(20, 30, 20); dirRoom.castShadow = true; sceneRoom.add(dirRoom);
-const groundRoom = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1 })); groundRoom.rotation.x = -Math.PI / 2; groundRoom.receiveShadow = true; sceneRoom.add(groundRoom);
-const gridRoom = new THREE.GridHelper(200, 200, 0xcbd5e1, 0xe2e8f0); gridRoom.position.y = 0.01; sceneRoom.add(gridRoom);
+const rendererRoom = new THREE.WebGLRenderer({ antialias: true });
+rendererRoom.setPixelRatio(Math.min(devicePixelRatio, 2));
+rendererRoom.setSize(containerRoom.clientWidth, containerRoom.clientHeight);
+rendererRoom.shadowMap.enabled = true;
+containerRoom.appendChild(rendererRoom.domElement);
+const controlsRoom = new OrbitControls(cameraRoom, rendererRoom.domElement);
+controlsRoom.enableDamping = true; controlsRoom.maxPolarAngle = Math.PI / 2 - 0.05;
+controlsRoom.minDistance = 5; controlsRoom.maxDistance = 100; controlsRoom.target.set(0, 2, 0);
+sceneRoom.add(new THREE.AmbientLight(0xffffff, 0.6));
+const dirRoom = new THREE.DirectionalLight(0xffffff, 1.2);
+dirRoom.position.set(20, 30, 20); dirRoom.castShadow = true; sceneRoom.add(dirRoom);
+const groundRoom = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1 }));
+groundRoom.rotation.x = -Math.PI / 2; groundRoom.receiveShadow = true; sceneRoom.add(groundRoom);
+const gridRoom = new THREE.GridHelper(200, 200, 0xcbd5e1, 0xe2e8f0);
+gridRoom.position.y = 0.01; sceneRoom.add(gridRoom);
 const buildingGroup = new THREE.Group(); sceneRoom.add(buildingGroup);
 
 function rebuild3D() {
@@ -616,65 +540,40 @@ function rebuild3D() {
     const wall4 = new THREE.Mesh(new THREE.BoxGeometry(blockThick, hgt, wid), blockMat); wall4.position.set(len/2, hgt/2, 0); buildingGroup.add(wall4);
   } else {
     const geo = new THREE.BoxGeometry(BLOCK_W * 0.98, BLOCK_H * 0.98, blockThick);
-    
     const walls = [
       { axis: 'x', fixed:  wid/2, span: len, isFront: true,  visible: !currentRoom.sharedFront },
       { axis: 'x', fixed: -wid/2, span: len, isFront: false, visible: !currentRoom.sharedBack },
       { axis: 'z', fixed: -len/2, span: wid, isFront: false, visible: !currentRoom.sharedLeft },
       { axis: 'z', fixed:  len/2, span: wid, isFront: false, visible: !currentRoom.sharedRight },
     ];
-    
-    let remainingDoors = doors;
-    let remainingWindows = windows;
-    
+    let remainingDoors = doors; let remainingWindows = windows;
     walls.forEach(w => {
       if (!w.visible) return;
-      
-      const cols = Math.round(w.span / BLOCK_W);
-      const rows = Math.round(hgt / BLOCK_H);
+      const cols = Math.round(w.span / BLOCK_W); const rows = Math.round(hgt / BLOCK_H);
       const openings = [];
-      
-      // Place doors on the front wall
       if (w.isFront && remainingDoors > 0) {
-        for (let i = 0; i < remainingDoors; i++) {
-          const offset = (i - (remainingDoors - 1) / 2) * (doorW + 0.3);
-          openings.push({ type: 'door', pos: offset, width: doorW, height: doorH });
-        }
+        for (let i = 0; i < remainingDoors; i++) openings.push({ type: 'door', pos: (i - (remainingDoors-1)/2) * (doorW + 0.3), width: doorW, height: doorH });
         remainingDoors = 0;
       }
-      
-      // Place windows evenly on the other walls
       if (!w.isFront && remainingWindows > 0) {
         const count = Math.ceil(remainingWindows / 3);
-        for (let i = 0; i < count; i++) {
-          const offset = (i - (count - 1) / 2) * (winW + 0.5);
-          openings.push({ type: 'window', pos: offset, width: winW, height: winH, sill: sillY });
-        }
+        for (let i = 0; i < count; i++) openings.push({ type: 'window', pos: (i - (count-1)/2) * (winW + 0.5), width: winW, height: winH, sill: sillY });
         remainingWindows -= count;
       }
-      
-      for (let c = 0; c < cols; c++) {
-        for (let r = 0; r < rows; r++) {
-          const alongPos = c * BLOCK_W + BLOCK_W / 2 - w.span / 2;
-          const yPos = r * BLOCK_H + BLOCK_H / 2;
-          
-          let skip = false;
-          for (const op of openings) {
-            if (op.type === 'door' && Math.abs(alongPos - op.pos) < op.width / 2 && yPos < op.height) { skip = true; break; }
-            if (op.type === 'window' && Math.abs(alongPos - op.pos) < op.width / 2 && yPos > op.sill && yPos < op.sill + op.height) { skip = true; break; }
-          }
-          
-          if (skip) continue;
-          
-          const m = new THREE.Mesh(geo, blockMat);
-          m.castShadow = true; m.receiveShadow = true;
-          if (w.axis === 'x') m.position.set(alongPos, yPos, w.fixed);
-          else { m.position.set(w.fixed, yPos, alongPos); m.rotation.y = Math.PI / 2; }
-          buildingGroup.add(m);
+      for (let c = 0; c < cols; c++) for (let r = 0; r < rows; r++) {
+        const alongPos = c * BLOCK_W + BLOCK_W/2 - w.span/2;
+        const yPos = r * BLOCK_H + BLOCK_H/2;
+        let skip = false;
+        for (const op of openings) {
+          if (op.type === 'door' && Math.abs(alongPos - op.pos) < op.width/2 && yPos < op.height) { skip = true; break; }
+          if (op.type === 'window' && Math.abs(alongPos - op.pos) < op.width/2 && yPos > op.sill && yPos < op.sill + op.height) { skip = true; break; }
         }
+        if (skip) continue;
+        const m = new THREE.Mesh(geo, blockMat); m.castShadow = true; m.receiveShadow = true;
+        if (w.axis === 'x') m.position.set(alongPos, yPos, w.fixed);
+        else { m.position.set(w.fixed, yPos, alongPos); m.rotation.y = Math.PI / 2; }
+        buildingGroup.add(m);
       }
-      
-      // Add ONLY the door mesh (windows are just open holes)
       openings.forEach(op => {
         if (op.type === 'door') {
           const doorMesh = new THREE.Mesh(new THREE.BoxGeometry(op.width, op.height, 0.05), doorMat);
@@ -684,7 +583,6 @@ function rebuild3D() {
       });
     });
   }
-
   const rad = (25 * Math.PI) / 180; const halfW = wid / 2; const rise = Math.tan(rad) * halfW; const overhang = 0.4;
   const roofGeo = new THREE.BufferGeometry();
   const v0 = new THREE.Vector3(-halfW - overhang, hgt,  len/2 + overhang); const v1 = new THREE.Vector3( halfW + overhang, hgt,  len/2 + overhang); const v2 = new THREE.Vector3( 0, hgt + rise, len/2 + overhang);
@@ -696,33 +594,297 @@ function rebuild3D() {
   cameraRoom.position.set(len * 1.5, hgt * 2, wid * 1.5); controlsRoom.target.set(0, hgt * 0.5, 0); controlsRoom.update();
 }
 
+// ==================== ROOF 3D & LOGIC (FIXED) ====================
+const containerRoof = document.getElementById('canvas-roof');
+const sceneRoof = new THREE.Scene(); sceneRoof.background = new THREE.Color(0xf1f5f9);
+const cameraRoof = new THREE.PerspectiveCamera(40, containerRoof.clientWidth / containerRoof.clientHeight, 0.1, 1000);
+cameraRoof.position.set(15, 12, 18);
+const rendererRoof = new THREE.WebGLRenderer({ antialias: true });
+rendererRoof.setPixelRatio(Math.min(devicePixelRatio, 2));
+rendererRoof.setSize(containerRoof.clientWidth, containerRoof.clientHeight);
+rendererRoof.shadowMap.enabled = true;
+containerRoof.appendChild(rendererRoof.domElement);
+const controlsRoof = new OrbitControls(cameraRoof, rendererRoof.domElement);
+controlsRoof.enableDamping = true; controlsRoof.maxPolarAngle = Math.PI / 2 - 0.05;
+controlsRoof.minDistance = 5; controlsRoof.maxDistance = 100; controlsRoof.target.set(0, 2, 0);
+sceneRoof.add(new THREE.AmbientLight(0xffffff, 0.6));
+const dirRoof = new THREE.DirectionalLight(0xffffff, 1.2);
+dirRoof.position.set(20, 30, 20); dirRoof.castShadow = true; sceneRoof.add(dirRoof);
+const groundRoof = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1 }));
+groundRoof.rotation.x = -Math.PI / 2; groundRoof.receiveShadow = true; sceneRoof.add(groundRoof);
+const gridRoof = new THREE.GridHelper(200, 200, 0xcbd5e1, 0xe2e8f0);
+gridRoof.position.y = 0.01; sceneRoof.add(gridRoof);
+const roofGroup = new THREE.Group(); sceneRoof.add(roofGroup);
+
+function rebuildRoof3D() {
+  roofGroup.clear();
+  const { len, wid, pitch, overhang, type } = roofP;
+  const rad = (pitch * Math.PI) / 180;
+  const halfW = wid / 2;
+  const wallH = 3.0;
+  const rise = Math.tan(rad) * (halfW + overhang);
+  const roofColor = new THREE.MeshStandardMaterial({ color: 0xc0392b, roughness: 0.5, side: THREE.DoubleSide });
+  const wallColor = new THREE.MeshStandardMaterial({ color: 0xd4cbb8, roughness: 0.9 });
+
+  // Simple walls
+  const w1 = new THREE.Mesh(new THREE.BoxGeometry(len, wallH, 0.1), wallColor); w1.position.set(0, wallH/2, wid/2); roofGroup.add(w1);
+  const w2 = new THREE.Mesh(new THREE.BoxGeometry(len, wallH, 0.1), wallColor); w2.position.set(0, wallH/2, -wid/2); roofGroup.add(w2);
+  const w3 = new THREE.Mesh(new THREE.BoxGeometry(0.1, wallH, wid), wallColor); w3.position.set(-len/2, wallH/2, 0); roofGroup.add(w3);
+  const w4 = new THREE.Mesh(new THREE.BoxGeometry(0.1, wallH, wid), wallColor); w4.position.set(len/2, wallH/2, 0); roofGroup.add(w4);
+
+  if (type === 'flat') {
+    const g = new THREE.Mesh(new THREE.BoxGeometry(len + overhang*2, 0.1, wid + overhang*2), roofColor);
+    g.position.set(0, wallH + 0.1, 0); g.castShadow = true; roofGroup.add(g);
+  } else if (type === 'gable') {
+    const slopeLen = Math.sqrt(Math.pow(halfW + overhang, 2) + Math.pow(rise, 2));
+    const geo = new THREE.BufferGeometry();
+    const v0 = new THREE.Vector3(-halfW - overhang, wallH, len/2 + overhang);
+    const v1 = new THREE.Vector3(halfW + overhang, wallH, len/2 + overhang);
+    const v2 = new THREE.Vector3(0, wallH + rise, len/2 + overhang);
+    const v3 = new THREE.Vector3(-halfW - overhang, wallH, -len/2 - overhang);
+    const v4 = new THREE.Vector3(halfW + overhang, wallH, -len/2 - overhang);
+    const v5 = new THREE.Vector3(0, wallH + rise, -len/2 - overhang);
+    const vertices = new Float32Array([v0.x,v0.y,v0.z, v1.x,v1.y,v1.z, v2.x,v2.y,v2.z, v3.x,v3.y,v3.z, v4.x,v4.y,v4.z, v5.x,v5.y,v5.z]);
+    geo.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+    geo.setIndex([0,2,5, 0,5,3, 1,4,5, 1,5,2, 0,1,2, 3,5,4]);
+    geo.computeVertexNormals();
+    const mesh = new THREE.Mesh(geo, roofColor); mesh.castShadow = true; mesh.receiveShadow = true; roofGroup.add(mesh);
+    // Gable triangle ends
+    const triGeo1 = new THREE.BufferGeometry();
+    triGeo1.setAttribute('position', new THREE.BufferAttribute(new Float32Array([-halfW, wallH, len/2, halfW, wallH, len/2, 0, wallH+rise, len/2]), 3));
+    triGeo1.computeVertexNormals();
+    roofGroup.add(new THREE.Mesh(triGeo1, wallColor));
+    const triGeo2 = new THREE.BufferGeometry();
+    triGeo2.setAttribute('position', new THREE.BufferAttribute(new Float32Array([halfW, wallH, -len/2, -halfW, wallH, -len/2, 0, wallH+rise, -len/2]), 3));
+    triGeo2.computeVertexNormals();
+    roofGroup.add(new THREE.Mesh(triGeo2, wallColor));
+  } else if (type === 'hip') {
+    // Simple 4-sided pyramid
+    const geo = new THREE.ConeGeometry(Math.max(len, wid) * 0.7, rise, 4, 1);
+    const mesh = new THREE.Mesh(geo, roofColor);
+    mesh.rotation.y = Math.PI / 4;
+    mesh.position.set(0, wallH + rise/2, 0);
+    mesh.castShadow = true;
+    roofGroup.add(mesh);
+  } else if (type === 'mono') {
+    const geo = new THREE.BufferGeometry();
+    const v0 = new THREE.Vector3(-halfW - overhang, wallH, len/2 + overhang);
+    const v1 = new THREE.Vector3(halfW + overhang, wallH, len/2 + overhang);
+    const v2 = new THREE.Vector3(-halfW - overhang, wallH + rise, len/2 + overhang);
+    const v3 = new THREE.Vector3(halfW + overhang, wallH + rise, len/2 + overhang);
+    const v4 = new THREE.Vector3(-halfW - overhang, wallH, -len/2 - overhang);
+    const v5 = new THREE.Vector3(halfW + overhang, wallH, -len/2 - overhang);
+    const v6 = new THREE.Vector3(-halfW - overhang, wallH + rise, -len/2 - overhang);
+    const v7 = new THREE.Vector3(halfW + overhang, wallH + rise, -len/2 - overhang);
+    const verts = new Float32Array([
+      v0.x,v0.y,v0.z, v1.x,v1.y,v1.z, v2.x,v2.y,v2.z, v3.x,v3.y,v3.z,
+      v4.x,v4.y,v4.z, v5.x,v5.y,v5.z, v6.x,v6.y,v6.z, v7.x,v7.y,v7.z
+    ]);
+    geo.setAttribute('position', new THREE.BufferAttribute(verts, 3));
+    geo.setIndex([
+      0,2,3, 0,3,1,   // front slope
+      4,5,7, 4,7,6,   // back slope
+      0,4,6, 0,6,2,   // left slope
+      1,3,7, 1,7,5    // right slope
+    ]);
+    geo.computeVertexNormals();
+    const mesh = new THREE.Mesh(geo, roofColor); mesh.castShadow = true; roofGroup.add(mesh);
+  }
+
+  cameraRoof.position.set(len * 1.5, wallH * 3, wid * 1.8);
+  controlsRoof.target.set(0, wallH, 0); controlsRoof.update();
+}
+
+function calcRoof() {
+  const { len, wid, pitch, type } = roofP;
+  const rad = pitch * Math.PI / 180;
+  let area = 0;
+  if (type === 'flat') area = len * wid;
+  else if (type === 'gable' || type === 'mono') area = len * wid / Math.cos(rad);
+  else if (type === 'hip') area = len * wid * 1.1 / Math.cos(rad);
+  document.getElementById('f-outArea').textContent = area.toFixed(2) + ' m²';
+  document.getElementById('f-outAngle').textContent = pitch + '°';
+  const sheets = Math.ceil(area / (0.9 * 3) * 1.1);
+  const ridgeLen = type === 'gable' ? len : type === 'hip' ? len * 1.2 : type === 'mono' ? len : 0;
+  const ridges = Math.ceil(ridgeLen / 3);
+  const battens = Math.ceil(area / 0.6 * 1.05);
+  const screws = Math.ceil(area * 8);
+  document.getElementById('f-outSheets').textContent = sheets + ' pcs';
+  document.getElementById('f-outRidges').textContent = ridges + ' pcs';
+  document.getElementById('f-outBattens').textContent = battens + ' pcs';
+  document.getElementById('f-outScrews').textContent = screws.toLocaleString() + ' pcs';
+}
+
+window.setRoofType = (type) => {
+  roofP.type = type;
+  document.querySelectorAll('.roof-btn').forEach(b => b.classList.toggle('active', b.dataset.type === type));
+  rebuildRoof3D(); calcRoof();
+};
+
+// Wire up roof sliders
+['f-len','f-wid','f-pit'].forEach(id => {
+  document.getElementById(id).addEventListener('input', () => {
+    roofP.len = parseFloat(document.getElementById('f-len').value);
+    roofP.wid = parseFloat(document.getElementById('f-wid').value);
+    roofP.pitch = parseFloat(document.getElementById('f-pit').value);
+    document.getElementById('f-lenV').textContent = roofP.len.toFixed(1) + ' m';
+    document.getElementById('f-widV').textContent = roofP.wid.toFixed(1) + ' m';
+    document.getElementById('f-pitV').textContent = roofP.pitch + '°';
+    rebuildRoof3D(); calcRoof();
+  });
+});
+document.getElementById('f-overhang').addEventListener('input', () => {
+  roofP.overhang = parseFloat(document.getElementById('f-overhang').value) || 0.5;
+  rebuildRoof3D();
+});
+
+// ==================== TILES 3D & LOGIC (FIXED) ====================
+const containerTiles = document.getElementById('canvas-tiles');
+const sceneTiles = new THREE.Scene(); sceneTiles.background = new THREE.Color(0xf1f5f9);
+const cameraTiles = new THREE.PerspectiveCamera(40, containerTiles.clientWidth / containerTiles.clientHeight, 0.1, 1000);
+cameraTiles.position.set(8, 10, 12);
+const rendererTiles = new THREE.WebGLRenderer({ antialias: true });
+rendererTiles.setPixelRatio(Math.min(devicePixelRatio, 2));
+rendererTiles.setSize(containerTiles.clientWidth, containerTiles.clientHeight);
+rendererTiles.shadowMap.enabled = true;
+containerTiles.appendChild(rendererTiles.domElement);
+const controlsTiles = new OrbitControls(cameraTiles, rendererTiles.domElement);
+controlsTiles.enableDamping = true; controlsTiles.maxPolarAngle = Math.PI / 2 - 0.05;
+controlsTiles.minDistance = 2; controlsTiles.maxDistance = 80; controlsTiles.target.set(0, 0, 0);
+sceneTiles.add(new THREE.AmbientLight(0xffffff, 0.7));
+const dirTiles = new THREE.DirectionalLight(0xffffff, 1.0);
+dirTiles.position.set(10, 20, 10); dirTiles.castShadow = true; sceneTiles.add(dirTiles);
+const groundTiles = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1 }));
+groundTiles.rotation.x = -Math.PI / 2; groundTiles.receiveShadow = true; sceneTiles.add(groundTiles);
+const tileGroup = new THREE.Group(); sceneTiles.add(tileGroup);
+
+function rebuildTiles3D() {
+  tileGroup.clear();
+  const { len, wid, tileSize } = tilesP;
+  const cols = Math.max(1, Math.floor(len / Math.sqrt(tileSize)));
+  const rows = Math.max(1, Math.floor(wid / Math.sqrt(tileSize)));
+  const tileW = len / cols;
+  const tileD = wid / rows;
+  const tileH = 0.05;
+  const tileGeo = new THREE.BoxGeometry(tileW * 0.95, tileH, tileD * 0.95);
+
+  for (let i = 0; i < cols; i++) for (let j = 0; j < rows; j++) {
+    const color = (i + j) % 2 === 0 ? 0xe2e8f0 : 0xcbd5e1;
+    const mat = new THREE.MeshStandardMaterial({ color: color, roughness: 0.3, metalness: 0.05 });
+    const tile = new THREE.Mesh(tileGeo, mat);
+    tile.position.set(-len/2 + tileW/2 + i * tileW, tileH/2, -wid/2 + tileD/2 + j * tileD);
+    tile.receiveShadow = true;
+    tileGroup.add(tile);
+  }
+  // Room outline walls
+  const wallMat = new THREE.MeshStandardMaterial({ color: 0xd4cbb8, roughness: 0.9 });
+  const wallH = 1.5;
+  const w1 = new THREE.Mesh(new THREE.BoxGeometry(len, wallH, 0.05), wallMat); w1.position.set(0, wallH/2, wid/2); tileGroup.add(w1);
+  const w2 = new THREE.Mesh(new THREE.BoxGeometry(len, wallH, 0.05), wallMat); w2.position.set(0, wallH/2, -wid/2); tileGroup.add(w2);
+  const w3 = new THREE.Mesh(new THREE.BoxGeometry(0.05, wallH, wid), wallMat); w3.position.set(-len/2, wallH/2, 0); tileGroup.add(w3);
+  const w4 = new THREE.Mesh(new THREE.BoxGeometry(0.05, wallH, wid), wallMat); w4.position.set(len/2, wallH/2, 0); tileGroup.add(w4);
+
+  cameraTiles.position.set(len * 1.2, Math.max(len, wid) * 1.5, wid * 1.2);
+  controlsTiles.target.set(0, 0, 0); controlsTiles.update();
+}
+
+function calcTiles() {
+  const { len, wid, tileSize, waste } = tilesP;
+  const area = len * wid;
+  const tilesNeeded = Math.ceil(area / tileSize * (1 + waste / 100));
+  document.getElementById('t-outArea').textContent = area.toFixed(2) + ' m²';
+  document.getElementById('t-outTiles').textContent = tilesNeeded + ' tiles';
+  const adhesive = Math.ceil(area * 4 / 20);
+  const grout = Math.ceil(area * 0.5 / 5);
+  const spacers = Math.max(1, Math.ceil(tilesNeeded / 100));
+  document.getElementById('t-outAdhesive').textContent = adhesive + ' bags';
+  document.getElementById('t-outGrout').textContent = grout + ' bags';
+  document.getElementById('t-outSpacers').textContent = spacers + ' packs';
+}
+
+['t-len','t-wid'].forEach(id => {
+  document.getElementById(id).addEventListener('input', () => {
+    tilesP.len = parseFloat(document.getElementById('t-len').value);
+    tilesP.wid = parseFloat(document.getElementById('t-wid').value);
+    document.getElementById('t-lenV').textContent = tilesP.len.toFixed(1) + ' m';
+    document.getElementById('t-widV').textContent = tilesP.wid.toFixed(1) + ' m';
+    rebuildTiles3D(); calcTiles();
+  });
+});
+document.getElementById('t-size').addEventListener('change', () => {
+  tilesP.tileSize = parseFloat(document.getElementById('t-size').value);
+  rebuildTiles3D(); calcTiles();
+});
+document.getElementById('t-waste').addEventListener('input', () => {
+  tilesP.waste = parseFloat(document.getElementById('t-waste').value) || 10;
+  calcTiles();
+});
+
+// ==================== UNLOCK / MODALS / REFERRAL ====================
 function unlockApp(app) {
   const prefix = app === 'room' ? 'r' : app === 'roof' ? 'f' : 't';
   document.getElementById(`${prefix}-materialList`).classList.remove('blurred');
   document.getElementById(`${prefix}-paywall`).style.display = 'none';
   document.getElementById(`${prefix}-actions`).style.display = 'flex';
 }
-window.mockUnlock = (app) => { setTimeout(() => unlockApp(app), 800); };
+window.mockUnlock = (app) => setTimeout(() => unlockApp(app), 800);
 
-// FIXED MODAL LOGIC
 window.openModal = (type) => {
   document.getElementById('legalModal').classList.add('active');
   document.querySelectorAll('#legalModal > div > div').forEach(el => el.style.display = 'none');
   document.getElementById(`content-${type}`).style.display = 'block';
 };
-window.closeModal = () => { 
+window.closeModal = () => {
   document.getElementById('legalModal').classList.remove('active');
   document.getElementById('referralModal').classList.remove('active');
 };
 
-// PDF GENERATION (SAME AS BEFORE)
+let myReferralId = localStorage.getItem('myReferralId');
+window.openReferralModal = async (app) => {
+  document.getElementById('referralModal').classList.add('active');
+  myReferralId = 'C2B-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+  localStorage.setItem('myReferralId', myReferralId);
+  try { await supabase.from('referrals').insert({ code: myReferralId, status: 'waiting', unlocked_app: app }); } catch(e) {}
+  const fullLink = window.location.origin + window.location.pathname + '?ref=' + myReferralId;
+  document.getElementById('refLinkInput').value = fullLink;
+  const shareMsg = encodeURIComponent("I just used Calculate2Build to estimate my building materials — it's free and saves money! Check it out: ");
+  document.getElementById('refShareWhatsapp').href = `https://wa.me/?text=${shareMsg}${encodeURIComponent(fullLink)}`;
+  document.getElementById('refShareTwitter').href = `https://twitter.com/intent/tweet?text=${shareMsg}&url=${encodeURIComponent(fullLink)}`;
+  startPollingReferral(myReferralId, app);
+};
+
+function startPollingReferral(code, app) {
+  const interval = setInterval(async () => {
+    try {
+      const { data } = await supabase.from('referrals').select('status').eq('code', code).maybeSingle();
+      if (data && data.status === 'success') {
+        clearInterval(interval);
+        unlockApp(app);
+        document.getElementById('refStatus').innerHTML = '✅ Success! Your PDF has been unlocked.';
+        document.getElementById('refStatus').style.background = '#d1fae5';
+        setTimeout(() => closeModal(), 2000);
+      }
+    } catch(e) {}
+  }, 3000);
+}
+
+window.copyReferralLink = () => navigator.clipboard.writeText(document.getElementById('refLinkInput').value);
+
+window.addEventListener('load', async () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const incomingRef = urlParams.get('ref');
+  if (incomingRef && incomingRef !== myReferralId) {
+    try { await supabase.from('referrals').update({ status: 'success' }).eq('code', incomingRef); } catch(e) {}
+  }
+  initUI();
+});
+
+// ==================== PDF DOWNLOADS ====================
 window.downloadRoomPDF = () => {
   const { jsPDF } = window.jspdf; const doc = new jsPDF();
-  const mult = currentUnit === 'm' ? 1 : M_TO_FT; const suffix = currentUnit === 'm' ? 'm' : 'ft';
   doc.setFillColor(30, 41, 59); doc.rect(0, 0, 210, 30, 'F');
   doc.setTextColor(255, 255, 255); doc.setFontSize(22); doc.setFont('helvetica', 'bold'); doc.text("Calculate2Build", 14, 15);
   doc.setFontSize(10); doc.setFont('helvetica', 'normal'); doc.text("Builder's Protection Packet", 14, 22);
-  
   doc.setTextColor(0, 0, 0); doc.setFontSize(10); doc.text(`Ref: ${Date.now()} | Date: ${new Date().toLocaleDateString()}`, 14, 40);
   doc.setFontSize(14); doc.setFont('helvetica', 'bold'); doc.text("1. Bill of Quantities", 14, 50);
   doc.setFontSize(10); doc.setFont('helvetica', 'normal'); let y = 58;
@@ -735,17 +897,13 @@ window.downloadRoomPDF = () => {
     ["Ceiling Boards", document.getElementById('r-outCeiling').textContent]
   ];
   rows.forEach(([k, v]) => { doc.text(k, 20, y); doc.text(v, 120, y); y += 8; });
-  
   y += 10; doc.setFontSize(14); doc.setFont('helvetica', 'bold'); doc.text("2. Site Supervisor's Audit Checklist", 14, y); y += 8;
   doc.setFontSize(9); doc.setFont('helvetica', 'normal');
   ['- Verify block count on delivery against the BOQ above.', '- Confirm 1 bag of cement yields ~25-30 blocks during laying.', '- Measure plaster thickness; reject work above 15mm.', '- Photograph tile boxes before and after installation.'].forEach(t => { doc.text(t, 20, y); y += 6; });
-  
   y += 10; doc.setFontSize(14); doc.setFont('helvetica', 'bold'); doc.text("3. Standard Artisan Work Agreement", 14, y); y += 8;
   doc.setFontSize(9); doc.setFont('helvetica', 'normal');
   ['The artisan agrees to deliver the structure within the agreed timeline.', 'Wages are payable per milestones defined below and signed by both parties.', 'Material wastage beyond 10% is the artisan\'s financial responsibility.', 'Disputes are resolved through the local trade association before litigation.', '', 'Artisan signature: ______________________   Date: ____________', 'Owner signature:   ______________________   Date: ____________'].forEach(t => { doc.text(t, 20, y); y += 6; });
-  
-  doc.save('C2B_Building_Estimate.pdf');
-  relockApp('room');
+  doc.save('C2B_Building_Estimate.pdf'); relockApp('room');
 };
 
 window.downloadRoofPDF = () => {
@@ -783,9 +941,41 @@ function relockApp(app) {
   document.getElementById(`${prefix}-actions`).style.display = 'none';
 }
 
-updateUI(); rebuild3D();
-(function animate() { requestAnimationFrame(animate); controlsRoom.update(); rendererRoom.render(sceneRoom, cameraRoom); })();
-new ResizeObserver(() => { if(containerRoom.clientWidth > 0) { cameraRoom.aspect = containerRoom.clientWidth / containerRoom.clientHeight; cameraRoom.updateProjectionMatrix(); rendererRoom.setSize(containerRoom.clientWidth, containerRoom.clientHeight); } }).observe(document.body);
+// ==================== BOOT ====================
+function initUI() {
+  updateUI(); rebuild3D();
+  // Room sliders
+  document.getElementById('r-len').addEventListener('input', e => { currentRoom.len = parseFloat(e.target.value); updateUI(); rebuild3D(); });
+  document.getElementById('r-wid').addEventListener('input', e => { currentRoom.wid = parseFloat(e.target.value); updateUI(); rebuild3D(); });
+  document.getElementById('r-hgt').addEventListener('input', e => { currentRoom.hgt = parseFloat(e.target.value); updateUI(); rebuild3D(); });
+  document.getElementById('r-block').addEventListener('change', e => { currentRoom.blockThick = parseFloat(e.target.value); updateUI(); });
+  // Roof
+  rebuildRoof3D(); calcRoof();
+  document.getElementById('f-lenV').textContent = roofP.len.toFixed(1) + ' m';
+  document.getElementById('f-widV').textContent = roofP.wid.toFixed(1) + ' m';
+  document.getElementById('f-pitV').textContent = roofP.pitch + '°';
+  // Tiles
+  rebuildTiles3D(); calcTiles();
+  document.getElementById('t-lenV').textContent = tilesP.len.toFixed(1) + ' m';
+  document.getElementById('t-widV').textContent = tilesP.wid.toFixed(1) + ' m';
+}
+
+// Resize handler
+function resizeAll() {
+  if (containerRoom.clientWidth > 0) { cameraRoom.aspect = containerRoom.clientWidth / containerRoom.clientHeight; cameraRoom.updateProjectionMatrix(); rendererRoom.setSize(containerRoom.clientWidth, containerRoom.clientHeight); }
+  if (containerRoof.clientWidth > 0) { cameraRoof.aspect = containerRoof.clientWidth / containerRoof.clientHeight; cameraRoof.updateProjectionMatrix(); rendererRoof.setSize(containerRoof.clientWidth, containerRoof.clientHeight); }
+  if (containerTiles.clientWidth > 0) { cameraTiles.aspect = containerTiles.clientWidth / containerTiles.clientHeight; cameraTiles.updateProjectionMatrix(); rendererTiles.setSize(containerTiles.clientWidth, containerTiles.clientHeight); }
+}
+new ResizeObserver(resizeAll).observe(document.body);
+window.addEventListener('resize', resizeAll);
+
+// Animation loop
+(function animate() {
+  requestAnimationFrame(animate);
+  controlsRoom.update(); rendererRoom.render(sceneRoom, cameraRoom);
+  controlsRoof.update(); rendererRoof.render(sceneRoof, cameraRoof);
+  controlsTiles.update(); rendererTiles.render(sceneTiles, cameraTiles);
+})();
 </script>
 </body>
 </html>
