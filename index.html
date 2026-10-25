@@ -1050,259 +1050,268 @@ function parseQty(txt) {
 
 // ==================== PDF: ROOM ====================
 window.downloadRoomPDF = () => {
-  // Trigger GTM Event
+  // 1. Trigger GTM Event First
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({
     'event': 'pdf_download',
     'pdf_type': 'room_estimator'
   });
 
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-  const mult = currentUnit === 'm' ? 1 : M_TO_FT;
-  const u = currentUnit === 'm' ? 'm' : 'ft';
-  const showPrices = document.querySelector('.include-pricing[data-app="room"]')?.checked;
-  const currency = getCurrency('room');
-  const prices = getPrices('room');
-  const delivery = getDelivery('room');
+  // 2. Delay PDF generation so GTM can send data
+  setTimeout(() => {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const mult = currentUnit === 'm' ? 1 : M_TO_FT;
+    const u = currentUnit === 'm' ? 'm' : 'ft';
+    const showPrices = document.querySelector('.include-pricing[data-app="room"]')?.checked;
+    const currency = getCurrency('room');
+    const prices = getPrices('room');
+    const delivery = getDelivery('room');
 
-  const roomsForReport = savedRooms.length > 0 ? savedRooms : [{ id: 1, ...currentRoom }];
-  const projectName = `${roomsForReport.length} Room${roomsForReport.length > 1 ? 's' : ''} – ${(roomsForReport[0].len*mult).toFixed(1)}${u} × ${(roomsForReport[0].wid*mult).toFixed(1)}${u}${roomsForReport.length > 1 ? ' …' : ''}`;
+    const roomsForReport = savedRooms.length > 0 ? savedRooms : [{ id: 1, ...currentRoom }];
+    const projectName = `${roomsForReport.length} Room${roomsForReport.length > 1 ? 's' : ''} – ${(roomsForReport[0].len*mult).toFixed(1)}${u} × ${(roomsForReport[0].wid*mult).toFixed(1)}${u}${roomsForReport.length > 1 ? ' …' : ''}`;
 
-  let y = drawHeader(doc, "Builder's Protection Packet");
+    let y = drawHeader(doc, "Builder's Protection Packet");
 
-  y = drawMetaBlock(doc, y, [
-    ["Project", projectName],
-    ["Date", new Date().toLocaleString()],
-    ["Unit", currentUnit === 'm' ? 'Metres' : 'Feet'],
-    ["Rooms Saved", roomsForReport.length],
-    ["Block Type", getBlockName(roomsForReport[0].blockThick)]
-  ]);
-
-  // 1. Room schedule
-  y = drawSectionTitle(doc, y, "1. Room Schedule (User Input)");
-  doc.setFontSize(9); doc.setFont('helvetica', 'bold');
-  doc.setFillColor(241, 245, 249);
-  doc.rect(14, y - 5, 182, 7, 'F');
-  doc.text("Room", 16, y);
-  doc.text("L × W × H", 55, y);
-  doc.text("Doors", 115, y);
-  doc.text("Windows", 140, y);
-  doc.text("Shared", 168, y);
-  y += 7;
-  doc.setFont('helvetica', 'normal');
-  roomsForReport.forEach((r, i) => {
-    const shared = ['Front','Back','Left','Right'].filter(s => r['shared'+s]).join(', ') || '—';
-    const dimStr = `${(r.len*mult).toFixed(1)} × ${(r.wid*mult).toFixed(1)} × ${(r.hgt*mult).toFixed(1)} ${u}`;
-    doc.text(`Room ${i + 1}`, 16, y);
-    doc.text(dimStr, 55, y);
-    doc.text(String(r.doors), 118, y);
-    doc.text(String(r.windows), 145, y);
-    doc.text(shared.length > 20 ? shared.substring(0, 20) + '…' : shared, 168, y);
-    y += 6;
-    if (y > 270) { doc.addPage(); y = 20; }
-  });
-  y += 4;
-
-  // 2. Calculation results
-  y = drawSectionTitle(doc, y, "2. Calculation Results (All Rooms)");
-  y = drawMetaBlock(doc, y, [
-    ["Total Floor Area", document.getElementById('r-outFloor').textContent],
-    ["Total Wall Area (net)", document.getElementById('r-outWall').textContent]
-  ]);
-
-  // 3. Material quantities
-  y = drawSectionTitle(doc, y, "3. Material Quantities (All Rooms)");
-  const materials = [
-    ["Sandcrete Blocks", parseQty(document.getElementById('r-outBlocks').textContent)],
-    ["Cement (mortar)", parseQty(document.getElementById('r-outCemMortar').textContent)],
-    ["Mortar sand", parseQty(document.getElementById('r-outSand').textContent)],
-    ["Cement (plaster)", parseQty(document.getElementById('r-outCemPlaster').textContent)],
-    ["Plaster sand", parseQty(document.getElementById('r-outSandPlaster').textContent)],
-    ["Paint (2 coats)", parseQty(document.getElementById('r-outPaint').textContent)],
-    ["Ceiling Boards", parseQty(document.getElementById('r-outCeiling').textContent)]
-  ];
-  const rows = materials.map(([n, q]) => [n, `${q} ${UNITS[n]}`, showPrices ? prices[n] : null]);
-  const { y: y2, grand } = drawTable(doc, y, rows, currency, showPrices);
-  y = y2 + 4;
-
-  // Blocks transparency note
-  const blkTheo = theoreticalBlocks(lastCalc.wall);
-  const blkOrd = orderBlocks(lastCalc.wall);
-  doc.setFontSize(8.5); doc.setTextColor(90,90,90);
-  doc.text(`Blocks: order ${blkOrd.toLocaleString()} pcs (theoretical ${blkTheo.toLocaleString()} + ${Math.round(BLOCK_WASTE*100)}% waste)`, 14, y);
-  y += 6; doc.setTextColor(0,0,0);
-
-  // 4. Price breakdown
-  if (showPrices) {
-    y = drawSectionTitle(doc, y, "4. Price Breakdown");
     y = drawMetaBlock(doc, y, [
-      ["Materials Subtotal", `${currency} ${grand.toFixed(2)}`],
-      ["Delivery", `${currency} ${delivery.toFixed(2)}`],
-      ["Grand Total", `${currency} ${(grand + delivery).toFixed(2)}`]
+      ["Project", projectName],
+      ["Date", new Date().toLocaleString()],
+      ["Unit", currentUnit === 'm' ? 'Metres' : 'Feet'],
+      ["Rooms Saved", roomsForReport.length],
+      ["Block Type", getBlockName(roomsForReport[0].blockThick)]
     ]);
-  }
 
-  // 5. Wastage
-  y = drawNotes(doc, y, "5. Wastage Allowance Applied", [
-    "• Blocks: +5% (breakage, cuts, transport loss).",
-    "• Cement & sand (mortar): +7% (site mixing loss).",
-    "• Paint: +5% (roller absorption & touch-ups).",
-    "• Ceiling boards: +5% (off-cuts, mis-cuts)."
-  ]);
+    // 1. Room schedule
+    y = drawSectionTitle(doc, y, "1. Room Schedule (User Input)");
+    doc.setFontSize(9); doc.setFont('helvetica', 'bold');
+    doc.setFillColor(241, 245, 249);
+    doc.rect(14, y - 5, 182, 7, 'F');
+    doc.text("Room", 16, y);
+    doc.text("L × W × H", 55, y);
+    doc.text("Doors", 115, y);
+    doc.text("Windows", 140, y);
+    doc.text("Shared", 168, y);
+    y += 7;
+    doc.setFont('helvetica', 'normal');
+    roomsForReport.forEach((r, i) => {
+      const shared = ['Front','Back','Left','Right'].filter(s => r['shared'+s]).join(', ') || '—';
+      const dimStr = `${(r.len*mult).toFixed(1)} × ${(r.wid*mult).toFixed(1)} × ${(r.hgt*mult).toFixed(1)} ${u}`;
+      doc.text(`Room ${i + 1}`, 16, y);
+      doc.text(dimStr, 55, y);
+      doc.text(String(r.doors), 118, y);
+      doc.text(String(r.windows), 145, y);
+      doc.text(shared.length > 20 ? shared.substring(0, 20) + '…' : shared, 168, y);
+      y += 6;
+      if (y > 270) { doc.addPage(); y = 20; }
+    });
+    y += 4;
 
-  // 6. Assumptions
-  y = drawNotes(doc, y, "6. Assumptions & Limitations", [
-    "• Ghana standard 10 blocks/m² of net wall (mortar joints + typical cuts included).",
-    "• Net wall area deducts doors (0.9×2.1m) and windows (1.2×1.2m), and shared walls you marked.",
-    "• Plaster thickness ~12mm per face, both faces.",
-    "• Paint coverage ~8.3 m²/L per coat, 2 coats.",
-    "• Figures are planning estimates only. Verify with a quantity surveyor or contractor before purchase."
-  ]);
+    // 2. Calculation results
+    y = drawSectionTitle(doc, y, "2. Calculation Results (All Rooms)");
+    y = drawMetaBlock(doc, y, [
+      ["Total Floor Area", document.getElementById('r-outFloor').textContent],
+      ["Total Wall Area (net)", document.getElementById('r-outWall').textContent]
+    ]);
 
-  drawShoppingList(doc, projectName, materials);
-  doc.save(`C2B_Room_${Date.now()}.pdf`);
-  relockApp('room');
+    // 3. Material quantities
+    y = drawSectionTitle(doc, y, "3. Material Quantities (All Rooms)");
+    const materials = [
+      ["Sandcrete Blocks", parseQty(document.getElementById('r-outBlocks').textContent)],
+      ["Cement (mortar)", parseQty(document.getElementById('r-outCemMortar').textContent)],
+      ["Mortar sand", parseQty(document.getElementById('r-outSand').textContent)],
+      ["Cement (plaster)", parseQty(document.getElementById('r-outCemPlaster').textContent)],
+      ["Plaster sand", parseQty(document.getElementById('r-outSandPlaster').textContent)],
+      ["Paint (2 coats)", parseQty(document.getElementById('r-outPaint').textContent)],
+      ["Ceiling Boards", parseQty(document.getElementById('r-outCeiling').textContent)]
+    ];
+    const rows = materials.map(([n, q]) => [n, `${q} ${UNITS[n]}`, showPrices ? prices[n] : null]);
+    const { y: y2, grand } = drawTable(doc, y, rows, currency, showPrices);
+    y = y2 + 4;
+
+    // Blocks transparency note
+    const blkTheo = theoreticalBlocks(lastCalc.wall);
+    const blkOrd = orderBlocks(lastCalc.wall);
+    doc.setFontSize(8.5); doc.setTextColor(90,90,90);
+    doc.text(`Blocks: order ${blkOrd.toLocaleString()} pcs (theoretical ${blkTheo.toLocaleString()} + ${Math.round(BLOCK_WASTE*100)}% waste)`, 14, y);
+    y += 6; doc.setTextColor(0,0,0);
+
+    // 4. Price breakdown
+    if (showPrices) {
+      y = drawSectionTitle(doc, y, "4. Price Breakdown");
+      y = drawMetaBlock(doc, y, [
+        ["Materials Subtotal", `${currency} ${grand.toFixed(2)}`],
+        ["Delivery", `${currency} ${delivery.toFixed(2)}`],
+        ["Grand Total", `${currency} ${(grand + delivery).toFixed(2)}`]
+      ]);
+    }
+
+    // 5. Wastage
+    y = drawNotes(doc, y, "5. Wastage Allowance Applied", [
+      "• Blocks: +5% (breakage, cuts, transport loss).",
+      "• Cement & sand (mortar): +7% (site mixing loss).",
+      "• Paint: +5% (roller absorption & touch-ups).",
+      "• Ceiling boards: +5% (off-cuts, mis-cuts)."
+    ]);
+
+    // 6. Assumptions
+    y = drawNotes(doc, y, "6. Assumptions & Limitations", [
+      "• Ghana standard 10 blocks/m² of net wall (mortar joints + typical cuts included).",
+      "• Net wall area deducts doors (0.9×2.1m) and windows (1.2×1.2m), and shared walls you marked.",
+      "• Plaster thickness ~12mm per face, both faces.",
+      "• Paint coverage ~8.3 m²/L per coat, 2 coats.",
+      "• Figures are planning estimates only. Verify with a quantity surveyor or contractor before purchase."
+    ]);
+
+    drawShoppingList(doc, projectName, materials);
+    doc.save(`C2B_Room_${Date.now()}.pdf`);
+    relockApp('room');
+  }, 250); 
 };
 
 // ==================== PDF: ROOF ====================
 window.downloadRoofPDF = () => {
-  // Trigger GTM Event
+  // 1. Trigger GTM Event First
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({
     'event': 'pdf_download',
     'pdf_type': 'roof_wizard'
   });
 
-  const { jsPDF } = window.jspdf; const doc = new jsPDF();
-  const showPrices = document.querySelector('.include-pricing[data-app="roof"]')?.checked;
-  const currency = getCurrency('roof');
-  const prices = getPrices('roof');
-  const delivery = getDelivery('roof');
-  const projectName = `Roof – ${roofP.type.toUpperCase()} ${roofP.len}m × ${roofP.wid}m @ ${roofP.pitch}°`;
-  let y = drawHeader(doc, "Roof Wizard Report");
-  y = drawMetaBlock(doc, y, [
-    ["Project", projectName],
-    ["Date", new Date().toLocaleString()],
-    ["Roof Type", roofP.type.toUpperCase()],
-    ["Pitch", roofP.pitch + '°'],
-    ["Overhang", roofP.overhang + ' m']
-  ]);
-  y = drawSectionTitle(doc, y, "1. Dimensions (User Input)");
-  y = drawMetaBlock(doc, y, [
-    ["Length", roofP.len + ' m'],
-    ["Width", roofP.wid + ' m'],
-    ["Pitch", roofP.pitch + '°'],
-    ["Overhang", roofP.overhang + ' m']
-  ]);
-  y = drawSectionTitle(doc, y, "2. Calculation Results");
-  y = drawMetaBlock(doc, y, [
-    ["Roof Area", document.getElementById('f-outArea').textContent],
-    ["Angle", document.getElementById('f-outAngle').textContent]
-  ]);
-  y = drawSectionTitle(doc, y, "3. Material Quantities");
-  const materials = [
-    ["Roofing Sheets", parseQty(document.getElementById('f-outSheets').textContent)],
-    ["Ridge Caps", parseQty(document.getElementById('f-outRidges').textContent)],
-    ["Battens", parseQty(document.getElementById('f-outBattens').textContent)],
-    ["Roofing Screws", parseQty(document.getElementById('f-outScrews').textContent)]
-  ];
-  const rows = materials.map(([n, q]) => [n, `${q} ${UNITS[n]}`, showPrices ? prices[n] : null]);
-  const { y: y2, grand } = drawTable(doc, y, rows, currency, showPrices);
-  y = y2 + 4;
-  if (showPrices) {
-    y = drawSectionTitle(doc, y, "4. Price Breakdown");
+  // 2. Delay PDF generation so GTM can send data
+  setTimeout(() => {
+    const { jsPDF } = window.jspdf; const doc = new jsPDF();
+    const showPrices = document.querySelector('.include-pricing[data-app="roof"]')?.checked;
+    const currency = getCurrency('roof');
+    const prices = getPrices('roof');
+    const delivery = getDelivery('roof');
+    const projectName = `Roof – ${roofP.type.toUpperCase()} ${roofP.len}m × ${roofP.wid}m @ ${roofP.pitch}°`;
+    let y = drawHeader(doc, "Roof Wizard Report");
     y = drawMetaBlock(doc, y, [
-      ["Materials Subtotal", `${currency} ${grand.toFixed(2)}`],
-      ["Delivery", `${currency} ${delivery.toFixed(2)}`],
-      ["Grand Total", `${currency} ${(grand + delivery).toFixed(2)}`]
+      ["Project", projectName],
+      ["Date", new Date().toLocaleString()],
+      ["Roof Type", roofP.type.toUpperCase()],
+      ["Pitch", roofP.pitch + '°'],
+      ["Overhang", roofP.overhang + ' m']
     ]);
-  }
-  y = drawNotes(doc, y, "5. Wastage Allowance Applied", [
-    "• Roofing sheets: +10% (overlap, cuts at hips/valleys).",
-    "• Battens: +5% (spacing tolerance).",
-    "• Screws: 8 pcs/m² (industry standard)."
-  ]);
-  y = drawNotes(doc, y, "6. Assumptions & Limitations", [
-    "• Sheet size assumed 0.9m × 3m.",
-    "• Slope area = plan area ÷ cos(pitch) for gable/mono.",
-    "• Hip roofs add ~10% for hip surfaces.",
-    "• Ridge length estimated from roof type.",
-    "• Excludes fascia, gutters, underlay, and labour.",
-    "• Verify with your roofing contractor before ordering."
-  ]);
-  drawShoppingList(doc, projectName, materials);
-  doc.save(`C2B_Roof_${Date.now()}.pdf`);
-  relockApp('roof');
+    y = drawSectionTitle(doc, y, "1. Dimensions (User Input)");
+    y = drawMetaBlock(doc, y, [
+      ["Length", roofP.len + ' m'],
+      ["Width", roofP.wid + ' m'],
+      ["Pitch", roofP.pitch + '°'],
+      ["Overhang", roofP.overhang + ' m']
+    ]);
+    y = drawSectionTitle(doc, y, "2. Calculation Results");
+    y = drawMetaBlock(doc, y, [
+      ["Roof Area", document.getElementById('f-outArea').textContent],
+      ["Angle", document.getElementById('f-outAngle').textContent]
+    ]);
+    y = drawSectionTitle(doc, y, "3. Material Quantities");
+    const materials = [
+      ["Roofing Sheets", parseQty(document.getElementById('f-outSheets').textContent)],
+      ["Ridge Caps", parseQty(document.getElementById('f-outRidges').textContent)],
+      ["Battens", parseQty(document.getElementById('f-outBattens').textContent)],
+      ["Roofing Screws", parseQty(document.getElementById('f-outScrews').textContent)]
+    ];
+    const rows = materials.map(([n, q]) => [n, `${q} ${UNITS[n]}`, showPrices ? prices[n] : null]);
+    const { y: y2, grand } = drawTable(doc, y, rows, currency, showPrices);
+    y = y2 + 4;
+    if (showPrices) {
+      y = drawSectionTitle(doc, y, "4. Price Breakdown");
+      y = drawMetaBlock(doc, y, [
+        ["Materials Subtotal", `${currency} ${grand.toFixed(2)}`],
+        ["Delivery", `${currency} ${delivery.toFixed(2)}`],
+        ["Grand Total", `${currency} ${(grand + delivery).toFixed(2)}`]
+      ]);
+    }
+    y = drawNotes(doc, y, "5. Wastage Allowance Applied", [
+      "• Roofing sheets: +10% (overlap, cuts at hips/valleys).",
+      "• Battens: +5% (spacing tolerance).",
+      "• Screws: 8 pcs/m² (industry standard)."
+    ]);
+    y = drawNotes(doc, y, "6. Assumptions & Limitations", [
+      "• Sheet size assumed 0.9m × 3m.",
+      "• Slope area = plan area ÷ cos(pitch) for gable/mono.",
+      "• Hip roofs add ~10% for hip surfaces.",
+      "• Ridge length estimated from roof type.",
+      "• Excludes fascia, gutters, underlay, and labour.",
+      "• Verify with your roofing contractor before ordering."
+    ]);
+    drawShoppingList(doc, projectName, materials);
+    doc.save(`C2B_Roof_${Date.now()}.pdf`);
+    relockApp('roof');
+  }, 250);
 };
 
 // ==================== PDF: TILES ====================
 window.downloadTilesPDF = () => {
-  // Trigger GTM Event
+  // 1. Trigger GTM Event First
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({
     'event': 'pdf_download',
     'pdf_type': 'floor_tiles'
   });
 
-  const { jsPDF } = window.jspdf; const doc = new jsPDF();
-  const showPrices = document.querySelector('.include-pricing[data-app="tiles"]')?.checked;
-  const currency = getCurrency('tiles');
-  const prices = getPrices('tiles');
-  const delivery = getDelivery('tiles');
-  const projectName = `Tiles – ${tilesP.len}m × ${tilesP.wid}m`;
-  let y = drawHeader(doc, "Floor Tiles Report");
-  y = drawMetaBlock(doc, y, [
-    ["Project", projectName],
-    ["Date", new Date().toLocaleString()],
-    ["Tile Size", document.getElementById('t-size').selectedOptions[0].text],
-    ["Waste Allowance", tilesP.waste + '%']
-  ]);
-  y = drawSectionTitle(doc, y, "1. Dimensions (User Input)");
-  y = drawMetaBlock(doc, y, [
-    ["Length", tilesP.len + ' m'],
-    ["Width", tilesP.wid + ' m'],
-    ["Tile Size", document.getElementById('t-size').selectedOptions[0].text],
-    ["Waste Allowance", tilesP.waste + '%']
-  ]);
-  y = drawSectionTitle(doc, y, "2. Calculation Results");
-  y = drawMetaBlock(doc, y, [
-    ["Floor Area", document.getElementById('t-outArea').textContent],
-    ["Tiles Needed (incl. waste)", document.getElementById('t-outTiles').textContent]
-  ]);
-  y = drawSectionTitle(doc, y, "3. Material Quantities");
-  const materials = [
-    ["Tile Adhesive", parseQty(document.getElementById('t-outAdhesive').textContent)],
-    ["Tile Grout", parseQty(document.getElementById('t-outGrout').textContent)],
-    ["Tile Spacers", parseQty(document.getElementById('t-outSpacers').textContent)]
-  ];
-  const rows = materials.map(([n, q]) => [n, `${q} ${UNITS[n]}`, showPrices ? prices[n] : null]);
-  const { y: y2, grand } = drawTable(doc, y, rows, currency, showPrices);
-  y = y2 + 4;
-  if (showPrices) {
-    y = drawSectionTitle(doc, y, "4. Price Breakdown");
+  // 2. Delay PDF generation so GTM can send data
+  setTimeout(() => {
+    const { jsPDF } = window.jspdf; const doc = new jsPDF();
+    const showPrices = document.querySelector('.include-pricing[data-app="tiles"]')?.checked;
+    const currency = getCurrency('tiles');
+    const prices = getPrices('tiles');
+    const delivery = getDelivery('tiles');
+    const projectName = `Tiles – ${tilesP.len}m × ${tilesP.wid}m`;
+    let y = drawHeader(doc, "Floor Tiles Report");
     y = drawMetaBlock(doc, y, [
-      ["Materials Subtotal", `${currency} ${grand.toFixed(2)}`],
-      ["Delivery", `${currency} ${delivery.toFixed(2)}`],
-      ["Grand Total", `${currency} ${(grand + delivery).toFixed(2)}`]
+      ["Project", projectName],
+      ["Date", new Date().toLocaleString()],
+      ["Tile Size", document.getElementById('t-size').selectedOptions[0].text],
+      ["Waste Allowance", tilesP.waste + '%']
     ]);
-  }
-  y = drawNotes(doc, y, "5. Wastage Allowance Applied", [
-    `• Tile waste: ${tilesP.waste}% (cuts, edge trims, breakage).`,
-    "• Adhesive: 4 kg/m² (industry average for 6mm bed).",
-    "• Grout: 0.5 kg/m²."
-  ]);
-  y = drawNotes(doc, y, "6. Assumptions & Limitations", [
-    "• Assumes standard square/rectangular layout with straight cuts.",
-    "• Excludes skirting tiles and threshold strips.",
-    "• Substrate assumed level; extra adhesive may be needed on uneven floors.",
-    "• Actual coverage varies by tile size, layout pattern, and substrate.",
-    "• Verify with your tiler before purchase."
-  ]);
-  const tileBoxes = parseQty(document.getElementById('t-outTiles').textContent);
-  drawShoppingList(doc, projectName, [...materials, ["Tile boxes (tiles to buy)", tileBoxes]]);
-  doc.save(`C2B_Tiles_${Date.now()}.pdf`);
-  relockApp('tiles');
+    y = drawSectionTitle(doc, y, "1. Dimensions (User Input)");
+    y = drawMetaBlock(doc, y, [
+      ["Length", tilesP.len + ' m'],
+      ["Width", tilesP.wid + ' m'],
+      ["Tile Size", document.getElementById('t-size').selectedOptions[0].text],
+      ["Waste Allowance", tilesP.waste + '%']
+    ]);
+    y = drawSectionTitle(doc, y, "2. Calculation Results");
+    y = drawMetaBlock(doc, y, [
+      ["Floor Area", document.getElementById('t-outArea').textContent],
+      ["Tiles Needed (incl. waste)", document.getElementById('t-outTiles').textContent]
+    ]);
+    y = drawSectionTitle(doc, y, "3. Material Quantities");
+    const materials = [
+      ["Tile Adhesive", parseQty(document.getElementById('t-outAdhesive').textContent)],
+      ["Tile Grout", parseQty(document.getElementById('t-outGrout').textContent)],
+      ["Tile Spacers", parseQty(document.getElementById('t-outSpacers').textContent)]
+    ];
+    const rows = materials.map(([n, q]) => [n, `${q} ${UNITS[n]}`, showPrices ? prices[n] : null]);
+    const { y: y2, grand } = drawTable(doc, y, rows, currency, showPrices);
+    y = y2 + 4;
+    if (showPrices) {
+      y = drawSectionTitle(doc, y, "4. Price Breakdown");
+      y = drawMetaBlock(doc, y, [
+        ["Materials Subtotal", `${currency} ${grand.toFixed(2)}`],
+        ["Delivery", `${currency} ${delivery.toFixed(2)}`],
+        ["Grand Total", `${currency} ${(grand + delivery).toFixed(2)}`]
+      ]);
+    }
+    y = drawNotes(doc, y, "5. Wastage Allowance Applied", [
+      `• Tile waste: ${tilesP.waste}% (cuts, edge trims, breakage).`,
+      "• Adhesive: 4 kg/m² (industry average for 6mm bed).",
+      "• Grout: 0.5 kg/m²."
+    ]);
+    y = drawNotes(doc, y, "6. Assumptions & Limitations", [
+      "• Assumes standard square/rectangular layout with straight cuts.",
+      "• Excludes skirting tiles and threshold strips.",
+      "• Substrate assumed level; extra adhesive may be needed on uneven floors.",
+      "• Actual coverage varies by tile size, layout pattern, and substrate.",
+      "• Verify with your tiler before purchase."
+    ]);
+    const tileBoxes = parseQty(document.getElementById('t-outTiles').textContent);
+    drawShoppingList(doc, projectName, [...materials, ["Tile boxes (tiles to buy)", tileBoxes]]);
+    doc.save(`C2B_Tiles_${Date.now()}.pdf`);
+    relockApp('tiles');
+  }, 250);
 };
 
 function relockApp(app) {
@@ -1311,7 +1320,6 @@ function relockApp(app) {
   document.getElementById(`${prefix}-paywall`).style.display = 'flex';
   document.getElementById(`${prefix}-actions`).style.display = 'none';
 }
-
 // ==================== WIRE UP ALL SLIDERS ====================
 function initUI() {
   // Room — any input re-activates the in-progress room
