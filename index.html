@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-M8D7N78T');</script>
+<!-- End Google Tag Manager -->
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Calculate2Build | Professional Estimators</title>
@@ -103,6 +110,10 @@
 </style>
 </head>
 <body>
+  <!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-M8D7N78T"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
 <nav>
   <div class="logo">Calculate2Build <span>/ C2B</span></div>
   <div class="nav-links">
@@ -1039,6 +1050,13 @@ function parseQty(txt) {
 
 // ==================== PDF: ROOM ====================
 window.downloadRoomPDF = () => {
+  // Trigger GTM Event
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({
+    'event': 'pdf_download',
+    'pdf_type': 'room_estimator'
+  });
+
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
   const mult = currentUnit === 'm' ? 1 : M_TO_FT;
@@ -1149,6 +1167,13 @@ window.downloadRoomPDF = () => {
 
 // ==================== PDF: ROOF ====================
 window.downloadRoofPDF = () => {
+  // Trigger GTM Event
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({
+    'event': 'pdf_download',
+    'pdf_type': 'roof_wizard'
+  });
+
   const { jsPDF } = window.jspdf; const doc = new jsPDF();
   const showPrices = document.querySelector('.include-pricing[data-app="roof"]')?.checked;
   const currency = getCurrency('roof');
@@ -1213,6 +1238,13 @@ window.downloadRoofPDF = () => {
 
 // ==================== PDF: TILES ====================
 window.downloadTilesPDF = () => {
+  // Trigger GTM Event
+  window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({
+    'event': 'pdf_download',
+    'pdf_type': 'floor_tiles'
+  });
+
   const { jsPDF } = window.jspdf; const doc = new jsPDF();
   const showPrices = document.querySelector('.include-pricing[data-app="tiles"]')?.checked;
   const currency = getCurrency('tiles');
