@@ -10,6 +10,13 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <!-- End Google Tag Manager -->
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏗️</text></svg>">
+  <!-- Add this right after your <title> tag -->
+<meta name="description" content="Calculate building materials, blocks, cement, and tiles for your house in seconds. Free professional construction estimator.">
+<meta property="og:title" content="Calculate2Build | Professional Estimators">
+<meta property="og:description" content="Estimate blocks, cement, and tiles for your building project instantly. Generate a PDF shopping list.">
+<meta property="og:image" content="https://yourdomain.com/preview-image.jpg"> <!-- A screenshot of your app -->
+<meta property="og:type" content="website">
 <title>Calculate2Build | Professional Estimators</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
@@ -37,8 +44,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   .unit-toggle button.active { background: white; color: var(--text-main); box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
   .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   .input-group { display: flex; flex-direction: column; gap: 6px; }
-  .input-group label { font-size: 12px; font-weight: 600; display: flex; justify-content: space-between; }
+  .input-group label { font-size: 12px; font-weight: 600; display: flex; justify-content: space-between; align-items: center;}
   .input-group .val { color: var(--text-main); font-weight: 600; }
+  .info-icon { display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; border-radius: 50%; background: #cbd5e1; color: white; font-size: 9px; font-weight: bold; margin-left: 4px; cursor: help; }
   input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; margin: 10px 0; height: 30px; }
   input[type=range]::-webkit-slider-runnable-track { height: 8px; background: #e2e8f0; border-radius: 4px; }
   input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 24px; width: 24px; border-radius: 50%; background: var(--text-main); cursor: pointer; margin-top: -8px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
@@ -85,7 +93,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   .btn-share { width: 100%; padding: 12px; background: var(--blue); color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; }
   .btn-share:hover { background: #2563eb; }
   .warning-box { background: #fef3c7; border: 1px solid #fde68a; color: #92400e; padding: 12px; border-radius: 8px; font-size: 12px; line-height: 1.5; margin-top: 20px; }
-  .actions { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; display: none; }
+  .actions { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
   .btn-primary { background: var(--text-main); color: white; padding: 14px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; } .btn-primary.unlocked { background: var(--green); }
   footer { background: #0f172a; color: #94a3b8; padding: 24px; text-align: center; margin-top: 40px; font-size: 12px; }
   footer a { color: #94a3b8; text-decoration: none; margin: 0 10px; cursor: pointer; } footer a:hover { color: white; text-decoration: underline; }
@@ -102,57 +110,34 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   .pricing-block { margin-top: 16px; border-top: 1px dashed var(--border); padding-top: 16px; }
   .pricing-block label { font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 8px; cursor: pointer; }
   .pricing-block input[type=checkbox] { width: 16px; height: 16px; cursor: pointer; }
-    /* ================= MOBILE RESPONSIVENESS ================= */
+
+  /* ================= MOBILE RESPONSIVENESS ================= */
   @media (max-width: 768px) {
-    /* Navigation */
     .nav-links { display: none; } 
     .mobile-nav { display: block; padding: 8px 12px; }
     nav { padding: 10px 16px; }
-    
-    /* Layout Containers */
-    .container { 
-      grid-template-columns: 1fr; 
-      margin-top: 12px; 
-      gap: 16px; 
-      padding: 0 12px; 
-    }
+    .container { grid-template-columns: 1fr; margin-top: 12px; gap: 16px; padding: 0 12px; }
     .card { margin-bottom: 16px; border-radius: 10px; }
     .card-header { padding: 14px 16px; flex-direction: column; align-items: flex-start; gap: 10px; }
     .card-header .unit-toggle { width: 100%; justify-content: center; }
     .card-header .unit-toggle button { flex: 1; }
     .card-body { padding: 16px; }
-
-    /* 3D Canvas - make it shorter so controls are visible sooner */
     .canvas-container { height: 250px; }
     .active-room-badge { top: 8px; left: 8px; font-size: 11px; padding: 3px 10px; }
     .viewer-hint { bottom: 8px; left: 8px; font-size: 10px; padding: 4px 8px; }
-
-    /* Inputs & Sliders */
     .input-grid { grid-template-columns: 1fr; gap: 14px; }
-    
-    /* Fix the slider thumb and track for touch */
     input[type=range] { margin: 6px 0; height: 36px; }
     input[type=range]::-webkit-slider-thumb { height: 28px; width: 28px; margin-top: -10px; }
-    
-    /* Room Actions & Lists */
     .room-actions { flex-direction: column; gap: 10px; }
     .btn-save, .btn-clear { width: 100%; padding: 16px; font-size: 15px; }
     .room-item { flex-direction: column; align-items: flex-start; gap: 4px; padding: 10px; }
     .room-item span:last-child { font-size: 11px; }
-
-    /* Openings & Counters */
     .openings-control { flex-direction: column; gap: 10px; }
     .counter-box { padding: 10px 14px; }
-    
-    /* Roof & Wall Toggles */
     .roof-toggles { grid-template-columns: 1fr 1fr; gap: 8px; }
     .roof-btn { padding: 14px 8px; }
     .wall-toggles { grid-template-columns: 1fr 1fr; }
-    
-    /* Pricing Grid */
     #prices-room, #prices-roof, #prices-tiles { grid-template-columns: 1fr !important; }
-
-    /* Modals */
     .modal-box { padding: 20px; width: 95%; max-height: 90vh; margin: 10px; }
     .modal-box h2 { font-size: 18px; }
     .modal-box h3 { font-size: 14px; }
@@ -203,7 +188,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <div class="input-group"><label>Width <span class="val" id="r-widV">5.5 m</span></label><input type="range" id="r-wid" min="0.5" max="50" step="0.1" value="5.5" /></div>
             <div class="input-group"><label>Height <span class="val" id="r-hgtV">3.7 m</span></label><input type="range" id="r-hgt" min="2.0" max="8.0" step="0.1" value="3.7" /></div>
            <div class="input-group">
-  <label>Block Type</label>
+  <label>Block Type <span class="info-icon" title="9-inch blocks are standard for exterior walls. 6-inch is for interior partitions.">?</span></label>
   <select id="r-block">
     <option value="0.225">9" Sandcrete (225mm)</option>
     <option value="0.150">6" Sandcrete (150mm)</option>
@@ -216,6 +201,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <select id="r-standard" onchange="updateBlockStandard(this.value)">
     <option value="10">Ghana / West Africa (10/m²)</option>
     <option value="12.5">US / UK Standard (12.5/m²)</option>
+  </select>
+</div>
+<div class="input-group">
+  <label>Cement Bag Size</label>
+  <select id="r-bag-size">
+    <option value="50">50 kg (Standard)</option>
+    <option value="42.5">42.5 kg</option>
   </select>
 </div>
           </div>
@@ -233,7 +225,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             </div>
           </div>
           <div class="room-actions">
-            <button class="btn-save" onclick="saveCurrentRoom()">Save Room & Add Next</button>
+            <button class="btn-save" onclick="saveCurrentRoom()">+ Add Another Room</button>
             <button class="btn-clear" onclick="clearAllRooms()">Clear All</button>
           </div>
           <div class="room-list" id="savedRoomsList"></div>
@@ -288,7 +280,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             </div>
           </div>
           <div class="warning-box"><strong>Important:</strong> Verify quantities with a local professional before purchasing.</div>
-          <div class="actions" id="r-actions"><button class="btn-primary unlocked" onclick="downloadRoomPDF()">✓ Download Official PDF</button></div>
+          <div class="actions" id="r-actions">
+            <button class="btn-primary" onclick="downloadRoomPDF()">✓ Download Official PDF</button>
+            <button class="btn-primary" style="background:#25D366; color:white; margin-top:10px;" onclick="shareToWhatsApp('room')">Share on WhatsApp</button>
+          </div>
         </div>
       </div>
     </div>
@@ -356,14 +351,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             </div>
           </div>
           <div class="warning-box"><strong>Important:</strong> This is a preliminary geometric estimate. Verify with your contractor.</div>
-          <div class="actions" id="f-actions"><button class="btn-primary unlocked" onclick="downloadRoofPDF()">✓ Download Official PDF</button></div>
+          <div class="actions" id="f-actions">
+            <button class="btn-primary" onclick="downloadRoofPDF()">✓ Download Official PDF</button>
+            <button class="btn-primary" style="background:#25D366; color:white; margin-top:10px;" onclick="shareToWhatsApp('roof')">Share on WhatsApp</button>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- APP 3: FLOOR TILES (MULTI-ROOM) -->
+<!-- APP 3: FLOOR TILES -->
 <div class="app-section" id="app-tiles">
   <div class="container">
     <div class="left-col">
@@ -391,7 +389,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <div class="input-group"><label>Waste Allowance (%)</label><input type="number" id="t-waste" value="10" step="1" /></div>
           </div>
           <div class="room-actions">
-            <button class="btn-save" onclick="saveCurrentTileRoom()">Save Room & Add Next</button>
+            <button class="btn-save" onclick="saveCurrentTileRoom()">+ Add Another Room</button>
             <button class="btn-clear" onclick="clearAllTileRooms()">Clear All</button>
           </div>
           <div class="room-list" id="tileRoomsList"></div>
@@ -433,7 +431,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             </div>
           </div>
           <div class="warning-box"><strong>Important:</strong> This is a preliminary estimate. Actual coverage varies by tile layout and substrate.</div>
-          <div class="actions" id="t-actions"><button class="btn-primary unlocked" onclick="downloadTilesPDF()">✓ Download Official PDF</button></div>
+          <div class="actions" id="t-actions">
+            <button class="btn-primary" onclick="downloadTilesPDF()">✓ Download Official PDF</button>
+            <button class="btn-primary" style="background:#25D366; color:white; margin-top:10px;" onclick="shareToWhatsApp('tiles')">Share on WhatsApp</button>
+          </div>
         </div>
       </div>
     </div>
@@ -694,9 +695,14 @@ function calcTotals() {
   document.getElementById('r-outBlocks').innerHTML =
     `${blkOrder.toLocaleString()} pcs <span style="font-size:10px; font-weight:500; color:var(--text-muted);">(theoretical ${blkTheoretical.toLocaleString()} + ${Math.round(BLOCK_WASTE*100)}% waste)</span>`;
 
-  document.getElementById('r-outCemMortar').textContent = mortarCementBags(totalWallArea) + ' bags';
+  // Bag Size Logic
+  const bagWeight = parseFloat(document.getElementById('r-bag-size').value) || 50;
+  const mortarBags = Math.ceil((totalWallArea * MORTAR_CEMENT_PER_M2 * (1 + MORTAR_WASTE) * 50) / bagWeight);
+  const plasterBags = Math.ceil((totalWallArea / 11 * 50) / bagWeight);
+
+  document.getElementById('r-outCemMortar').textContent = mortarBags + ' bags';
   document.getElementById('r-outSand').textContent = mortarSandM3(totalWallArea).toFixed(2) + ' m³';
-  document.getElementById('r-outCemPlaster').textContent = Math.ceil(totalWallArea / 11) + ' bags';
+  document.getElementById('r-outCemPlaster').textContent = plasterBags + ' bags';
   document.getElementById('r-outSandPlaster').textContent = (totalWallArea / 11 * 0.05).toFixed(2) + ' m³';
   document.getElementById('r-outPaint').textContent = (totalWallArea / 8.3 * 2 * 1.05).toFixed(1) + ' L';
   document.getElementById('r-outCeiling').textContent = Math.ceil(totalArea * 1.05) + ' m²';
@@ -1100,6 +1106,28 @@ function startPollingReferral(code, app) {
 
 window.copyReferralLink = () => navigator.clipboard.writeText(document.getElementById('refLinkInput').value);
 
+// ==================== WHATSAPP SHARE ====================
+window.shareToWhatsApp = (app) => {
+  let text = "";
+  if (app === 'room') {
+    const floor = document.getElementById('r-outFloor').textContent;
+    const blocks = document.getElementById('r-outBlocks').textContent.split('(')[0].trim();
+    const cement = document.getElementById('r-outCemMortar').textContent;
+    text = `🏗️ *Calculate2Build Estimate*\nMy project total floor area: ${floor}\nNeeds: ${blocks} Blocks, ${cement} Cement.\n\nCalculate yours free here: ${window.location.origin}`;
+  } else if (app === 'tiles') {
+     const area = document.getElementById('t-outArea').textContent;
+     const tiles = document.getElementById('t-outTiles').textContent;
+     text = `🚽 *Tiling Estimate*\nTotal Area: ${area}\nTiles Needed: ${tiles}\n\nCalculate yours free: ${window.location.origin}`;
+  } else if (app === 'roof') {
+     const area = document.getElementById('f-outArea').textContent;
+     const sheets = document.getElementById('f-outSheets').textContent;
+     text = `🏠 *Roof Estimate*\nTotal Roof Area: ${area}\nSheets Needed: ${sheets}\n\nCalculate yours free: ${window.location.origin}`;
+  }
+  
+  const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+  window.open(url, '_blank');
+};
+
 // ==================== PDF HELPERS ====================
 function drawHeader(doc, subtitle) {
   doc.setFillColor(30, 41, 59);
@@ -1196,6 +1224,9 @@ function parseQty(txt) {
 
 // ==================== PDF: ROOM ====================
 window.downloadRoomPDF = () => {
+  const isUnlocked = !document.getElementById('r-materialList').classList.contains('blurred');
+  if (!isUnlocked) { window.mockUnlock('room'); return; }
+
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({ 'event': 'pdf_download', 'pdf_type': 'room_estimator' });
 
@@ -1304,6 +1335,9 @@ window.downloadRoomPDF = () => {
 
 // ==================== PDF: ROOF ====================
 window.downloadRoofPDF = () => {
+  const isUnlocked = !document.getElementById('f-materialList').classList.contains('blurred');
+  if (!isUnlocked) { window.mockUnlock('roof'); return; }
+
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({ 'event': 'pdf_download', 'pdf_type': 'roof_wizard' });
 
@@ -1373,6 +1407,9 @@ window.downloadRoofPDF = () => {
 
 // ==================== PDF: TILES (MULTI-ROOM) ====================
 window.downloadTilesPDF = () => {
+  const isUnlocked = !document.getElementById('t-materialList').classList.contains('blurred');
+  if (!isUnlocked) { window.mockUnlock('tiles'); return; }
+
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push({ 'event': 'pdf_download', 'pdf_type': 'floor_tiles' });
 
@@ -1480,7 +1517,6 @@ function relockApp(app) {
   const prefix = app === 'room' ? 'r' : app === 'roof' ? 'f' : 't';
   document.getElementById(`${prefix}-materialList`).classList.add('blurred');
   document.getElementById(`${prefix}-paywall`).style.display = 'flex';
-  document.getElementById(`${prefix}-actions`).style.display = 'none';
 }
 
 // ==================== WIRE UP ALL SLIDERS ====================
@@ -1491,6 +1527,7 @@ function initUI() {
   document.getElementById('r-wid').addEventListener('input', e => { currentRoomActive = true; currentRoom.wid = parseFloat(e.target.value); updateUI(); rebuild3D(); });
   document.getElementById('r-hgt').addEventListener('input', e => { currentRoomActive = true; currentRoom.hgt = parseFloat(e.target.value); updateUI(); rebuild3D(); });
   document.getElementById('r-block').addEventListener('change', e => { currentRoomActive = true; currentRoom.blockThick = parseFloat(e.target.value); updateUI(); });
+  document.getElementById('r-bag-size').addEventListener('change', () => { calcTotals(); });
 
   // Roof
   rebuildRoof3D(); calcRoof();
