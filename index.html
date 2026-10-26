@@ -80,7 +80,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   .paywall-box { background: white; padding: 24px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border: 1px solid var(--border); max-width: 340px; text-align: left; }
   .paywall-box h3 { font-size: 16px; font-weight: 700; margin-bottom: 4px; color: var(--text-main); } .paywall-box p.subtitle { font-size: 12px; color: var(--text-muted); margin-bottom: 16px; }
   .premium-features { list-style: none; padding: 0; margin-bottom: 20px; } .premium-features li { font-size: 12px; color: #334155; line-height: 1.4; margin-bottom: 10px; display: flex; gap: 8px; } .premium-features li span { color: var(--green); font-weight: 700; }
-  .btn-unlock { width: 100%; padding: 14px; background: var(--green); color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 8px; }
+  .btn-unlock { width: 100%; padding: 14px; background: var(--green); color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 8px; text-align: center; }
   .btn-unlock:hover { background: #059669; }
   .btn-share { width: 100%; padding: 12px; background: var(--blue); color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; }
   .btn-share:hover { background: #2563eb; }
@@ -151,15 +151,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <div class="input-group"><label>Length <span class="val" id="r-lenV">6.4 m</span></label><input type="range" id="r-len" min="0.5" max="50" step="0.1" value="6.4" /></div>
             <div class="input-group"><label>Width <span class="val" id="r-widV">5.5 m</span></label><input type="range" id="r-wid" min="0.5" max="50" step="0.1" value="5.5" /></div>
             <div class="input-group"><label>Height <span class="val" id="r-hgtV">3.7 m</span></label><input type="range" id="r-hgt" min="2.0" max="8.0" step="0.1" value="3.7" /></div>
-            <div class="input-group">
-              <label>Block Type</label>
-              <select id="r-block">
-                <option value="0.225">9" Sandcrete (225mm)</option>
-                <option value="0.150">6" Sandcrete (150mm)</option>
-                <option value="0.125">5" Sandcrete (125mm)</option>
-                <option value="0.100">4" Sandcrete (100mm)</option>
-              </select>
-            </div>
+           <div class="input-group">
+  <label>Block Type</label>
+  <select id="r-block">
+    <option value="0.225">9" Sandcrete (225mm)</option>
+    <option value="0.150">6" Sandcrete (150mm)</option>
+    <option value="0.125">5" Sandcrete (125mm)</option>
+    <option value="0.100">4" Sandcrete (100mm)</option>
+  </select>
+</div>
+<div class="input-group">
+  <label>Standard</label>
+  <select id="r-standard" onchange="updateBlockStandard(this.value)">
+    <option value="10">Ghana / West Africa (10/m²)</option>
+    <option value="12.5">US / UK Standard (12.5/m²)</option>
+  </select>
+</div>
           </div>
           <div class="openings-control">
             <div class="counter-box"><span>Doors</span><div style="display:flex; align-items:center; gap:8px;"><button class="counter-btn" onclick="changeCount('door', -1)">−</button><span class="counter-val" id="doorCount">1</span><button class="counter-btn" onclick="changeCount('door', 1)">+</button></div></div>
@@ -213,7 +220,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                   <li><span>✅</span> <div><strong>Room Schedule:</strong> Itemized breakdown for every room in the PDF.</div></li>
                   <li><span>✅</span> <div><strong>Shareable Blueprint:</strong> Clean PDF optimized for WhatsApp or printing.</div></li>
                 </ul>
-                <button class="btn-unlock" onclick="mockUnlock('room')">Unlock for ₵15 (Preview Mode)</button>
+                <button class="btn-unlock" onclick="mockUnlock('room')">Unlock for $2.99 USD / ₵15 GHS / ₦2,000 NGN</button>
                 <button class="btn-share" onclick="openReferralModal('room')"><span>🔗</span> Unlock Free by Referring a Friend</button>
               </div>
             </div>
@@ -281,7 +288,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               <div class="paywall-box">
                 <h3>🔒 Unlock Roofing Materials</h3>
                 <p class="subtitle">Get exact quantities for sheets, battens, and screws instantly.</p>
-                <button class="btn-unlock" onclick="mockUnlock('roof')">Unlock for ₵15 (Preview Mode)</button>
+                <button class="btn-unlock" onclick="mockUnlock('roof')">Unlock for $2.99 USD / ₵15 GHS / ₦2,000 NGN</button>
                 <button class="btn-share" onclick="openReferralModal('roof')"><span>🔗</span> Unlock Free by Referring a Friend</button>
               </div>
             </div>
@@ -350,7 +357,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               <div class="paywall-box">
                 <h3>🔒 Unlock Tiling Materials</h3>
                 <p class="subtitle">Get exact quantities for adhesive, grout, and spacers instantly.</p>
-                <button class="btn-unlock" onclick="mockUnlock('tiles')">Unlock for ₵15 (Preview Mode)</button>
+                <button class="btn-unlock" onclick="mockUnlock('tiles')">Unlock for $2.99 USD / ₵15 GHS / ₦2,000 NGN</button>
                 <button class="btn-share" onclick="openReferralModal('tiles')"><span>🔗</span> Unlock Free by Referring a Friend</button>
               </div>
             </div>
@@ -443,7 +450,7 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let currentUnit = 'm'; const M_TO_FT = 3.28084;
 let savedRooms = []; let activeRoomId = 1;
-let currentRoomActive = true;  // is the in-progress room part of the project?
+let currentRoomActive = true;  
 const currentRoom = { len: 6.4, wid: 5.5, hgt: 3.7, blockThick: 0.225, doors: 1, windows: 1, sharedFront: false, sharedBack: false, sharedLeft: false, sharedRight: false };
 let lastCalc = { area: 0, wall: 0 };
 const roofP = { type: 'gable', len: 10, wid: 8, pitch: 25, overhang: 0.5 };
@@ -529,7 +536,7 @@ window.toggleWall = (side) => {
 window.saveCurrentRoom = () => {
   savedRooms.push({ id: activeRoomId, label: `Room ${activeRoomId}`, ...currentRoom });
   activeRoomId++;
-  currentRoomActive = false;     // ← in-progress room is NOT counted until user starts editing again
+  currentRoomActive = false;     
   currentRoom.len = 5.0;
   currentRoom.wid = 4.0;
   currentRoom.doors = 1;
@@ -573,14 +580,17 @@ function updateUI() {
   calcTotals();
 }
 
-// ==================== BLOCK & MORTAR ENGINE (GHANA STANDARD) ====================
-// Ghanaian artisans use 10 blocks per m² of NET wall (joints + typical cuts already included).
-// This matches on-site practice and avoids the ~7% over-quote that "theoretical + waste" causes.
-const BLOCKS_PER_M2 = 10;         // Ghana artisan standard
+// ==================== BLOCK & MORTAR ENGINE ====================
+let BLOCKS_PER_M2 = 10;         // Default: Ghana artisan standard
 const BLOCK_WASTE = 0.05;         // +5% breakage / cutting
 const MORTAR_WASTE = 0.07;        // +7% site mixing
-const MORTAR_CEMENT_PER_M2 = 0.11; // bags per m² of wall (1:6, Ghana site average)
+const MORTAR_CEMENT_PER_M2 = 0.11; // bags per m² of wall
 const MORTAR_SAND_PER_M2 = 0.015;  // m³ per m² of wall
+
+window.updateBlockStandard = (val) => {
+  BLOCKS_PER_M2 = parseFloat(val);
+  updateUI(); 
+};
 
 function theoreticalBlocks(netWallArea) {
   return Math.ceil(netWallArea * BLOCKS_PER_M2);
@@ -613,30 +623,24 @@ function calcTotals() {
     totalWallArea += net;
   };
   savedRooms.forEach(calcRoom);
-  if (currentRoomActive) calcRoom(currentRoom);   // ← only count in-progress room if user is editing it
+  if (currentRoomActive) calcRoom(currentRoom); 
 
-  // Blocks (theoretical = net × 10; order = +5%)
   const blkTheoretical = theoreticalBlocks(totalWallArea);
   const blkOrder = orderBlocks(totalWallArea);
   document.getElementById('r-outBlocks').innerHTML =
     `${blkOrder.toLocaleString()} pcs <span style="font-size:10px; font-weight:500; color:var(--text-muted);">(theoretical ${blkTheoretical.toLocaleString()} + ${Math.round(BLOCK_WASTE*100)}% waste)</span>`;
 
-  // Mortar
   document.getElementById('r-outCemMortar').textContent = mortarCementBags(totalWallArea) + ' bags';
   document.getElementById('r-outSand').textContent = mortarSandM3(totalWallArea).toFixed(2) + ' m³';
-
-  // Plaster & paint (unchanged — sanity-checked earlier)
   document.getElementById('r-outCemPlaster').textContent = Math.ceil(totalWallArea / 11) + ' bags';
   document.getElementById('r-outSandPlaster').textContent = (totalWallArea / 11 * 0.05).toFixed(2) + ' m³';
   document.getElementById('r-outPaint').textContent = (totalWallArea / 8.3 * 2 * 1.05).toFixed(1) + ' L';
   document.getElementById('r-outCeiling').textContent = Math.ceil(totalArea * 1.05) + ' m²';
 
-  // Totals
   document.getElementById('r-outFloor').textContent = totalArea.toFixed(2) + ' m²';
   document.getElementById('r-outWall').textContent = totalWallArea.toFixed(2) + ' m²';
   document.getElementById('r-outBlockType').textContent = getBlockName(currentRoom.blockThick);
 
-  // Cache for PDF
   lastCalc = { area: totalArea, wall: totalWallArea };
 }
 
@@ -911,7 +915,11 @@ function unlockApp(app) {
   document.getElementById(`${prefix}-paywall`).style.display = 'none';
   document.getElementById(`${prefix}-actions`).style.display = 'flex';
 }
-window.mockUnlock = (app) => setTimeout(() => unlockApp(app), 800);
+
+window.mockUnlock = (app) => {
+  alert("This is a preview. In the future, a secure global payment gateway (PayPal/Stripe/Paystack) will open here to process your local currency.");
+  setTimeout(() => unlockApp(app), 500);
+};
 
 window.openModal = (type) => {
   document.getElementById('legalModal').classList.add('active');
@@ -1384,6 +1392,15 @@ window.addEventListener('resize', resizeAll);
 
 // ==================== BOOT ====================
 window.addEventListener('load', async () => {
+  // Detect user's locale and set default currency
+  const userLocale = navigator.language || 'en-US';
+  const defaultCurrency = userLocale.includes('US') || userLocale.includes('GB') || userLocale.includes('UK') ? 'USD' : 'GHS';
+  
+  // Set the dropdowns to the detected currency
+  document.getElementById('cur-room').value = defaultCurrency;
+  document.getElementById('cur-roof').value = defaultCurrency;
+  document.getElementById('cur-tiles').value = defaultCurrency;
+
   const urlParams = new URLSearchParams(window.location.search);
   const incomingRef = urlParams.get('ref');
   if (incomingRef && incomingRef !== myReferralId) {
