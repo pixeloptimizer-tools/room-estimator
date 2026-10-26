@@ -1415,7 +1415,7 @@ window.downloadTilesPDF = () => {
     const shoppingItems = [];
     roomsForReport.forEach((r, i) => {
       const t = Math.ceil((r.len * r.wid) / r.tileSize * (1 + r.waste / 100));
-      shoppingItems.push([`Tiles – Room ${i + 1}`, t]);
+      shoppingItems.push([`Tiles – Room ${i + 1} (${Math.round(r.tileSize * 1e4)} mm)`, t]);
     });
     shoppingItems.push(...materials);
     drawShoppingList(doc, projectName, shoppingItems);
