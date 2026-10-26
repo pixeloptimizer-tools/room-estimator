@@ -312,12 +312,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </div>
 
-<!-- APP 3: FLOOR TILES -->
+<!-- APP 3: FLOOR TILES (MULTI-ROOM) -->
 <div class="app-section" id="app-tiles">
   <div class="container">
     <div class="left-col">
       <div class="card">
-        <div class="card-header"><h2>Floor Tiling</h2><p>Calculate tiles, adhesive, and grout.</p></div>
+        <div class="card-header">
+          <div><h2>Build your rooms</h2><p>Measure one room, save it, then add the next.</p></div>
+          <div class="active-room-badge" id="activeTileRoomBadge" style="position:static;">Designing Room 1</div>
+        </div>
         <div class="canvas-container" id="canvas-tiles">
           <div class="viewer-hint">Drag to rotate • Scroll to zoom</div>
         </div>
@@ -336,16 +339,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             </div>
             <div class="input-group"><label>Waste Allowance (%)</label><input type="number" id="t-waste" value="10" step="1" /></div>
           </div>
+          <div class="room-actions">
+            <button class="btn-save" onclick="saveCurrentTileRoom()">Save Room & Add Next</button>
+            <button class="btn-clear" onclick="clearAllTileRooms()">Clear All</button>
+          </div>
+          <div class="room-list" id="tileRoomsList"></div>
         </div>
       </div>
     </div>
     <div class="right-col">
       <div class="card">
-        <div class="card-header"><h2>Tiling Materials</h2><p>Indicative quantities for your flooring.</p></div>
+        <div class="card-header"><h2>Tiling Materials</h2><p>Indicative quantities for all saved rooms.</p></div>
         <div class="card-body">
           <div class="area-boxes">
-            <div class="area-box"><div class="label">Floor Area</div><div class="val" id="t-outArea">0.00 m²</div></div>
-            <div class="area-box"><div class="label">Tiles Needed</div><div class="val" id="t-outTiles">0 tiles</div></div>
+            <div class="area-box"><div class="label">Total Floor Area</div><div class="val" id="t-outArea">0.00 m²</div></div>
+            <div class="area-box"><div class="label">Total Tiles Needed</div><div class="val" id="t-outTiles">0 tiles</div></div>
           </div>
           <div class="material-wrapper">
             <div class="material-list blurred" id="t-materialList">
@@ -450,11 +458,16 @@ const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let currentUnit = 'm'; const M_TO_FT = 3.28084;
 let savedRooms = []; let activeRoomId = 1;
-let currentRoomActive = true;  
+let currentRoomActive = true;
 const currentRoom = { len: 6.4, wid: 5.5, hgt: 3.7, blockThick: 0.225, doors: 1, windows: 1, sharedFront: false, sharedBack: false, sharedLeft: false, sharedRight: false };
 let lastCalc = { area: 0, wall: 0 };
 const roofP = { type: 'gable', len: 10, wid: 8, pitch: 25, overhang: 0.5 };
-const tilesP = { len: 5, wid: 4, tileSize: 0.36, waste: 10 };
+
+// ==================== TILES: MULTI-ROOM STATE ====================
+let savedTileRooms = [];
+let activeTileRoomId = 1;
+let currentTileRoomActive = true;
+const currentTileRoom = { len: 5.0, wid: 4.0, tileSize: 0.36, waste: 10 };
 
 // ==================== PRICING ====================
 const DEFAULT_PRICES = {
@@ -536,7 +549,7 @@ window.toggleWall = (side) => {
 window.saveCurrentRoom = () => {
   savedRooms.push({ id: activeRoomId, label: `Room ${activeRoomId}`, ...currentRoom });
   activeRoomId++;
-  currentRoomActive = false;     
+  currentRoomActive = false;
   currentRoom.len = 5.0;
   currentRoom.wid = 4.0;
   currentRoom.doors = 1;
@@ -581,15 +594,15 @@ function updateUI() {
 }
 
 // ==================== BLOCK & MORTAR ENGINE ====================
-let BLOCKS_PER_M2 = 10;         // Default: Ghana artisan standard
-const BLOCK_WASTE = 0.05;         // +5% breakage / cutting
-const MORTAR_WASTE = 0.07;        // +7% site mixing
-const MORTAR_CEMENT_PER_M2 = 0.11; // bags per m² of wall
-const MORTAR_SAND_PER_M2 = 0.015;  // m³ per m² of wall
+let BLOCKS_PER_M2 = 10;
+const BLOCK_WASTE = 0.05;
+const MORTAR_WASTE = 0.07;
+const MORTAR_CEMENT_PER_M2 = 0.11;
+const MORTAR_SAND_PER_M2 = 0.015;
 
 window.updateBlockStandard = (val) => {
   BLOCKS_PER_M2 = parseFloat(val);
-  updateUI(); 
+  updateUI();
 };
 
 function theoreticalBlocks(netWallArea) {
@@ -623,7 +636,7 @@ function calcTotals() {
     totalWallArea += net;
   };
   savedRooms.forEach(calcRoom);
-  if (currentRoomActive) calcRoom(currentRoom); 
+  if (currentRoomActive) calcRoom(currentRoom);
 
   const blkTheoretical = theoreticalBlocks(totalWallArea);
   const blkOrder = orderBlocks(totalWallArea);
@@ -869,7 +882,7 @@ const tileGroup = new THREE.Group(); sceneTiles.add(tileGroup);
 
 function rebuildTiles3D() {
   tileGroup.clear();
-  const { len, wid, tileSize } = tilesP;
+  const { len, wid, tileSize } = currentTileRoom;
   const cols = Math.max(1, Math.floor(len / Math.sqrt(tileSize)));
   const rows = Math.max(1, Math.floor(wid / Math.sqrt(tileSize)));
   const tileW = len / cols;
@@ -894,15 +907,89 @@ function rebuildTiles3D() {
   controlsTiles.target.set(0, 0, 0); controlsTiles.update();
 }
 
+// ==================== TILES: MULTI-ROOM LOGIC ====================
+window.saveCurrentTileRoom = () => {
+  savedTileRooms.push({ id: activeTileRoomId, label: `Room ${activeTileRoomId}`, ...currentTileRoom });
+  activeTileRoomId++;
+  currentTileRoomActive = false;
+
+  currentTileRoom.len = 5.0;
+  currentTileRoom.wid = 4.0;
+  currentTileRoom.tileSize = 0.36;
+  currentTileRoom.waste = 10;
+
+  document.getElementById('t-len').value = 5.0;
+  document.getElementById('t-wid').value = 4.0;
+  document.getElementById('t-size').value = '0.36';
+  document.getElementById('t-waste').value = 10;
+  document.getElementById('t-lenV').textContent = '5.0 m';
+  document.getElementById('t-widV').textContent = '4.0 m';
+
+  updateTilesUI();
+  rebuildTiles3D();
+  calcTiles();
+};
+
+window.clearAllTileRooms = () => {
+  savedTileRooms = [];
+  activeTileRoomId = 1;
+  currentTileRoomActive = true;
+  currentTileRoom.len = 5.0;
+  currentTileRoom.wid = 4.0;
+  currentTileRoom.tileSize = 0.36;
+  currentTileRoom.waste = 10;
+
+  document.getElementById('t-len').value = 5.0;
+  document.getElementById('t-wid').value = 4.0;
+  document.getElementById('t-size').value = '0.36';
+  document.getElementById('t-waste').value = 10;
+  document.getElementById('t-lenV').textContent = '5.0 m';
+  document.getElementById('t-widV').textContent = '4.0 m';
+
+  updateTilesUI();
+  rebuildTiles3D();
+  calcTiles();
+};
+
+function updateTilesUI() {
+  document.getElementById('activeTileRoomBadge').textContent = `Designing Room ${activeTileRoomId}`;
+  const list = document.getElementById('tileRoomsList');
+  list.innerHTML = savedTileRooms.length === 0
+    ? '<div style="font-size:12px;color:var(--text-muted);text-align:center;">No rooms saved yet.</div>'
+    : savedTileRooms.map((r, i) =>
+        `<div class="room-item">
+           <span>Room ${i + 1}</span>
+           <span>${r.len.toFixed(1)} m × ${r.wid.toFixed(1)} m &nbsp;•&nbsp; ${Math.round(r.tileSize * 1e4)} mm tiles</span>
+         </div>`
+      ).join('');
+}
+
 function calcTiles() {
-  const { len, wid, tileSize, waste } = tilesP;
-  const area = len * wid;
-  const tilesNeeded = Math.ceil(area / tileSize * (1 + waste / 100));
-  document.getElementById('t-outArea').textContent = area.toFixed(2) + ' m²';
-  document.getElementById('t-outTiles').textContent = tilesNeeded + ' tiles';
-  const adhesive = Math.ceil(area * 4 / 20);
-  const grout = Math.ceil(area * 0.5 / 5);
-  const spacers = Math.max(1, Math.ceil(tilesNeeded / 100));
+  let totalArea = 0;
+  let totalTiles = 0;
+  let totalAdhesiveKg = 0;
+  let totalGroutKg = 0;
+  let totalSpacers = 0;
+
+  const addRoom = (r) => {
+    const area = r.len * r.wid;
+    const tiles = Math.ceil(area / r.tileSize * (1 + r.waste / 100));
+    totalArea += area;
+    totalTiles += tiles;
+    totalAdhesiveKg += area * 4;
+    totalGroutKg += area * 0.5;
+    totalSpacers += Math.ceil(tiles / 100);
+  };
+
+  savedTileRooms.forEach(addRoom);
+  if (currentTileRoomActive) addRoom(currentTileRoom);
+
+  const adhesive = Math.ceil(totalAdhesiveKg / 20);
+  const grout = Math.ceil(totalGroutKg / 5);
+  const spacers = Math.max(1, totalSpacers);
+
+  document.getElementById('t-outArea').textContent = totalArea.toFixed(2) + ' m²';
+  document.getElementById('t-outTiles').textContent = totalTiles + ' tiles';
   document.getElementById('t-outAdhesive').textContent = adhesive + ' bags';
   document.getElementById('t-outGrout').textContent = grout + ' bags';
   document.getElementById('t-outSpacers').textContent = spacers + ' packs';
@@ -1058,14 +1145,9 @@ function parseQty(txt) {
 
 // ==================== PDF: ROOM ====================
 window.downloadRoomPDF = () => {
-  // 1. Trigger GTM Event First
   window.dataLayer = window.dataLayer || [];
-  window.dataLayer.push({
-    'event': 'pdf_download',
-    'pdf_type': 'room_estimator'
-  });
+  window.dataLayer.push({ 'event': 'pdf_download', 'pdf_type': 'room_estimator' });
 
-  // 2. Delay PDF generation so GTM can send data
   setTimeout(() => {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
@@ -1089,7 +1171,6 @@ window.downloadRoomPDF = () => {
       ["Block Type", getBlockName(roomsForReport[0].blockThick)]
     ]);
 
-    // 1. Room schedule
     y = drawSectionTitle(doc, y, "1. Room Schedule (User Input)");
     doc.setFontSize(9); doc.setFont('helvetica', 'bold');
     doc.setFillColor(241, 245, 249);
@@ -1114,14 +1195,12 @@ window.downloadRoomPDF = () => {
     });
     y += 4;
 
-    // 2. Calculation results
     y = drawSectionTitle(doc, y, "2. Calculation Results (All Rooms)");
     y = drawMetaBlock(doc, y, [
       ["Total Floor Area", document.getElementById('r-outFloor').textContent],
       ["Total Wall Area (net)", document.getElementById('r-outWall').textContent]
     ]);
 
-    // 3. Material quantities
     y = drawSectionTitle(doc, y, "3. Material Quantities (All Rooms)");
     const materials = [
       ["Sandcrete Blocks", parseQty(document.getElementById('r-outBlocks').textContent)],
@@ -1136,14 +1215,12 @@ window.downloadRoomPDF = () => {
     const { y: y2, grand } = drawTable(doc, y, rows, currency, showPrices);
     y = y2 + 4;
 
-    // Blocks transparency note
     const blkTheo = theoreticalBlocks(lastCalc.wall);
     const blkOrd = orderBlocks(lastCalc.wall);
     doc.setFontSize(8.5); doc.setTextColor(90,90,90);
     doc.text(`Blocks: order ${blkOrd.toLocaleString()} pcs (theoretical ${blkTheo.toLocaleString()} + ${Math.round(BLOCK_WASTE*100)}% waste)`, 14, y);
     y += 6; doc.setTextColor(0,0,0);
 
-    // 4. Price breakdown
     if (showPrices) {
       y = drawSectionTitle(doc, y, "4. Price Breakdown");
       y = drawMetaBlock(doc, y, [
@@ -1153,7 +1230,6 @@ window.downloadRoomPDF = () => {
       ]);
     }
 
-    // 5. Wastage
     y = drawNotes(doc, y, "5. Wastage Allowance Applied", [
       "• Blocks: +5% (breakage, cuts, transport loss).",
       "• Cement & sand (mortar): +7% (site mixing loss).",
@@ -1161,7 +1237,6 @@ window.downloadRoomPDF = () => {
       "• Ceiling boards: +5% (off-cuts, mis-cuts)."
     ]);
 
-    // 6. Assumptions
     y = drawNotes(doc, y, "6. Assumptions & Limitations", [
       "• Ghana standard 10 blocks/m² of net wall (mortar joints + typical cuts included).",
       "• Net wall area deducts doors (0.9×2.1m) and windows (1.2×1.2m), and shared walls you marked.",
@@ -1173,19 +1248,14 @@ window.downloadRoomPDF = () => {
     drawShoppingList(doc, projectName, materials);
     doc.save(`C2B_Room_${Date.now()}.pdf`);
     relockApp('room');
-  }, 250); 
+  }, 250);
 };
 
 // ==================== PDF: ROOF ====================
 window.downloadRoofPDF = () => {
-  // 1. Trigger GTM Event First
   window.dataLayer = window.dataLayer || [];
-  window.dataLayer.push({
-    'event': 'pdf_download',
-    'pdf_type': 'roof_wizard'
-  });
+  window.dataLayer.push({ 'event': 'pdf_download', 'pdf_type': 'roof_wizard' });
 
-  // 2. Delay PDF generation so GTM can send data
   setTimeout(() => {
     const { jsPDF } = window.jspdf; const doc = new jsPDF();
     const showPrices = document.querySelector('.include-pricing[data-app="roof"]')?.checked;
@@ -1250,43 +1320,65 @@ window.downloadRoofPDF = () => {
   }, 250);
 };
 
-// ==================== PDF: TILES ====================
+// ==================== PDF: TILES (MULTI-ROOM) ====================
 window.downloadTilesPDF = () => {
-  // 1. Trigger GTM Event First
   window.dataLayer = window.dataLayer || [];
-  window.dataLayer.push({
-    'event': 'pdf_download',
-    'pdf_type': 'floor_tiles'
-  });
+  window.dataLayer.push({ 'event': 'pdf_download', 'pdf_type': 'floor_tiles' });
 
-  // 2. Delay PDF generation so GTM can send data
   setTimeout(() => {
-    const { jsPDF } = window.jspdf; const doc = new jsPDF();
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
     const showPrices = document.querySelector('.include-pricing[data-app="tiles"]')?.checked;
     const currency = getCurrency('tiles');
     const prices = getPrices('tiles');
     const delivery = getDelivery('tiles');
-    const projectName = `Tiles – ${tilesP.len}m × ${tilesP.wid}m`;
+
+    const roomsForReport = savedTileRooms.length > 0
+      ? savedTileRooms
+      : [{ id: 1, ...currentTileRoom }];
+
+    const projectName = `${roomsForReport.length} Room${roomsForReport.length > 1 ? 's' : ''} – Tiling`;
+
     let y = drawHeader(doc, "Floor Tiles Report");
+
     y = drawMetaBlock(doc, y, [
       ["Project", projectName],
       ["Date", new Date().toLocaleString()],
-      ["Tile Size", document.getElementById('t-size').selectedOptions[0].text],
-      ["Waste Allowance", tilesP.waste + '%']
+      ["Rooms Saved", roomsForReport.length],
+      ["Default Tile Size", document.getElementById('t-size').selectedOptions[0].text]
     ]);
-    y = drawSectionTitle(doc, y, "1. Dimensions (User Input)");
+
+    y = drawSectionTitle(doc, y, "1. Room Schedule (User Input)");
+    doc.setFontSize(9); doc.setFont('helvetica', 'bold');
+    doc.setFillColor(241, 245, 249);
+    doc.rect(14, y - 5, 182, 7, 'F');
+    doc.text("Room", 16, y);
+    doc.text("L × W", 55, y);
+    doc.text("Tile Size", 100, y);
+    doc.text("Waste", 140, y);
+    doc.text("Tiles", 168, y);
+    y += 7;
+    doc.setFont('helvetica', 'normal');
+
+    roomsForReport.forEach((r, i) => {
+      const tilesForRoom = Math.ceil((r.len * r.wid) / r.tileSize * (1 + r.waste / 100));
+      doc.text(`Room ${i + 1}`, 16, y);
+      doc.text(`${r.len.toFixed(1)} × ${r.wid.toFixed(1)} m`, 55, y);
+      doc.text(`${Math.round(r.tileSize * 1e4)} mm`, 100, y);
+      doc.text(`${r.waste}%`, 140, y);
+      doc.text(String(tilesForRoom), 168, y);
+      y += 6;
+      if (y > 270) { doc.addPage(); y = 20; }
+    });
+    y += 4;
+
+    y = drawSectionTitle(doc, y, "2. Calculation Results (All Rooms)");
     y = drawMetaBlock(doc, y, [
-      ["Length", tilesP.len + ' m'],
-      ["Width", tilesP.wid + ' m'],
-      ["Tile Size", document.getElementById('t-size').selectedOptions[0].text],
-      ["Waste Allowance", tilesP.waste + '%']
+      ["Total Floor Area", document.getElementById('t-outArea').textContent],
+      ["Total Tiles Needed", document.getElementById('t-outTiles').textContent]
     ]);
-    y = drawSectionTitle(doc, y, "2. Calculation Results");
-    y = drawMetaBlock(doc, y, [
-      ["Floor Area", document.getElementById('t-outArea').textContent],
-      ["Tiles Needed (incl. waste)", document.getElementById('t-outTiles').textContent]
-    ]);
-    y = drawSectionTitle(doc, y, "3. Material Quantities");
+
+    y = drawSectionTitle(doc, y, "3. Material Quantities (All Rooms)");
     const materials = [
       ["Tile Adhesive", parseQty(document.getElementById('t-outAdhesive').textContent)],
       ["Tile Grout", parseQty(document.getElementById('t-outGrout').textContent)],
@@ -1295,6 +1387,7 @@ window.downloadTilesPDF = () => {
     const rows = materials.map(([n, q]) => [n, `${q} ${UNITS[n]}`, showPrices ? prices[n] : null]);
     const { y: y2, grand } = drawTable(doc, y, rows, currency, showPrices);
     y = y2 + 4;
+
     if (showPrices) {
       y = drawSectionTitle(doc, y, "4. Price Breakdown");
       y = drawMetaBlock(doc, y, [
@@ -1303,20 +1396,30 @@ window.downloadTilesPDF = () => {
         ["Grand Total", `${currency} ${(grand + delivery).toFixed(2)}`]
       ]);
     }
+
     y = drawNotes(doc, y, "5. Wastage Allowance Applied", [
-      `• Tile waste: ${tilesP.waste}% (cuts, edge trims, breakage).`,
-      "• Adhesive: 4 kg/m² (industry average for 6mm bed).",
-      "• Grout: 0.5 kg/m²."
+      "• Tile waste applied per room (default 10%).",
+      "• Adhesive: 4 kg/m² (6 mm bed) — pooled across all rooms before rounding to 20 kg bags.",
+      "• Grout: 0.5 kg/m² — pooled before rounding to 5 kg bags.",
+      "• Spacers: 1 pack per 100 tiles."
     ]);
+
     y = drawNotes(doc, y, "6. Assumptions & Limitations", [
       "• Assumes standard square/rectangular layout with straight cuts.",
       "• Excludes skirting tiles and threshold strips.",
       "• Substrate assumed level; extra adhesive may be needed on uneven floors.",
-      "• Actual coverage varies by tile size, layout pattern, and substrate.",
+      "• Per-room tile counts are rounded up independently — buy boxes accordingly.",
       "• Verify with your tiler before purchase."
     ]);
-    const tileBoxes = parseQty(document.getElementById('t-outTiles').textContent);
-    drawShoppingList(doc, projectName, [...materials, ["Tile boxes (tiles to buy)", tileBoxes]]);
+
+    const shoppingItems = [];
+    roomsForReport.forEach((r, i) => {
+      const t = Math.ceil((r.len * r.wid) / r.tileSize * (1 + r.waste / 100));
+      shoppingItems.push([`Tiles – Room ${i + 1}`, t]);
+    });
+    shoppingItems.push(...materials);
+    drawShoppingList(doc, projectName, shoppingItems);
+
     doc.save(`C2B_Tiles_${Date.now()}.pdf`);
     relockApp('tiles');
   }, 250);
@@ -1328,9 +1431,10 @@ function relockApp(app) {
   document.getElementById(`${prefix}-paywall`).style.display = 'flex';
   document.getElementById(`${prefix}-actions`).style.display = 'none';
 }
+
 // ==================== WIRE UP ALL SLIDERS ====================
 function initUI() {
-  // Room — any input re-activates the in-progress room
+  // Room
   updateUI(); rebuild3D();
   document.getElementById('r-len').addEventListener('input', e => { currentRoomActive = true; currentRoom.len = parseFloat(e.target.value); updateUI(); rebuild3D(); });
   document.getElementById('r-wid').addEventListener('input', e => { currentRoomActive = true; currentRoom.wid = parseFloat(e.target.value); updateUI(); rebuild3D(); });
@@ -1358,26 +1462,34 @@ function initUI() {
     rebuildRoof3D();
   });
 
-  // Tiles
-  rebuildTiles3D(); calcTiles();
-  document.getElementById('t-lenV').textContent = tilesP.len.toFixed(1) + ' m';
-  document.getElementById('t-widV').textContent = tilesP.wid.toFixed(1) + ' m';
-  ['t-len','t-wid'].forEach(id => {
-    document.getElementById(id).addEventListener('input', () => {
-      tilesP.len = parseFloat(document.getElementById('t-len').value);
-      tilesP.wid = parseFloat(document.getElementById('t-wid').value);
-      document.getElementById('t-lenV').textContent = tilesP.len.toFixed(1) + ' m';
-      document.getElementById('t-widV').textContent = tilesP.wid.toFixed(1) + ' m';
-      rebuildTiles3D(); calcTiles();
-    });
+  // Tiles — any input re-activates the in-progress room
+  rebuildTiles3D();
+  document.getElementById('t-lenV').textContent = currentTileRoom.len.toFixed(1) + ' m';
+  document.getElementById('t-widV').textContent = currentTileRoom.wid.toFixed(1) + ' m';
+  updateTilesUI();
+  calcTiles();
+
+  document.getElementById('t-len').addEventListener('input', e => {
+    currentTileRoomActive = true;
+    currentTileRoom.len = parseFloat(e.target.value);
+    document.getElementById('t-lenV').textContent = currentTileRoom.len.toFixed(1) + ' m';
+    updateTilesUI(); rebuildTiles3D(); calcTiles();
   });
-  document.getElementById('t-size').addEventListener('change', () => {
-    tilesP.tileSize = parseFloat(document.getElementById('t-size').value);
-    rebuildTiles3D(); calcTiles();
+  document.getElementById('t-wid').addEventListener('input', e => {
+    currentTileRoomActive = true;
+    currentTileRoom.wid = parseFloat(e.target.value);
+    document.getElementById('t-widV').textContent = currentTileRoom.wid.toFixed(1) + ' m';
+    updateTilesUI(); rebuildTiles3D(); calcTiles();
   });
-  document.getElementById('t-waste').addEventListener('input', () => {
-    tilesP.waste = parseFloat(document.getElementById('t-waste').value) || 10;
-    calcTiles();
+  document.getElementById('t-size').addEventListener('change', e => {
+    currentTileRoomActive = true;
+    currentTileRoom.tileSize = parseFloat(e.target.value);
+    updateTilesUI(); rebuildTiles3D(); calcTiles();
+  });
+  document.getElementById('t-waste').addEventListener('input', e => {
+    currentTileRoomActive = true;
+    currentTileRoom.waste = parseFloat(e.target.value) || 10;
+    updateTilesUI(); calcTiles();
   });
 }
 
@@ -1392,11 +1504,9 @@ window.addEventListener('resize', resizeAll);
 
 // ==================== BOOT ====================
 window.addEventListener('load', async () => {
-  // Detect user's locale and set default currency
   const userLocale = navigator.language || 'en-US';
   const defaultCurrency = userLocale.includes('US') || userLocale.includes('GB') || userLocale.includes('UK') ? 'USD' : 'GHS';
-  
-  // Set the dropdowns to the detected currency
+
   document.getElementById('cur-room').value = defaultCurrency;
   document.getElementById('cur-roof').value = defaultCurrency;
   document.getElementById('cur-tiles').value = defaultCurrency;
