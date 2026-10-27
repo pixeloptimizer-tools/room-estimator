@@ -11,11 +11,10 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏗️</text></svg>">
-  <!-- Add this right after your <title> tag -->
 <meta name="description" content="Calculate building materials, blocks, cement, and tiles for your house in seconds. Free professional construction estimator.">
 <meta property="og:title" content="Calculate2Build | Professional Estimators">
 <meta property="og:description" content="Estimate blocks, cement, and tiles for your building project instantly. Generate a PDF shopping list.">
-<meta property="og:image" content="https://yourdomain.com/preview-image.jpg"> <!-- A screenshot of your app -->
+<meta property="og:image" content="https://yourdomain.com/preview-image.jpg">
 <meta property="og:type" content="website">
 <title>Calculate2Build | Professional Estimators</title>
 <style>
@@ -23,8 +22,14 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   :root { --bg: #f8fafc; --white: #ffffff; --text-main: #0f172a; --text-muted: #64748b; --border: #e2e8f0; --brand: #f59e0b; --green: #10b981; --blue: #3b82f6; }
   * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, sans-serif; }
   body { background: var(--bg); color: var(--text-main); display: flex; flex-direction: column; min-height: 100vh; }
+
+  /* === Tier 1D: Typography tightening === */
+  h1, h2, h3, .card-header h2 { letter-spacing: -0.02em; line-height: 1.2; }
+  .card-header p { line-height: 1.5; }
+  .mat-qty, .area-box .val, .counter-val { font-variant-numeric: tabular-nums; }
+
   nav { background: #1e293b; color: white; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
-  .logo { font-size: 18px; font-weight: 700; cursor: pointer; } .logo span { color: #94a3b8; font-weight: 400; }
+  .logo { font-size: 18px; font-weight: 700; cursor: pointer; letter-spacing: -0.02em; } .logo span { color: #94a3b8; font-weight: 400; }
   .nav-links { display: flex; gap: 20px; font-size: 13px; font-weight: 500; }
   .nav-links a { color: #94a3b8; text-decoration: none; transition: color 0.2s; cursor: pointer; padding-bottom: 4px; border-bottom: 2px solid transparent; }
   .nav-links a.active { color: white; border-bottom-color: var(--brand); } .nav-links a:hover:not(.active) { color: white; }
@@ -32,12 +37,28 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   .mobile-nav select { width: 100%; padding: 14px; background: #0f172a; color: white; border: 1px solid #334155; border-radius: 6px; font-size: 15px; font-weight: 600; outline: none; }
   .app-section { display: none; } .app-section.active { display: block; }
   .container { max-width: 1300px; margin: 24px auto; padding: 0 16px; display: grid; grid-template-columns: 1fr 450px; gap: 24px; align-items: start; width: 100%; }
-  .card { background: var(--white); border-radius: 12px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05); overflow: hidden; margin-bottom: 20px; }
-  .card-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+
+  /* === Tier 2H: Card polish === */
+  .card {
+    background: var(--white);
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 8px 24px -12px rgba(0,0,0,0.08);
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+  .card-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid #f1f5f9;
+    background: linear-gradient(180deg, #ffffff, #fbfcfe);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
   .card-header h2 { font-size: 18px; font-weight: 700; } .card-header p { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
   .card-body { padding: 20px; }
-  .canvas-container { width: 100%; height: 400px; background: #f1f5f9; position: relative; cursor: grab; border-bottom: 1px solid var(--border); touch-action: none; display: block; }
-  .viewer-hint { position: absolute; bottom: 12px; left: 12px; background: white; padding: 6px 10px; border-radius: 6px; font-size: 11px; color: var(--text-muted); box-shadow: 0 1px 3px rgba(0,0,0,0.1); pointer-events: none; border: 1px solid var(--border); }
+  .canvas-container { width: 100%; height: 400px; background: #eef2f6; position: relative; cursor: grab; border-bottom: 1px solid var(--border); touch-action: none; display: block; }
+  .viewer-hint { position: absolute; bottom: 12px; left: 12px; background: rgba(255,255,255,0.9); padding: 6px 10px; border-radius: 6px; font-size: 11px; color: var(--text-muted); box-shadow: 0 1px 3px rgba(0,0,0,0.1); pointer-events: none; border: 1px solid var(--border); }
   .active-room-badge { position: absolute; top: 12px; left: 12px; background: var(--brand); color: #000; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; pointer-events: none; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
   .unit-toggle { display: flex; background: #e2e8f0; border-radius: 6px; padding: 4px; }
   .unit-toggle button { padding: 8px 16px; border: none; background: transparent; font-size: 13px; font-weight: 600; cursor: pointer; border-radius: 4px; color: var(--text-muted); transition: 0.2s; }
@@ -45,12 +66,14 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   .input-group { display: flex; flex-direction: column; gap: 6px; }
   .input-group label { font-size: 12px; font-weight: 600; display: flex; justify-content: space-between; align-items: center;}
-  .input-group .val { color: var(--text-main); font-weight: 600; }
+  .input-group .val { color: var(--text-main); font-weight: 600; font-variant-numeric: tabular-nums; }
   .info-icon { display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; border-radius: 50%; background: #cbd5e1; color: white; font-size: 9px; font-weight: bold; margin-left: 4px; cursor: help; }
   input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; margin: 10px 0; height: 30px; }
   input[type=range]::-webkit-slider-runnable-track { height: 8px; background: #e2e8f0; border-radius: 4px; }
-  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 24px; width: 24px; border-radius: 50%; background: var(--text-main); cursor: pointer; margin-top: -8px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-  input[type=number], input[type=text], select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; background: var(--bg); outline: none; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 24px; width: 24px; border-radius: 50%; background: var(--text-main); cursor: pointer; margin-top: -8px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: background 0.2s; }
+  input[type=range]:hover::-webkit-slider-thumb { background: var(--brand); }
+  input[type=number], input[type=text], select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; background: var(--bg); outline: none; transition: border-color 0.15s, background 0.15s; }
+  input[type=number]:hover, input[type=text]:hover, select:hover { border-color: #cbd5e1; background: #fff; }
   input[type=number]:focus, input[type=text]:focus, select:focus { border-color: var(--text-main); background: white; }
   .shared-walls { margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--border); }
   .shared-walls p { font-size: 12px; font-weight: 600; margin-bottom: 8px; color: var(--text-muted); }
@@ -63,7 +86,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   .counter-btn { width: 32px; height: 32px; border-radius: 50%; border: none; background: var(--text-main); color: white; font-size: 18px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; }
   .counter-btn:hover { background: var(--brand); color: #000; }
   .counter-val { font-size: 16px; font-weight: 700; min-width: 20px; text-align: center; }
-  .roof-toggles { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+  .roof-toggles { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 16px; }
   .roof-btn { padding: 12px; border: 1px solid var(--border); border-radius: 6px; background: white; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; text-align: center; }
   .roof-btn.active { border-color: var(--brand); background: rgba(245, 158, 11, 0.1); color: var(--brand); }
   .room-actions { display: flex; gap: 10px; margin-top: 20px; }
@@ -79,22 +102,95 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   .material-wrapper { position: relative; }
   .material-list { display: flex; flex-direction: column; transition: filter 0.3s; }
   .material-list.blurred { filter: blur(6px); user-select: none; pointer-events: none; }
-  .category-title { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin: 16px 0 8px; border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+  .category-title { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin: 16px 0 8px; border-bottom: 1px solid var(--border); padding-bottom: 4px; letter-spacing: 0.04em; }
   .category-title:first-child { margin-top: 0; }
   .mat-item { display: flex; justify-content: space-between; align-items: flex-start; padding: 8px 0; border-bottom: 1px dashed var(--border); } .mat-item:last-child { border-bottom: none; }
   .mat-info { display: flex; flex-direction: column; gap: 2px; padding-right: 12px; } .mat-name { font-size: 13px; font-weight: 600; } .mat-desc { font-size: 10px; color: var(--text-muted); }
   .mat-qty { font-size: 13px; font-weight: 700; text-align: right; white-space: nowrap; color: var(--brand); }
-  .paywall-overlay { position: absolute; inset: -10px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(2px); z-index: 10; text-align: center; padding: 20px; border-radius: 8px; }
-  .paywall-box { background: white; padding: 24px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); border: 1px solid var(--border); max-width: 340px; text-align: left; }
-  .paywall-box h3 { font-size: 16px; font-weight: 700; margin-bottom: 4px; color: var(--text-main); } .paywall-box p.subtitle { font-size: 12px; color: var(--text-muted); margin-bottom: 16px; }
-  .premium-features { list-style: none; padding: 0; margin-bottom: 20px; } .premium-features li { font-size: 12px; color: #334155; line-height: 1.4; margin-bottom: 10px; display: flex; gap: 8px; } .premium-features li span { color: var(--green); font-weight: 700; }
-  .btn-unlock { width: 100%; padding: 14px; background: var(--green); color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 8px; text-align: center; }
-  .btn-unlock:hover { background: #059669; }
+
+  /* === Tier 1C: Premium paywall === */
+  .paywall-overlay {
+    position: absolute;
+    inset: -10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(15, 23, 42, 0.55);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 10;
+    padding: 24px;
+    border-radius: 12px;
+  }
+  .paywall-box {
+    background: #ffffff;
+    padding: 28px;
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.6) inset;
+    border: none;
+    max-width: 360px;
+    width: 100%;
+    text-align: left;
+  }
+  .paywall-box h3 { font-size: 17px; font-weight: 700; margin-bottom: 6px; letter-spacing: -0.01em; }
+  .paywall-box p.subtitle { font-size: 13px; color: #64748b; margin-bottom: 20px; line-height: 1.5; }
+  .premium-features { list-style: none; padding: 0; margin-bottom: 20px; }
+  .premium-features li { font-size: 13px; color: #334155; line-height: 1.5; margin-bottom: 12px; display: flex; gap: 10px; align-items: flex-start; }
+  .premium-features li span { color: var(--green); font-weight: 700; flex-shrink: 0; }
+  .btn-unlock {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(180deg, #10b981, #059669);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35);
+    transition: transform 0.15s, box-shadow 0.15s;
+    margin-bottom: 10px;
+  }
+  .btn-unlock:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5); }
   .btn-share { width: 100%; padding: 12px; background: var(--blue); color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px; }
   .btn-share:hover { background: #2563eb; }
   .warning-box { background: #fef3c7; border: 1px solid #fde68a; color: #92400e; padding: 12px; border-radius: 8px; font-size: 12px; line-height: 1.5; margin-top: 20px; }
-  .actions { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
-  .btn-primary { background: var(--text-main); color: white; padding: 14px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; } .btn-primary.unlocked { background: var(--green); }
+
+  /* === Tier 1B: Actions footer with icons === */
+  .actions {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  .btn-primary, .btn-secondary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    border: none;
+    font-family: inherit;
+  }
+  .btn-primary {
+    background: linear-gradient(180deg, #f59e0b, #d97706);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
+  }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(245, 158, 11, 0.45); }
+  .btn-secondary {
+    background: #fff;
+    color: #0f172a;
+    border: 1px solid #e2e8f0;
+  }
+  .btn-secondary:hover { background: #f8fafc; }
+  .btn-primary svg, .btn-secondary svg { flex-shrink: 0; }
+
   footer { background: #0f172a; color: #94a3b8; padding: 24px; text-align: center; margin-top: 40px; font-size: 12px; }
   footer a { color: #94a3b8; text-decoration: none; margin: 0 10px; cursor: pointer; } footer a:hover { color: white; text-decoration: underline; }
   .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
@@ -113,11 +209,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
   /* ================= MOBILE RESPONSIVENESS ================= */
   @media (max-width: 768px) {
-    .nav-links { display: none; } 
+    .nav-links { display: none; }
     .mobile-nav { display: block; padding: 8px 12px; }
     nav { padding: 10px 16px; }
     .container { grid-template-columns: 1fr; margin-top: 12px; gap: 16px; padding: 0 12px; }
-    .card { margin-bottom: 16px; border-radius: 10px; }
+    .card { margin-bottom: 16px; border-radius: 12px; }
     .card-header { padding: 14px 16px; flex-direction: column; align-items: flex-start; gap: 10px; }
     .card-header .unit-toggle { width: 100%; justify-content: center; }
     .card-header .unit-toggle button { flex: 1; }
@@ -134,7 +230,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     .room-item span:last-child { font-size: 11px; }
     .openings-control { flex-direction: column; gap: 10px; }
     .counter-box { padding: 10px 14px; }
-    .roof-toggles { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .roof-toggles { grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
     .roof-btn { padding: 14px 8px; }
     .wall-toggles { grid-template-columns: 1fr 1fr; }
     #prices-room, #prices-roof, #prices-tiles { grid-template-columns: 1fr !important; }
@@ -142,14 +238,13 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     .modal-box h2 { font-size: 18px; }
     .modal-box h3 { font-size: 14px; }
     .modal-close { top: 12px; right: 16px; }
+    .actions { grid-template-columns: 1fr; }
   }
 </style>
 </head>
 <body>
-  <!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-M8D7N78T"
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-M8D7N78T"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
 <nav>
   <div class="logo">Calculate2Build <span>/ C2B</span></div>
   <div class="nav-links">
@@ -281,8 +376,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           </div>
           <div class="warning-box"><strong>Important:</strong> Verify quantities with a local professional before purchasing.</div>
           <div class="actions" id="r-actions">
-            <button class="btn-primary" onclick="downloadRoomPDF()">✓ Get Official Cost Summary</button>
-            <button class="btn-primary" style="background:#25D366; color:white; margin-top:10px;" onclick="shareToWhatsApp('room')">Share on WhatsApp</button>
+            <button class="btn-primary" onclick="downloadRoomPDF()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <span>Get Full Breakdown</span>
+            </button>
+            <button class="btn-secondary" onclick="shareToWhatsApp('room')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.6 6.4a7.9 7.9 0 0 0-11.2 0 7.9 7.9 0 0 0-1.1 9.8L4 20.1l4-1.3a7.9 7.9 0 0 0 9.6-1.1 7.9 7.9 0 0 0 0-11.3z" opacity=".9"/></svg>
+              <span>Share</span>
+            </button>
           </div>
         </div>
       </div>
@@ -303,7 +404,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <div class="roof-toggles">
             <button class="roof-btn active" data-type="gable" onclick="setRoofType('gable')">Gable</button>
             <button class="roof-btn" data-type="hip" onclick="setRoofType('hip')">Hip</button>
-            <button class="roof-btn" data-type="mono" onclick="setRoofType('mono')">Mono</button>
             <button class="roof-btn" data-type="flat" onclick="setRoofType('flat')">Flat</button>
           </div>
           <div class="input-grid">
@@ -352,8 +452,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           </div>
           <div class="warning-box"><strong>Important:</strong> This is a preliminary geometric estimate. Verify with your contractor.</div>
           <div class="actions" id="f-actions">
-            <button class="btn-primary" onclick="downloadRoofPDF()">✓ Get Official Cost Summary</button>
-            <button class="btn-primary" style="background:#25D366; color:white; margin-top:10px;" onclick="shareToWhatsApp('roof')">Share on WhatsApp</button>
+            <button class="btn-primary" onclick="downloadRoofPDF()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <span>Get Full Breakdown</span>
+            </button>
+            <button class="btn-secondary" onclick="shareToWhatsApp('roof')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.6 6.4a7.9 7.9 0 0 0-11.2 0 7.9 7.9 0 0 0-1.1 9.8L4 20.1l4-1.3a7.9 7.9 0 0 0 9.6-1.1 7.9 7.9 0 0 0 0-11.3z" opacity=".9"/></svg>
+              <span>Share</span>
+            </button>
           </div>
         </div>
       </div>
@@ -432,8 +538,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           </div>
           <div class="warning-box"><strong>Important:</strong> This is a preliminary estimate. Actual coverage varies by tile layout and substrate.</div>
           <div class="actions" id="t-actions">
-            <button class="btn-primary" onclick="downloadTilesPDF()">✓ Get Official Cost Summary</button>
-            <button class="btn-primary" style="background:#25D366; color:white; margin-top:10px;" onclick="shareToWhatsApp('tiles')">Share on WhatsApp</button>
+            <button class="btn-primary" onclick="downloadTilesPDF()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <span>Get Full Breakdown</span>
+            </button>
+            <button class="btn-secondary" onclick="shareToWhatsApp('tiles')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.6 6.4a7.9 7.9 0 0 0-11.2 0 7.9 7.9 0 0 0-1.1 9.8L4 20.1l4-1.3a7.9 7.9 0 0 0 9.6-1.1 7.9 7.9 0 0 0 0-11.3z" opacity=".9"/></svg>
+              <span>Share</span>
+            </button>
           </div>
         </div>
       </div>
@@ -562,6 +674,35 @@ function getPrices(app) {
 }
 function getCurrency(app) { const el = document.getElementById(`cur-${app}`); return el ? el.value : 'GHS'; }
 function getDelivery(app) { const el = document.getElementById(`delivery-${app}`); return el ? (parseFloat(el.value) || 0) : 0; }
+
+// ==================== TIER 1A: Shared stage background texture ====================
+function makeStageBackground() {
+  const c = document.createElement('canvas');
+  c.width = c.height = 512;
+  const ctx = c.getContext('2d');
+  const grad = ctx.createRadialGradient(256, 200, 30, 256, 256, 380);
+  grad.addColorStop(0, '#ffffff');
+  grad.addColorStop(1, '#e8edf3');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, 512, 512);
+  return new THREE.CanvasTexture(c);
+}
+
+function makeContactShadowTexture() {
+  const c = document.createElement('canvas');
+  c.width = c.height = 256;
+  const ctx = c.getContext('2d');
+  const grad = ctx.createRadialGradient(128, 128, 10, 128, 128, 120);
+  grad.addColorStop(0, 'rgba(0,0,0,0.35)');
+  grad.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, 256, 256);
+  return new THREE.CanvasTexture(c);
+}
+
+const stageTex = makeStageBackground();
+const contactShadowTex = makeContactShadowTexture();
+const contactShadowMat = new THREE.MeshBasicMaterial({ map: contactShadowTex, transparent: true, depthWrite: false });
 
 // ==================== ROOM FUNCTIONS ====================
 window.changeCount = (type, delta) => {
@@ -695,7 +836,6 @@ function calcTotals() {
   document.getElementById('r-outBlocks').innerHTML =
     `${blkOrder.toLocaleString()} pcs <span style="font-size:10px; font-weight:500; color:var(--text-muted);">(theoretical ${blkTheoretical.toLocaleString()} + ${Math.round(BLOCK_WASTE*100)}% waste)</span>`;
 
-  // Bag Size Logic
   const bagWeight = parseFloat(document.getElementById('r-bag-size').value) || 50;
   const mortarBags = Math.ceil((totalWallArea * MORTAR_CEMENT_PER_M2 * (1 + MORTAR_WASTE) * 50) / bagWeight);
   const plasterBags = Math.ceil((totalWallArea / 11 * 50) / bagWeight);
@@ -720,7 +860,7 @@ const roofMat = new THREE.MeshStandardMaterial({ color: 0x64748b, roughness: 0.6
 const doorMat = new THREE.MeshStandardMaterial({ color: 0x8b5a2b, roughness: 0.9 });
 
 const containerRoom = document.getElementById('canvas-room');
-const sceneRoom = new THREE.Scene(); sceneRoom.background = new THREE.Color(0xf1f5f9);
+const sceneRoom = new THREE.Scene(); sceneRoom.background = stageTex;
 const cameraRoom = new THREE.PerspectiveCamera(40, containerRoom.clientWidth / containerRoom.clientHeight, 0.1, 1000);
 cameraRoom.position.set(15, 12, 18);
 const rendererRoom = new THREE.WebGLRenderer({ antialias: true });
@@ -731,12 +871,14 @@ containerRoom.appendChild(rendererRoom.domElement);
 const controlsRoom = new OrbitControls(cameraRoom, rendererRoom.domElement);
 controlsRoom.enableDamping = true; controlsRoom.maxPolarAngle = Math.PI / 2 - 0.05;
 controlsRoom.minDistance = 5; controlsRoom.maxDistance = 100; controlsRoom.target.set(0, 2, 0);
-sceneRoom.add(new THREE.AmbientLight(0xffffff, 0.6));
-const dirRoom = new THREE.DirectionalLight(0xffffff, 1.2);
+sceneRoom.add(new THREE.AmbientLight(0xffffff, 0.55));
+const hemiRoom = new THREE.HemisphereLight(0xffffff, 0xe2e8f0, 0.35);
+sceneRoom.add(hemiRoom);
+const dirRoom = new THREE.DirectionalLight(0xffffff, 1.1);
 dirRoom.position.set(20, 30, 20); dirRoom.castShadow = true; sceneRoom.add(dirRoom);
 const groundRoom = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1 }));
 groundRoom.rotation.x = -Math.PI / 2; groundRoom.receiveShadow = true; sceneRoom.add(groundRoom);
-const gridRoom = new THREE.GridHelper(200, 200, 0xcbd5e1, 0xe2e8f0);
+const gridRoom = new THREE.GridHelper(100, 100, 0xdbe3ec, 0xeef3f8);
 gridRoom.position.y = 0.01; sceneRoom.add(gridRoom);
 const buildingGroup = new THREE.Group(); sceneRoom.add(buildingGroup);
 
@@ -745,6 +887,14 @@ function rebuild3D() {
   const { len, wid, hgt, blockThick, doors, windows } = currentRoom;
   const BLOCK_W = 0.45, BLOCK_H = 0.225;
   const doorW = 0.9, doorH = 2.1, winW = 1.2, winH = 1.2, sillY = 1.0;
+
+  // Contact shadow (Tier 1A)
+  const contactShadow = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), contactShadowMat);
+  contactShadow.rotation.x = -Math.PI / 2;
+  contactShadow.position.y = 0.02;
+  contactShadow.scale.set(len * 1.8, wid * 1.8, 1);
+  buildingGroup.add(contactShadow);
+
   if (len > 15 || wid > 15 || hgt > 15) {
     const wall1 = new THREE.Mesh(new THREE.BoxGeometry(len, hgt, blockThick), blockMat); wall1.position.set(0, hgt/2, wid/2); buildingGroup.add(wall1);
     const wall2 = new THREE.Mesh(new THREE.BoxGeometry(len, hgt, blockThick), blockMat); wall2.position.set(0, hgt/2, -wid/2); buildingGroup.add(wall2);
@@ -808,7 +958,7 @@ function rebuild3D() {
 
 // ==================== ROOF 3D ====================
 const containerRoof = document.getElementById('canvas-roof');
-const sceneRoof = new THREE.Scene(); sceneRoof.background = new THREE.Color(0xf1f5f9);
+const sceneRoof = new THREE.Scene(); sceneRoof.background = stageTex;
 const cameraRoof = new THREE.PerspectiveCamera(40, containerRoof.clientWidth / containerRoof.clientHeight, 0.1, 1000);
 cameraRoof.position.set(15, 12, 18);
 const rendererRoof = new THREE.WebGLRenderer({ antialias: true });
@@ -819,12 +969,13 @@ containerRoof.appendChild(rendererRoof.domElement);
 const controlsRoof = new OrbitControls(cameraRoof, rendererRoof.domElement);
 controlsRoof.enableDamping = true; controlsRoof.maxPolarAngle = Math.PI / 2 - 0.05;
 controlsRoof.minDistance = 5; controlsRoof.maxDistance = 100; controlsRoof.target.set(0, 2, 0);
-sceneRoof.add(new THREE.AmbientLight(0xffffff, 0.6));
-const dirRoof = new THREE.DirectionalLight(0xffffff, 1.2);
+sceneRoof.add(new THREE.AmbientLight(0xffffff, 0.55));
+sceneRoof.add(new THREE.HemisphereLight(0xffffff, 0xe2e8f0, 0.35));
+const dirRoof = new THREE.DirectionalLight(0xffffff, 1.1);
 dirRoof.position.set(20, 30, 20); dirRoof.castShadow = true; sceneRoof.add(dirRoof);
 const groundRoof = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1 }));
 groundRoof.rotation.x = -Math.PI / 2; groundRoof.receiveShadow = true; sceneRoof.add(groundRoof);
-const gridRoof = new THREE.GridHelper(200, 200, 0xcbd5e1, 0xe2e8f0);
+const gridRoof = new THREE.GridHelper(100, 100, 0xdbe3ec, 0xeef3f8);
 gridRoof.position.y = 0.01; sceneRoof.add(gridRoof);
 const roofGroup = new THREE.Group(); sceneRoof.add(roofGroup);
 
@@ -837,6 +988,14 @@ function rebuildRoof3D() {
   const rise = Math.tan(rad) * (halfW + overhang);
   const roofColor = new THREE.MeshStandardMaterial({ color: 0xc0392b, roughness: 0.5, side: THREE.DoubleSide });
   const wallColor = new THREE.MeshStandardMaterial({ color: 0xd4cbb8, roughness: 0.9 });
+
+  // Contact shadow (Tier 1A)
+  const contactShadow = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), contactShadowMat);
+  contactShadow.rotation.x = -Math.PI / 2;
+  contactShadow.position.y = 0.02;
+  contactShadow.scale.set(len * 1.8, wid * 1.8, 1);
+  roofGroup.add(contactShadow);
+
   const w1 = new THREE.Mesh(new THREE.BoxGeometry(len, wallH, 0.1), wallColor); w1.position.set(0, wallH/2, wid/2); roofGroup.add(w1);
   const w2 = new THREE.Mesh(new THREE.BoxGeometry(len, wallH, 0.1), wallColor); w2.position.set(0, wallH/2, -wid/2); roofGroup.add(w2);
   const w3 = new THREE.Mesh(new THREE.BoxGeometry(0.1, wallH, wid), wallColor); w3.position.set(-len/2, wallH/2, 0); roofGroup.add(w3);
@@ -871,21 +1030,6 @@ function rebuildRoof3D() {
     mesh.position.set(0, wallH + rise/2, 0);
     mesh.castShadow = true;
     roofGroup.add(mesh);
-  } else if (type === 'mono') {
-    const geo = new THREE.BufferGeometry();
-    const v0 = new THREE.Vector3(-halfW - overhang, wallH, len/2 + overhang);
-    const v1 = new THREE.Vector3(halfW + overhang, wallH, len/2 + overhang);
-    const v2 = new THREE.Vector3(-halfW - overhang, wallH + rise, len/2 + overhang);
-    const v3 = new THREE.Vector3(halfW + overhang, wallH + rise, len/2 + overhang);
-    const v4 = new THREE.Vector3(-halfW - overhang, wallH, -len/2 - overhang);
-    const v5 = new THREE.Vector3(halfW + overhang, wallH, -len/2 - overhang);
-    const v6 = new THREE.Vector3(-halfW - overhang, wallH + rise, -len/2 - overhang);
-    const v7 = new THREE.Vector3(halfW + overhang, wallH + rise, -len/2 - overhang);
-    const verts = new Float32Array([v0.x,v0.y,v0.z, v1.x,v1.y,v1.z, v2.x,v2.y,v2.z, v3.x,v3.y,v3.z, v4.x,v4.y,v4.z, v5.x,v5.y,v5.z, v6.x,v6.y,v6.z, v7.x,v7.y,v7.z]);
-    geo.setAttribute('position', new THREE.BufferAttribute(verts, 3));
-    geo.setIndex([0,2,3, 0,3,1, 4,5,7, 4,7,6, 0,4,6, 0,6,2, 1,3,7, 1,7,5]);
-    geo.computeVertexNormals();
-    const mesh = new THREE.Mesh(geo, roofColor); mesh.castShadow = true; roofGroup.add(mesh);
   }
   cameraRoof.position.set(len * 1.5, wallH * 3, wid * 1.8);
   controlsRoof.target.set(0, wallH, 0); controlsRoof.update();
@@ -896,12 +1040,12 @@ function calcRoof() {
   const rad = pitch * Math.PI / 180;
   let area = 0;
   if (type === 'flat') area = len * wid;
-  else if (type === 'gable' || type === 'mono') area = len * wid / Math.cos(rad);
+  else if (type === 'gable') area = len * wid / Math.cos(rad);
   else if (type === 'hip') area = len * wid * 1.1 / Math.cos(rad);
   document.getElementById('f-outArea').textContent = area.toFixed(2) + ' m²';
   document.getElementById('f-outAngle').textContent = pitch + '°';
   const sheets = Math.ceil(area / (0.9 * 3) * 1.1);
-  const ridgeLen = type === 'gable' ? len : type === 'hip' ? len * 1.2 : type === 'mono' ? len : 0;
+  const ridgeLen = type === 'gable' ? len : type === 'hip' ? len * 1.2 : 0;
   const ridges = Math.ceil(ridgeLen / 3);
   const battens = Math.ceil(area / 0.6 * 1.05);
   const screws = Math.ceil(area * 8);
@@ -919,7 +1063,7 @@ window.setRoofType = (type) => {
 
 // ==================== TILES 3D ====================
 const containerTiles = document.getElementById('canvas-tiles');
-const sceneTiles = new THREE.Scene(); sceneTiles.background = new THREE.Color(0xf1f5f9);
+const sceneTiles = new THREE.Scene(); sceneTiles.background = stageTex;
 const cameraTiles = new THREE.PerspectiveCamera(40, containerTiles.clientWidth / containerTiles.clientHeight, 0.1, 1000);
 cameraTiles.position.set(8, 10, 12);
 const rendererTiles = new THREE.WebGLRenderer({ antialias: true });
@@ -930,7 +1074,8 @@ containerTiles.appendChild(rendererTiles.domElement);
 const controlsTiles = new OrbitControls(cameraTiles, rendererTiles.domElement);
 controlsTiles.enableDamping = true; controlsTiles.maxPolarAngle = Math.PI / 2 - 0.05;
 controlsTiles.minDistance = 2; controlsTiles.maxDistance = 80; controlsTiles.target.set(0, 0, 0);
-sceneTiles.add(new THREE.AmbientLight(0xffffff, 0.7));
+sceneTiles.add(new THREE.AmbientLight(0xffffff, 0.65));
+sceneTiles.add(new THREE.HemisphereLight(0xffffff, 0xe2e8f0, 0.35));
 const dirTiles = new THREE.DirectionalLight(0xffffff, 1.0);
 dirTiles.position.set(10, 20, 10); dirTiles.castShadow = true; sceneTiles.add(dirTiles);
 const groundTiles = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1 }));
@@ -940,6 +1085,14 @@ const tileGroup = new THREE.Group(); sceneTiles.add(tileGroup);
 function rebuildTiles3D() {
   tileGroup.clear();
   const { len, wid, tileSize } = currentTileRoom;
+
+  // Contact shadow (Tier 1A)
+  const contactShadow = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), contactShadowMat);
+  contactShadow.rotation.x = -Math.PI / 2;
+  contactShadow.position.y = 0.02;
+  contactShadow.scale.set(len * 1.8, wid * 1.8, 1);
+  tileGroup.add(contactShadow);
+
   const cols = Math.max(1, Math.floor(len / Math.sqrt(tileSize)));
   const rows = Math.max(1, Math.floor(wid / Math.sqrt(tileSize)));
   const tileW = len / cols;
@@ -1057,8 +1210,7 @@ function unlockApp(app) {
   const prefix = app === 'room' ? 'r' : app === 'roof' ? 'f' : 't';
   document.getElementById(`${prefix}-materialList`).classList.remove('blurred');
   document.getElementById(`${prefix}-paywall`).style.display = 'none';
-  document.getElementById(`${prefix}-actions`).style.display = 'flex';
-  // Persist unlock for this browser session so a reload doesn't re-blur results.
+  document.getElementById(`${prefix}-actions`).style.display = 'grid';
   try { sessionStorage.setItem(`c2b_unlocked_${app}`, '1'); } catch(e) {}
 }
 
@@ -1119,13 +1271,12 @@ window.shareToWhatsApp = (app) => {
   } else if (app === 'tiles') {
      const area = document.getElementById('t-outArea').textContent;
      const tiles = document.getElementById('t-outTiles').textContent;
-     text = `🚽 *Tiling Estimate*\nTotal Area: ${area}\nTiles Needed: ${tiles}\n\nCalculate yours free: ${window.location.origin}`;
+     text = `🧱 *Tiling Estimate*\nTotal Area: ${area}\nTiles Needed: ${tiles}\n\nCalculate yours free: ${window.location.origin}`;
   } else if (app === 'roof') {
      const area = document.getElementById('f-outArea').textContent;
      const sheets = document.getElementById('f-outSheets').textContent;
      text = `🏠 *Roof Estimate*\nTotal Roof Area: ${area}\nSheets Needed: ${sheets}\n\nCalculate yours free: ${window.location.origin}`;
   }
-  
   const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
   window.open(url, '_blank');
 };
@@ -1220,8 +1371,6 @@ function drawShoppingList(doc, projectName, materials) {
   doc.text("Generated by Calculate2Build — estimates only.", 14, 288);
 }
 function parseQty(txt) {
-  // Strip all non-numeric characters except digits and decimal point, THEN match.
-  // Handles "1,234 pcs", "1 234", "1.234,56" (EU) → "1234" / "123456"
   const cleaned = String(txt).replace(/,/g, '').replace(/\s/g, '');
   const m = cleaned.match(/[\d.]+/);
   return m ? parseFloat(m[0]) : 0;
@@ -1246,7 +1395,6 @@ window.downloadRoomPDF = () => {
     const projectName = `${roomsForReport.length} Room${roomsForReport.length > 1 ? 's' : ''} – ${(roomsForReport[0].len*mult).toFixed(1)}${u} × ${(roomsForReport[0].wid*mult).toFixed(1)}${u}${roomsForReport.length > 1 ? ' …' : ''}`;
 
     let y = drawHeader(doc, "Builder's Protection Packet");
-
     y = drawMetaBlock(doc, y, [
       ["Project", projectName],
       ["Date", new Date().toLocaleString()],
@@ -1394,7 +1542,7 @@ window.downloadRoofPDF = () => {
     ]);
     y = drawNotes(doc, y, "6. Assumptions & Limitations", [
       "• Sheet size assumed 0.9m × 3m.",
-      "• Slope area = plan area ÷ cos(pitch) for gable/mono.",
+      "• Slope area = plan area ÷ cos(pitch) for gable.",
       "• Hip roofs add ~10% for hip surfaces.",
       "• Ridge length estimated from roof type.",
       "• Excludes fascia, gutters, underlay, and labour.",
@@ -1524,7 +1672,6 @@ function relockApp(app) {
 
 // ==================== WIRE UP ALL SLIDERS ====================
 function initUI() {
-  // Room
   updateUI(); rebuild3D();
   document.getElementById('r-len').addEventListener('input', e => { currentRoomActive = true; currentRoom.len = parseFloat(e.target.value); updateUI(); rebuild3D(); });
   document.getElementById('r-wid').addEventListener('input', e => { currentRoomActive = true; currentRoom.wid = parseFloat(e.target.value); updateUI(); rebuild3D(); });
@@ -1532,7 +1679,6 @@ function initUI() {
   document.getElementById('r-block').addEventListener('change', e => { currentRoomActive = true; currentRoom.blockThick = parseFloat(e.target.value); updateUI(); });
   document.getElementById('r-bag-size').addEventListener('change', () => { calcTotals(); });
 
-  // Roof
   rebuildRoof3D(); calcRoof();
   document.getElementById('f-lenV').textContent = roofP.len.toFixed(1) + ' m';
   document.getElementById('f-widV').textContent = roofP.wid.toFixed(1) + ' m';
@@ -1553,7 +1699,6 @@ function initUI() {
     rebuildRoof3D();
   });
 
-  // Tiles — any input re-activates the in-progress room
   rebuildTiles3D();
   document.getElementById('t-lenV').textContent = currentTileRoom.len.toFixed(1) + ' m';
   document.getElementById('t-widV').textContent = currentTileRoom.wid.toFixed(1) + ' m';
@@ -1584,7 +1729,6 @@ function initUI() {
   });
 }
 
-// Resize handler
 function resizeAll() {
   if (containerRoom.clientWidth > 0) { cameraRoom.aspect = containerRoom.clientWidth / containerRoom.clientHeight; cameraRoom.updateProjectionMatrix(); rendererRoom.setSize(containerRoom.clientWidth, containerRoom.clientHeight); }
   if (containerRoof.clientWidth > 0) { cameraRoof.aspect = containerRoof.clientWidth / containerRoof.clientHeight; cameraRoof.updateProjectionMatrix(); rendererRoof.setSize(containerRoof.clientWidth, containerRoof.clientHeight); }
@@ -1608,7 +1752,6 @@ window.addEventListener('load', async () => {
     try { await supabase.from('referrals').update({ status: 'success' }).eq('code', incomingRef); } catch(e) {}
   }
 
-  // Restore any unlocks from this browser session (fix: don't re-blur after a download + reload)
   ['room', 'roof', 'tiles'].forEach(app => {
     try {
       if (sessionStorage.getItem(`c2b_unlocked_${app}`) === '1') unlockApp(app);
