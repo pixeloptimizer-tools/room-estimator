@@ -25,12 +25,10 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, sans-serif; }
   body { background: var(--bg); color: var(--text-main); display: flex; flex-direction: column; min-height: 100vh; }
 
-  /* Typography */
   h1, h2, h3, .card-header h2 { letter-spacing: -0.02em; line-height: 1.2; }
   .card-header p { line-height: 1.5; }
   .mat-qty, .area-box .val, .counter-val { font-variant-numeric: tabular-nums; }
 
-  /* Skip link for accessibility */
   .skip-link { position: absolute; left: -9999px; top: 0; z-index: 9999; background: var(--text-main); color: #fff; padding: 10px 16px; border-radius: 0 0 6px 0; text-decoration: none; font-weight: 600; }
   .skip-link:focus { left: 0; }
 
@@ -49,7 +47,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   .app-section { display: none; } .app-section.active { display: block; }
   .container { max-width: 1300px; margin: 24px auto; padding: 0 16px; display: grid; grid-template-columns: 1fr 450px; gap: 24px; align-items: start; width: 100%; }
 
-  /* Card polish */
   .card { background: var(--white); border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 8px 24px -12px rgba(0,0,0,0.08); overflow: hidden; margin-bottom: 20px; }
   .card-header { padding: 16px 20px; border-bottom: 1px solid #f1f5f9; background: linear-gradient(180deg, #ffffff, #fbfcfe); display: flex; justify-content: space-between; align-items: center; }
   .card-header h2 { font-size: 18px; font-weight: 700; } .card-header p { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
@@ -108,11 +105,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   .mat-info { display: flex; flex-direction: column; gap: 2px; padding-right: 12px; } .mat-name { font-size: 13px; font-weight: 600; } .mat-desc { font-size: 11px; color: #475569; }
   .mat-qty { font-size: 13px; font-weight: 700; text-align: right; white-space: nowrap; color: var(--brand); }
   .paywall-overlay { position: absolute; inset: -10px; display: flex; align-items: center; justify-content: center; background: rgba(15, 23, 42, 0.55); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 10; padding: 24px; border-radius: 12px; }
-  .paywall-box { background: #ffffff; padding: 28px; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.6) inset; border: none; max-width: 360px; width: 100%; text-align: left; }
+  .paywall-box { background: #ffffff; padding: 24px; border-radius: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.25), 0 0 0 1px rgba(255,255,255,0.6) inset; border: none; max-width: 360px; width: 100%; text-align: left; max-height: 90vh; overflow-y: auto; }
   .paywall-box h3 { font-size: 17px; font-weight: 700; margin-bottom: 6px; letter-spacing: -0.01em; }
-  .paywall-box p.subtitle { font-size: 13px; color: #64748b; margin-bottom: 20px; line-height: 1.5; }
-  .premium-features { list-style: none; padding: 0; margin-bottom: 20px; }
-  .premium-features li { font-size: 13px; color: #334155; line-height: 1.5; margin-bottom: 12px; display: flex; gap: 10px; align-items: flex-start; }
+  .paywall-box p.subtitle { font-size: 13px; color: #64748b; margin-bottom: 16px; line-height: 1.5; }
+  .premium-features { list-style: none; padding: 0; margin-bottom: 16px; }
+  .premium-features li { font-size: 13px; color: #334155; line-height: 1.5; margin-bottom: 10px; display: flex; gap: 10px; align-items: flex-start; }
   .premium-features li span { color: var(--green); font-weight: 700; flex-shrink: 0; }
   .btn-unlock { width: 100%; padding: 15px; background: linear-gradient(180deg, #10b981, #059669); color: #fff; border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35); transition: transform 0.15s, box-shadow 0.15s; margin-bottom: 10px; font-family: inherit; }
   .btn-unlock:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5); }
@@ -181,6 +178,12 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     .modal-box h3 { font-size: 14px; }
     .modal-close { top: 12px; right: 16px; }
     .actions { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 480px) {
+    .paywall-box { padding: 18px; max-width: 320px; }
+    .paywall-box .premium-features { margin-bottom: 12px; }
+    .premium-features li { margin-bottom: 8px; font-size: 12px; }
+    .pp-wrap { margin-top: 8px; }
   }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
@@ -298,23 +301,22 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             <div class="paywall-overlay" id="r-paywall">
               <div class="paywall-box">
                 <h3>🔒 Unlock Complete Breakdown</h3>
-                <p class="subtitle">Get exact structural quantities instantly.</p>
+                <p class="subtitle">Your quantities are ready. Pay below to reveal the full material list. The results stay blurred until your payment is confirmed.</p>
                 <ul class="premium-features">
                   <li><span>✅</span> <div><strong>Precision Quantities:</strong> Blocks, cement, sand, paint perfectly scaled.</div></li>
                   <li><span>✅</span> <div><strong>Standard Waste Buffers:</strong> Multipliers included to protect against breakages.</div></li>
                   <li><span>✅</span> <div><strong>Room Schedule:</strong> Itemized breakdown for every room in the PDF.</div></li>
                   <li><span>✅</span> <div><strong>Shareable Blueprint:</strong> Clean PDF optimized for WhatsApp or printing.</div></li>
                 </ul>
-                <button class="btn-unlock" onclick="mockUnlock('room')">Unlock for $2.99 USD / ₵15 GHS / ₦2,000 NGN</button>
-                <button class="btn-share" onclick="openReferralModal('room')"><span>🔗</span> Unlock Free by Referring a Friend</button>
                 <div class="pp-wrap">
                   <form action="https://www.paypal.com/ncp/payment/W3HB96GQ9RVAJ" method="post" target="_blank" onsubmit="markPaypalPending('room')">
                     <input type="hidden" name="return" value="" />
-                    <input class="pp-btn" type="submit" value="Buy Now" />
+                    <input class="pp-btn" type="submit" value="Buy Now — $2.99" />
                     <img src="https://www.paypalobjects.com/images/Debit_Credit.svg" alt="Accepted cards" />
                     <section class="pp-powered">Powered by <img src="https://www.paypalobjects.com/paypal-ui/logos/svg/paypal-wordmark-color.svg" alt="PayPal" /></section>
                   </form>
                 </div>
+                <button class="btn-share" style="margin-top:12px;" onclick="openReferralModal('room')"><span>🔗</span> Unlock Free by Referring a Friend</button>
               </div>
             </div>
           </div>
@@ -330,7 +332,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             </div>
           </div>
           <div class="warning-box"><strong>Important:</strong> Verify quantities with a local professional before purchasing.</div>
-          <div class="actions" id="r-actions">
+          <div class="actions" id="r-actions" style="display:none;">
             <button class="btn-primary" onclick="downloadRoomPDF()">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
               <span>Get Full Breakdown</span>
@@ -388,17 +390,16 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             <div class="paywall-overlay" id="f-paywall">
               <div class="paywall-box">
                 <h3>🔒 Unlock Roofing Materials</h3>
-                <p class="subtitle">Get exact quantities for sheets, battens, and screws instantly.</p>
-                <button class="btn-unlock" onclick="mockUnlock('roof')">Unlock for $2.99 USD / ₵15 GHS / ₦2,000 NGN</button>
-                <button class="btn-share" onclick="openReferralModal('roof')"><span>🔗</span> Unlock Free by Referring a Friend</button>
+                <p class="subtitle">Your quantities are ready. Pay below to reveal the full material list. The results stay blurred until your payment is confirmed.</p>
                 <div class="pp-wrap">
                   <form action="https://www.paypal.com/ncp/payment/W3HB96GQ9RVAJ" method="post" target="_blank" onsubmit="markPaypalPending('roof')">
                     <input type="hidden" name="return" value="" />
-                    <input class="pp-btn" type="submit" value="Buy Now" />
+                    <input class="pp-btn" type="submit" value="Buy Now — $2.99" />
                     <img src="https://www.paypalobjects.com/images/Debit_Credit.svg" alt="Accepted cards" />
                     <section class="pp-powered">Powered by <img src="https://www.paypalobjects.com/paypal-ui/logos/svg/paypal-wordmark-color.svg" alt="PayPal" /></section>
                   </form>
                 </div>
+                <button class="btn-share" style="margin-top:12px;" onclick="openReferralModal('roof')"><span>🔗</span> Unlock Free by Referring a Friend</button>
               </div>
             </div>
           </div>
@@ -414,7 +415,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             </div>
           </div>
           <div class="warning-box"><strong>Important:</strong> This is a preliminary geometric estimate. Verify with your contractor.</div>
-          <div class="actions" id="f-actions">
+          <div class="actions" id="f-actions" style="display:none;">
             <button class="btn-primary" onclick="downloadRoofPDF()">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
               <span>Get Full Breakdown</span>
@@ -482,17 +483,16 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             <div class="paywall-overlay" id="t-paywall">
               <div class="paywall-box">
                 <h3>🔒 Unlock Tiling Materials</h3>
-                <p class="subtitle">Get exact quantities for adhesive, grout, and spacers instantly.</p>
-                <button class="btn-unlock" onclick="mockUnlock('tiles')">Unlock for $2.99 USD / ₵15 GHS / ₦2,000 NGN</button>
-                <button class="btn-share" onclick="openReferralModal('tiles')"><span>🔗</span> Unlock Free by Referring a Friend</button>
+                <p class="subtitle">Your quantities are ready. Pay below to reveal the full material list. The results stay blurred until your payment is confirmed.</p>
                 <div class="pp-wrap">
                   <form action="https://www.paypal.com/ncp/payment/W3HB96GQ9RVAJ" method="post" target="_blank" onsubmit="markPaypalPending('tiles')">
                     <input type="hidden" name="return" value="" />
-                    <input class="pp-btn" type="submit" value="Buy Now" />
+                    <input class="pp-btn" type="submit" value="Buy Now — $2.99" />
                     <img src="https://www.paypalobjects.com/images/Debit_Credit.svg" alt="Accepted cards" />
                     <section class="pp-powered">Powered by <img src="https://www.paypalobjects.com/paypal-ui/logos/svg/paypal-wordmark-color.svg" alt="PayPal" /></section>
                   </form>
                 </div>
+                <button class="btn-share" style="margin-top:12px;" onclick="openReferralModal('tiles')"><span>🔗</span> Unlock Free by Referring a Friend</button>
               </div>
             </div>
           </div>
@@ -508,7 +508,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             </div>
           </div>
           <div class="warning-box"><strong>Important:</strong> This is a preliminary estimate. Actual coverage varies by tile layout and substrate.</div>
-          <div class="actions" id="t-actions">
+          <div class="actions" id="t-actions" style="display:none;">
             <button class="btn-primary" onclick="downloadTilesPDF()">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
               <span>Get Full Breakdown</span>
@@ -599,7 +599,6 @@ const currentRoom = { len: 6.4, wid: 5.5, hgt: 3.7, blockThick: 0.225, doors: 1,
 let lastCalc = { area: 0, wall: 0 };
 const roofP = { type: 'gable', len: 10, wid: 8, pitch: 25, overhang: 0.5 };
 
-// Multi-room tile state
 let savedTileRooms = [];
 let activeTileRoomId = 1;
 let currentTileRoomActive = true;
@@ -1205,20 +1204,20 @@ function calcTiles() {
 }
 
 // ==================== UNLOCK / MODALS ====================
+// ONLY called from: (1) confirmed PayPal return, (2) confirmed referral.
 function unlockApp(app) {
   const prefix = app === 'room' ? 'r' : app === 'roof' ? 'f' : 't';
   document.getElementById(`${prefix}-materialList`).classList.remove('blurred');
-  document.getElementById(`${prefix}-paywall`).style.display = 'none';
-  document.getElementById(`${prefix}-actions`).style.display = 'grid';
+  const paywall = document.getElementById(`${prefix}-paywall`);
+  if (paywall) paywall.style.display = 'none';
+  const actions = document.getElementById(`${prefix}-actions`);
+  if (actions) actions.style.display = 'grid';
   try { sessionStorage.setItem(`c2b_unlocked_${app}`, '1'); } catch(e) {}
 }
-
 window.unlockApp = unlockApp;
 
 window.markPaypalPending = (app) => {
-  try {
-    localStorage.setItem('c2b_paypal_pending', JSON.stringify({ app, ts: Date.now() }));
-  } catch (e) {}
+  try { localStorage.setItem('c2b_paypal_pending', JSON.stringify({ app, ts: Date.now() })); } catch (e) {}
 };
 
 function handlePaypalReturn() {
@@ -1242,7 +1241,7 @@ function handlePaypalReturn() {
   const list = document.getElementById(`${prefix}-materialList`);
   if (list && list.parentElement) {
     const note = document.createElement('div');
-    note.textContent = '✅ Payment received — your breakdown is unlocked.';
+    note.textContent = '✅ Payment confirmed — your full breakdown is unlocked.';
     note.style.cssText = 'font-size:12px;color:#059669;font-weight:600;margin:0 0 8px;';
     list.parentElement.insertBefore(note, list);
     setTimeout(() => note.remove(), 6000);
@@ -1250,17 +1249,6 @@ function handlePaypalReturn() {
 
   window.history.replaceState({}, '', window.location.pathname);
 }
-
-window.mockUnlock = (app) => {
-  const prefix = app === 'room' ? 'r' : app === 'roof' ? 'f' : 't';
-  const overlay = document.getElementById(`${prefix}-paywall`);
-  const box = overlay.querySelector('.paywall-box');
-  const note = document.createElement('p');
-  note.style.cssText = 'font-size:12px;color:#059669;font-weight:600;margin:8px 0 4px;text-align:center;';
-  note.textContent = '✓ Preview unlocked. A secure payment gateway will process real purchases here.';
-  box.appendChild(note);
-  setTimeout(() => unlockApp(app), 500);
-};
 
 window.openModal = (type) => {
   const modal = document.getElementById('legalModal');
@@ -1435,7 +1423,7 @@ function parseQty(txt) {
 // ==================== PDF: ROOM ====================
 window.downloadRoomPDF = () => {
   const isUnlocked = !document.getElementById('r-materialList').classList.contains('blurred');
-  if (!isUnlocked) { window.mockUnlock('room'); return; }
+  if (!isUnlocked) return;
 
   setTimeout(() => {
     const { jsPDF } = window.jspdf;
@@ -1551,7 +1539,7 @@ window.downloadRoomPDF = () => {
 // ==================== PDF: ROOF ====================
 window.downloadRoofPDF = () => {
   const isUnlocked = !document.getElementById('f-materialList').classList.contains('blurred');
-  if (!isUnlocked) { window.mockUnlock('roof'); return; }
+  if (!isUnlocked) return;
 
   setTimeout(() => {
     const { jsPDF } = window.jspdf; const doc = new jsPDF();
@@ -1624,7 +1612,7 @@ window.downloadRoofPDF = () => {
 // ==================== PDF: TILES ====================
 window.downloadTilesPDF = () => {
   const isUnlocked = !document.getElementById('t-materialList').classList.contains('blurred');
-  if (!isUnlocked) { window.mockUnlock('tiles'); return; }
+  if (!isUnlocked) return;
 
   setTimeout(() => {
     const { jsPDF } = window.jspdf;
