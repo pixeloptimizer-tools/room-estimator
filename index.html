@@ -142,6 +142,14 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   .pricing-block label { font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 8px; cursor: pointer; }
   .pricing-block input[type=checkbox] { width: 16px; height: 16px; cursor: pointer; }
 
+  /* PayPal NCP button */
+  .pp-wrap { margin-top: 10px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .pp-wrap form { display: inline-grid; justify-items: center; align-content: start; gap: 0.5rem; width: 100%; }
+  .pp-btn { text-align: center; border: none; border-radius: 0.25rem; min-width: 11.625rem; width: 100%; padding: 0 2rem; height: 2.625rem; font-weight: bold; background-color: #FFD140; color: #000000; font-family: "Helvetica Neue", Arial, sans-serif; font-size: 1rem; line-height: 1.25rem; cursor: pointer; }
+  .pp-btn:hover { background-color: #f0c22f; }
+  .pp-wrap .pp-powered { font-size: 0.75rem; color: var(--text-muted); }
+  .pp-wrap .pp-powered img { height: 0.875rem; vertical-align: middle; }
+
   @media (max-width: 768px) {
     .nav-links { display: none; }
     .mobile-nav { display: block; padding: 8px 12px; }
@@ -299,6 +307,14 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
                 </ul>
                 <button class="btn-unlock" onclick="mockUnlock('room')">Unlock for $2.99 USD / ₵15 GHS / ₦2,000 NGN</button>
                 <button class="btn-share" onclick="openReferralModal('room')"><span>🔗</span> Unlock Free by Referring a Friend</button>
+                <div class="pp-wrap">
+                  <form action="https://www.paypal.com/ncp/payment/W3HB96GQ9RVAJ" method="post" target="_blank" onsubmit="markPaypalPending('room')">
+                    <input type="hidden" name="return" value="" />
+                    <input class="pp-btn" type="submit" value="Buy Now" />
+                    <img src="https://www.paypalobjects.com/images/Debit_Credit.svg" alt="Accepted cards" />
+                    <section class="pp-powered">Powered by <img src="https://www.paypalobjects.com/paypal-ui/logos/svg/paypal-wordmark-color.svg" alt="PayPal" /></section>
+                  </form>
+                </div>
               </div>
             </div>
           </div>
@@ -375,6 +391,14 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
                 <p class="subtitle">Get exact quantities for sheets, battens, and screws instantly.</p>
                 <button class="btn-unlock" onclick="mockUnlock('roof')">Unlock for $2.99 USD / ₵15 GHS / ₦2,000 NGN</button>
                 <button class="btn-share" onclick="openReferralModal('roof')"><span>🔗</span> Unlock Free by Referring a Friend</button>
+                <div class="pp-wrap">
+                  <form action="https://www.paypal.com/ncp/payment/W3HB96GQ9RVAJ" method="post" target="_blank" onsubmit="markPaypalPending('roof')">
+                    <input type="hidden" name="return" value="" />
+                    <input class="pp-btn" type="submit" value="Buy Now" />
+                    <img src="https://www.paypalobjects.com/images/Debit_Credit.svg" alt="Accepted cards" />
+                    <section class="pp-powered">Powered by <img src="https://www.paypalobjects.com/paypal-ui/logos/svg/paypal-wordmark-color.svg" alt="PayPal" /></section>
+                  </form>
+                </div>
               </div>
             </div>
           </div>
@@ -461,6 +485,14 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
                 <p class="subtitle">Get exact quantities for adhesive, grout, and spacers instantly.</p>
                 <button class="btn-unlock" onclick="mockUnlock('tiles')">Unlock for $2.99 USD / ₵15 GHS / ₦2,000 NGN</button>
                 <button class="btn-share" onclick="openReferralModal('tiles')"><span>🔗</span> Unlock Free by Referring a Friend</button>
+                <div class="pp-wrap">
+                  <form action="https://www.paypal.com/ncp/payment/W3HB96GQ9RVAJ" method="post" target="_blank" onsubmit="markPaypalPending('tiles')">
+                    <input type="hidden" name="return" value="" />
+                    <input class="pp-btn" type="submit" value="Buy Now" />
+                    <img src="https://www.paypalobjects.com/images/Debit_Credit.svg" alt="Accepted cards" />
+                    <section class="pp-powered">Powered by <img src="https://www.paypalobjects.com/paypal-ui/logos/svg/paypal-wordmark-color.svg" alt="PayPal" /></section>
+                  </form>
+                </div>
               </div>
             </div>
           </div>
@@ -506,7 +538,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       <h2 id="legalModalTitle">Privacy Policy</h2><p class="last-updated">Last Updated: October 2026</p>
       <h3>1. Introduction</h3><p>Calculate2Build ("C2B", "we", "us", or "our") operates the calculate2build.com website. This page informs you of our policies regarding the collection, use, and disclosure of personal data when you use our Service.</p>
       <h3>2. Information We Collect</h3><p>We do not require you to create an account. All calculations, dimensions, and project data you enter are processed locally in your browser and are <strong>not transmitted to our servers</strong>.</p>
-      <h3>3. Third-Party Payment Processors</h3><p>When you purchase a PDF report, your payment is processed by a secure third-party provider (such as Paystack or Flutterwave). We do not store your payment details.</p>
+      <h3>3. Third-Party Payment Processors</h3><p>When you purchase a PDF report, your payment is processed by a secure third-party provider (such as Paystack, Flutterwave, or PayPal). We do not store your payment details.</p>
       <h3>4. Cookies and Analytics</h3><p>We may use cookies and similar tracking technologies to track activity on our Service to help us improve the product.</p>
       <h3>5. Contact Us</h3><p>If you have any questions about this Privacy Policy, please contact us at <a href="mailto:quicktoolsapp@proton.me">quicktoolsapp@proton.me</a>.</p>
     </div>
@@ -707,7 +739,6 @@ window.saveCurrentRoom = () => {
   savedRooms.push({ id: activeRoomId, label: `Room ${activeRoomId}`, ...currentRoom });
   activeRoomId++;
   currentRoomActive = false;
-  // Reset to fresh room defaults (keeps current hgt & block so users can clone a floor)
   const prevHgt = currentRoom.hgt;
   const prevBlock = currentRoom.blockThick;
   currentRoom.len = 5.0; currentRoom.wid = 4.0; currentRoom.hgt = prevHgt; currentRoom.blockThick = prevBlock;
@@ -762,7 +793,6 @@ window.updateBlockStandard = (val) => {
 function theoreticalBlocks(netWallArea) { return Math.ceil(netWallArea * BLOCKS_PER_M2); }
 function orderBlocks(netWallArea) { return Math.ceil(netWallArea * BLOCKS_PER_M2 * (1 + BLOCK_WASTE)); }
 
-// Thickness scaling for mortar: 225mm baseline = 1.0
 function thicknessFactor(thick) { return Math.max(0.5, Math.min(1.4, thick / 0.225)); }
 
 function calcTotals() {
@@ -816,7 +846,6 @@ function calcTotals() {
   document.getElementById('r-outFloor').textContent = totalArea.toFixed(2) + ' m²';
   document.getElementById('r-outWall').textContent = totalWallArea.toFixed(2) + ' m²';
 
-  // Block-type label: single type → name; mixed → "Mixed (see PDF)"
   const types = new Set([...savedRooms, ...(currentRoomActive ? [currentRoom] : [])].map(r => r.blockThick));
   document.getElementById('r-outBlockType').textContent = types.size > 1 ? 'Mixed block types (see PDF)' : getBlockName(currentRoom.blockThick);
 
@@ -993,7 +1022,6 @@ function rebuildRoof3D() {
     triGeo2.computeVertexNormals();
     roofGroup.add(new THREE.Mesh(triGeo2, wallColor));
   } else if (type === 'hip') {
-    // Proper 4-face hip pyramid honouring rectangular footprint
     const apex = new THREE.Vector3(0, wallH + rise, 0);
     const p0 = new THREE.Vector3(-effHalfW, wallH,  effHalfL);
     const p1 = new THREE.Vector3( effHalfW, wallH,  effHalfL);
@@ -1185,8 +1213,45 @@ function unlockApp(app) {
   try { sessionStorage.setItem(`c2b_unlocked_${app}`, '1'); } catch(e) {}
 }
 
+window.unlockApp = unlockApp;
+
+window.markPaypalPending = (app) => {
+  try {
+    localStorage.setItem('c2b_paypal_pending', JSON.stringify({ app, ts: Date.now() }));
+  } catch (e) {}
+};
+
+function handlePaypalReturn() {
+  const params = new URLSearchParams(window.location.search);
+  const st = (params.get('st') || '').toLowerCase();
+  const txn = params.get('txn_id');
+  if (st !== 'completed' || !txn) return;
+
+  let pending = null;
+  try { pending = JSON.parse(localStorage.getItem('c2b_paypal_pending') || 'null'); } catch (e) {}
+  const app = pending && pending.app ? pending.app : 'room';
+
+  if (pending && Date.now() - pending.ts > 60 * 60 * 1000) {
+    try { localStorage.removeItem('c2b_paypal_pending'); } catch (e) {}
+  }
+
+  unlockApp(app);
+  try { localStorage.removeItem('c2b_paypal_pending'); } catch (e) {}
+
+  const prefix = app === 'room' ? 'r' : app === 'roof' ? 'f' : 't';
+  const list = document.getElementById(`${prefix}-materialList`);
+  if (list && list.parentElement) {
+    const note = document.createElement('div');
+    note.textContent = '✅ Payment received — your breakdown is unlocked.';
+    note.style.cssText = 'font-size:12px;color:#059669;font-weight:600;margin:0 0 8px;';
+    list.parentElement.insertBefore(note, list);
+    setTimeout(() => note.remove(), 6000);
+  }
+
+  window.history.replaceState({}, '', window.location.pathname);
+}
+
 window.mockUnlock = (app) => {
-  // Non-blocking notice; replaces alert() for better a11y
   const prefix = app === 'room' ? 'r' : app === 'roof' ? 'f' : 't';
   const overlay = document.getElementById(`${prefix}-paywall`);
   const box = overlay.querySelector('.paywall-box');
@@ -1217,7 +1282,6 @@ window.openReferralModal = async (app) => {
     localStorage.setItem('myReferralId', myReferralId);
     try { await supabase.from('referrals').insert({ code: myReferralId, status: 'waiting', unlocked_app: app }); } catch(e) {}
   } else {
-    // Reuse existing code; ensure it has a waiting row for this app if missing
     try {
       const { data } = await supabase.from('referrals').select('status').eq('code', myReferralId).maybeSingle();
       if (!data) await supabase.from('referrals').insert({ code: myReferralId, status: 'waiting', unlocked_app: app });
@@ -1324,7 +1388,6 @@ function drawTable(doc, y, rows, currency, showPrices) {
       const lineTotal = qty * unitPrice;
       grand += lineTotal;
       doc.text(`${currency} ${unitPrice.toFixed(2)}`, 130, y);
-      // Clip total to page margin to avoid overflow
       const totalStr = `${currency} ${lineTotal.toFixed(2)}`;
       doc.text(totalStr, 196 - doc.getTextWidth(totalStr), y, { align: 'left' });
     }
@@ -1723,7 +1786,6 @@ function initUI() {
     updateTilesUI(); calcTiles();
   });
 
-  // Keyboard support for tab nav
   document.querySelectorAll('.nav-links a').forEach(a => {
     a.addEventListener('keydown', (ev) => {
       if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); switchTab(a.dataset.tab); }
@@ -1736,7 +1798,6 @@ function initUI() {
       }
     });
   });
-  // ESC to close modals
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeModal();
   });
@@ -1764,6 +1825,8 @@ window.addEventListener('load', async () => {
   if (incomingRef && incomingRef !== myReferralId) {
     try { await supabase.from('referrals').update({ status: 'success' }).eq('code', incomingRef); } catch(e) {}
   }
+
+  handlePaypalReturn();
 
   ['room', 'roof', 'tiles'].forEach(app => {
     try { if (sessionStorage.getItem(`c2b_unlocked_${app}`) === '1') unlockApp(app); } catch(e) {}
