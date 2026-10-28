@@ -139,7 +139,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   .pricing-block label { font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 8px; cursor: pointer; }
   .pricing-block input[type=checkbox] { width: 16px; height: 16px; cursor: pointer; }
 
-  /* PayPal NCP button */
   .pp-wrap { margin-top: 10px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
   .pp-wrap form { display: inline-grid; justify-items: center; align-content: start; gap: 0.5rem; width: 100%; }
   .pp-btn { text-align: center; border: none; border-radius: 0.25rem; min-width: 11.625rem; width: 100%; padding: 0 2rem; height: 2.625rem; font-weight: bold; background-color: #FFD140; color: #000000; font-family: "Helvetica Neue", Arial, sans-serif; font-size: 1rem; line-height: 1.25rem; cursor: pointer; }
@@ -289,10 +288,10 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             <div class="material-list blurred" id="r-materialList">
               <div class="category-title">Masonry (Blocks & Mortar)</div>
               <div class="mat-item"><div class="mat-info"><div class="mat-name">Sandcrete Blocks</div><div class="mat-desc" id="r-outBlockType">9" (225mm)</div></div><div class="mat-qty" id="r-outBlocks">0 pcs</div></div>
-              <div class="mat-item"><div class="mat-info"><div class="mat-name">Cement (mortar)</div><div class="mat-desc">For laying blocks</div></div><div class="mat-qty" id="r-outCemMortar">0 bags</div></div>
+              <div class="mat-item"><div class="mat-info"><div class="mat-name">Cement (mortar)</div><div class="mat-desc">For laying blocks (1:5 mix)</div></div><div class="mat-qty" id="r-outCemMortar">0 bags</div></div>
               <div class="mat-item"><div class="mat-info"><div class="mat-name">Mortar sand</div><div class="mat-desc">Loose volume</div></div><div class="mat-qty" id="r-outSand">0 m³</div></div>
               <div class="category-title">Finishes (Plaster & Paint)</div>
-              <div class="mat-item"><div class="mat-info"><div class="mat-name">Cement (plaster)</div><div class="mat-desc">Both faces (12mm avg)</div></div><div class="mat-qty" id="r-outCemPlaster">0 bags</div></div>
+              <div class="mat-item"><div class="mat-info"><div class="mat-name">Cement (plaster)</div><div class="mat-desc">Both faces (1:4 mix, 12mm)</div></div><div class="mat-qty" id="r-outCemPlaster">0 bags</div></div>
               <div class="mat-item"><div class="mat-info"><div class="mat-name">Plaster sand</div><div class="mat-desc">Loose volume</div></div><div class="mat-qty" id="r-outSandPlaster">0 m³</div></div>
               <div class="mat-item"><div class="mat-info"><div class="mat-name">Paint (2 coats)</div><div class="mat-desc">Interior emulsion</div></div><div class="mat-qty" id="r-outPaint">0 L</div></div>
               <div class="category-title">Ceilings</div>
@@ -777,12 +776,16 @@ function updateUI() {
 }
 
 // ==================== BLOCK & MORTAR ENGINE ====================
+// FIXED (launch): mortar now assumes a 1:5 mix (0.13 bags/m²), plaster assumes 1:4 (1 bag per 8 m²).
+// Previous values under-counted cement by ~18% (mortar) and ~37% (plaster).
 let BLOCKS_PER_M2 = 10;
 const BLOCK_WASTE = 0.05;
 const MORTAR_WASTE = 0.07;
-const MORTAR_CEMENT_PER_M2 = 0.11;
-const MORTAR_SAND_PER_M2 = 0.015;
+const MORTAR_CEMENT_PER_M2 = 0.13;   // was 0.11 — 1:5 mix, bags-equivalent per m² of 225mm wall
+const MORTAR_SAND_PER_M2 = 0.018;    // was 0.015 — scaled to match 1:5 mix
 const PLASTER_WASTE = 0.07;
+const PLASTER_M2_PER_BAG = 8;        // was 11 — 1:4 mix, 12mm both faces
+const PLASTER_SAND_PER_M2 = 0.05;    // m³ of sand per m² of wall (both faces)
 
 window.updateBlockStandard = (val) => {
   BLOCKS_PER_M2 = parseFloat(val);
@@ -818,10 +821,12 @@ function calcTotals() {
     totalWallArea += net;
 
     const tFactor = thicknessFactor(r.blockThick);
+    // Mortar: 1:5 mix — 0.13 bags/m² × 50 kg × thickness factor, +7% waste
     totalMortarCementKg += net * MORTAR_CEMENT_PER_M2 * (1 + MORTAR_WASTE) * 50 * tFactor;
     totalMortarSandM3 += net * MORTAR_SAND_PER_M2 * (1 + MORTAR_WASTE) * tFactor;
-    totalPlasterCementKg += (net / 11) * 50 * (1 + PLASTER_WASTE);
-    totalPlasterSandM3 += (net / 11) * 0.05 * (1 + PLASTER_WASTE);
+    // Plaster: 1:4 mix — 1 bag per 8 m², both faces, +7% waste
+    totalPlasterCementKg += (net / PLASTER_M2_PER_BAG) * 50 * (1 + PLASTER_WASTE);
+    totalPlasterSandM3 += (net / PLASTER_M2_PER_BAG) * PLASTER_SAND_PER_M2 * (1 + PLASTER_WASTE);
     totalPaintL += (net / 8.3) * 2 * 1.05;
   };
   savedRooms.forEach(calcRoom);
@@ -1204,7 +1209,6 @@ function calcTiles() {
 }
 
 // ==================== UNLOCK / MODALS ====================
-// ONLY called from: (1) confirmed PayPal return, (2) confirmed referral.
 function unlockApp(app) {
   const prefix = app === 'room' ? 'r' : app === 'roof' ? 'f' : 't';
   document.getElementById(`${prefix}-materialList`).classList.remove('blurred');
@@ -1521,9 +1525,9 @@ window.downloadRoomPDF = () => {
 
     y = drawNotes(doc, y, "6. Assumptions & Limitations", [
       `• Block standard: ${standardNote}.`,
-      "• Mortar volumes scale with block thickness relative to the 225mm baseline.",
+      "• Cement (mortar) assumes 1:5 mix, scaled with block thickness relative to the 225mm baseline.",
+      "• Cement (plaster) assumes 1:4 mix, 12mm per face, both faces.",
       "• Net wall area deducts doors (0.9×2.1m) and windows (1.2×1.2m), and shared walls you marked.",
-      "• Plaster thickness ~12mm per face, both faces.",
       "• Paint coverage ~8.3 m²/L per coat, 2 coats.",
       "• Figures are planning estimates only. Verify with a quantity surveyor or contractor before purchase."
     ]);
