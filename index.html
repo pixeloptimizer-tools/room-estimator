@@ -29,6 +29,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   .card-header p { line-height: 1.5; }
   .mat-qty, .area-box .val, .counter-val { font-variant-numeric: tabular-nums; }
 
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
   .skip-link { position: absolute; left: -9999px; top: 0; z-index: 9999; background: var(--text-main); color: #fff; padding: 10px 16px; border-radius: 0 0 6px 0; text-decoration: none; font-weight: 600; }
   .skip-link:focus { left: 0; }
 
@@ -194,14 +196,14 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-M8D7N78T" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <nav aria-label="Primary">
   <button class="logo" onclick="switchTab('room')" aria-label="Calculate2Build home">Calculate2Build <span>/ C2B</span></button>
-  <div class="nav-links">
+  <div class="nav-links" role="tablist" aria-label="Estimator tools">
     <a class="active" data-tab="room" role="tab" aria-selected="true" tabindex="0" onclick="switchTab('room')">Room Estimator</a>
     <a data-tab="roof" role="tab" aria-selected="false" tabindex="-1" onclick="switchTab('roof')">Roof Wizard</a>
     <a data-tab="tiles" role="tab" aria-selected="false" tabindex="-1" onclick="switchTab('tiles')">Floor Tiles</a>
   </div>
 </nav>
 <div class="mobile-nav">
-  <label for="mobileTabSelect" class="sr-only" style="position:absolute;left:-9999px;">Choose estimator</label>
+  <label for="mobileTabSelect" class="sr-only">Choose estimator</label>
   <select id="mobileTabSelect" onchange="switchTab(this.value)">
     <option value="room">Room Estimator</option>
     <option value="roof">Roof Wizard</option>
@@ -211,7 +213,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
 <main id="main">
 <!-- APP 1: ROOM ESTIMATOR -->
-<div class="app-section active" id="app-room">
+<div class="app-section active" id="app-room" role="tabpanel" aria-labelledby="tab-room">
   <div class="container">
     <div class="left-col">
       <div class="card">
@@ -348,7 +350,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 </div>
 
 <!-- APP 2: ROOF WIZARD -->
-<div class="app-section" id="app-roof">
+<div class="app-section" id="app-roof" role="tabpanel" aria-labelledby="tab-roof">
   <div class="container">
     <div class="left-col">
       <div class="card">
@@ -431,7 +433,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 </div>
 
 <!-- APP 3: FLOOR TILES -->
-<div class="app-section" id="app-tiles">
+<div class="app-section" id="app-tiles" role="tabpanel" aria-labelledby="tab-tiles">
   <div class="container">
     <div class="left-col">
       <div class="card">
@@ -539,7 +541,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       <h3>2. Information We Collect</h3><p>We do not require you to create an account. All calculations, dimensions, and project data you enter are processed locally in your browser and are <strong>not transmitted to our servers</strong>.</p>
       <h3>3. Third-Party Payment Processors</h3><p>When you purchase a PDF report, your payment is processed by a secure third-party provider (such as Paystack, Flutterwave, or PayPal). We do not store your payment details.</p>
       <h3>4. Cookies and Analytics</h3><p>We may use cookies and similar tracking technologies to track activity on our Service to help us improve the product.</p>
-      <h3>5. Contact Us</h3><p>If you have any questions about this Privacy Policy, please contact us at <a href="mailto:support@calculate2build.com">quicktoolsapp@proton.me</a>.</p>
+      <h3>5. Contact Us</h3><p>If you have any questions about this Privacy Policy, please contact us at <a href="mailto:support@calculate2build.com">support@calculate2build.com</a>.</p>
     </div>
     <div id="content-terms" style="display:none;">
       <h2>Terms of Service</h2><p class="last-updated">Last Updated: October 2026</p>
@@ -548,12 +550,12 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       <h3>3. Limitation of Liability</h3><p>We do not guarantee the accuracy of the estimates generated. You are solely responsible for verifying all quantities with a qualified local professional before purchasing materials.</p>
       <h3>4. Payments & Refunds</h3><p>PDF reports and Premium subscriptions are digital goods delivered instantly upon payment. Because of the instantaneous nature of digital delivery, <strong>all sales are final</strong>.</p>
       <h3>5. Governing Law</h3><p>These Terms shall be governed and construed in accordance with the laws of the Republic of Ghana.</p>
-      <h3>6. Contact Information</h3><p>Questions about the Terms of Service should be sent to us at <a href="mailto:support@calculate2build.com">quicktoolsapp@proton.me</a>.</p>
+      <h3>6. Contact Information</h3><p>Questions about the Terms of Service should be sent to us at <a href="mailto:support@calculate2build.com">support@calculate2build.com</a>.</p>
     </div>
     <div id="content-contact" style="display:none;">
       <h2>Contact Us</h2><p class="last-updated">We typically respond within 24-48 hours.</p>
       <h3>Support & Inquiries</h3><p>If you have a question about an estimate or need support with a PDF download, please reach out to us directly.</p>
-      <p><strong>Email:</strong> <a href="mailto:support@calculate2build.com">quicktoolsapp@proton.me</a></p>
+      <p><strong>Email:</strong> <a href="mailto:support@calculate2build.com">support@calculate2build.com</a></p>
       <h3>Business Hours</h3><p>Monday - Friday: 9:00 AM - 5:00 PM (GMT)</p>
     </div>
   </div>
@@ -590,6 +592,8 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 const SUPABASE_URL = 'https://rvejecspofxepooxukpm.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ2ZWplY3Nwb2Z4ZXBvb3h1a3BtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2MjI1ODMsImV4cCI6MjEwODE5ODU4M30.9ztBB-DG2Blj5OnJsw8CBkzi--rWHAEDAHV7qq5ESe8';
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const SUPPORT_EMAIL = 'support@calculate2build.com';
 
 let currentUnit = 'm'; const M_TO_FT = 3.28084;
 let savedRooms = []; let activeRoomId = 1;
@@ -776,24 +780,22 @@ function updateUI() {
 }
 
 // ==================== BLOCK & MORTAR ENGINE (VOLUME METHOD) ====================
-// Volume method: cement and sand derived from the same wet volume, so they are
-// guaranteed consistent with the stated mix ratio.
 let BLOCKS_PER_M2 = 10;
 const BLOCK_WASTE = 0.05;
 
-const MORTAR_WET_M3_PER_M2   = 0.03;   // 10mm joints, 225mm wall
-const MORTAR_DRY_FACTOR      = 1.33;   // bulking of sand
-const MORTAR_MIX             = 5;      // 1 part cement : 5 parts sand
+const MORTAR_WET_M3_PER_M2   = 0.03;
+const MORTAR_DRY_FACTOR      = 1.33;
+const MORTAR_MIX             = 5;
 const MORTAR_WASTE           = 0.07;
 
-const PLASTER_WET_M3_PER_M2  = 0.024;  // 12mm per face, both faces
+const PLASTER_WET_M3_PER_M2  = 0.024;
 const PLASTER_DRY_FACTOR     = 1.33;
-const PLASTER_MIX            = 4;      // 1 part cement : 4 parts sand
+const PLASTER_MIX            = 4;
 const PLASTER_WASTE          = 0.07;
 
-const CEMENT_M3_PER_BAG      = 0.0347; // 50kg bag ≈ 0.0347 m³
+const CEMENT_M3_PER_BAG      = 0.0347;
 
-const PAINT_COVERAGE_M2_PER_L = 8.3;   // per coat
+const PAINT_COVERAGE_M2_PER_L = 8.3;
 const PAINT_COATS             = 2;
 const PAINT_WASTE             = 0.05;
 
@@ -805,7 +807,6 @@ window.updateBlockStandard = (val) => {
 function theoreticalBlocks(netWallArea) { return Math.ceil(netWallArea * BLOCKS_PER_M2); }
 function orderBlocks(netWallArea) { return Math.ceil(netWallArea * BLOCKS_PER_M2 * (1 + BLOCK_WASTE)); }
 
-// Linear interpolation between 0.75 (100mm) and 1.00 (225mm)
 function thicknessFactor(thick) {
   return Math.max(0.55, Math.min(1.0, 0.55 + 0.45 * (thick / 0.225)));
 }
@@ -820,7 +821,7 @@ function calcTotals() {
   let totalPaintL = 0;
 
   const bagWeight = parseFloat(document.getElementById('r-bag-size').value) || 50;
-  const bagVolume = CEMENT_M3_PER_BAG * (bagWeight / 50); // scale bag volume to bag weight
+  const bagVolume = CEMENT_M3_PER_BAG * (bagWeight / 50);
 
   const calcRoom = (r) => {
     const gross = 2 * (r.len + r.wid) * r.hgt;
@@ -836,7 +837,6 @@ function calcTotals() {
 
     const tFactor = thicknessFactor(r.blockThick);
 
-    // Mortar (1:5): wet volume × dry factor × cement fraction ÷ bag volume × bag weight
     const mortarWet = net * MORTAR_WET_M3_PER_M2 * tFactor;
     const mortarDry = mortarWet * MORTAR_DRY_FACTOR;
     const mortarCementM3 = mortarDry / (MORTAR_MIX + 1);
@@ -844,7 +844,6 @@ function calcTotals() {
     totalMortarCementKg += mortarCementM3 / bagVolume * bagWeight * (1 + MORTAR_WASTE);
     totalMortarSandM3  += mortarSandM3 * (1 + MORTAR_WASTE);
 
-    // Plaster (1:4), 12mm both faces
     const plasterWet = net * PLASTER_WET_M3_PER_M2;
     const plasterDry = plasterWet * PLASTER_DRY_FACTOR;
     const plasterCementM3 = plasterDry / (PLASTER_MIX + 1);
@@ -852,7 +851,6 @@ function calcTotals() {
     totalPlasterCementKg += plasterCementM3 / bagVolume * bagWeight * (1 + PLASTER_WASTE);
     totalPlasterSandM3  += plasterSandM3 * (1 + PLASTER_WASTE);
 
-    // Paint: both faces + ceiling
     const paintArea = net * 2 + r.len * r.wid;
     totalPaintL += (paintArea / PAINT_COVERAGE_M2_PER_L) * PAINT_COATS * (1 + PAINT_WASTE);
   };
@@ -1291,6 +1289,7 @@ window.openModal = (type) => {
 window.closeModal = () => {
   document.getElementById('legalModal').classList.remove('active');
   document.getElementById('referralModal').classList.remove('active');
+  if (referralPollTimer) { clearInterval(referralPollTimer); referralPollTimer = null; }
 };
 
 let myReferralId = localStorage.getItem('myReferralId');
@@ -1834,6 +1833,12 @@ window.addEventListener('resize', resizeAll);
 
 // ==================== BOOT ====================
 window.addEventListener('load', async () => {
+  // Force every mailto link to the correct support address
+  document.querySelectorAll('a[href^="mailto:"]').forEach(a => {
+    a.href = `mailto:${SUPPORT_EMAIL}`;
+    if (a.textContent.includes('@')) a.textContent = SUPPORT_EMAIL;
+  });
+
   const userLocale = navigator.language || 'en-US';
   const defaultCurrency = userLocale.includes('US') || userLocale.includes('GB') || userLocale.includes('UK') ? 'USD' : 'GHS';
 
