@@ -511,36 +511,88 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
 <footer>
   <div style="margin-bottom: 12px; font-weight: 600; color: white;">Calculate2Build / C2B</div>
-  <div><a onclick="openModal('privacy')">Privacy Policy</a> | <a onclick="openModal('terms')">Terms of Service</a> | <a onclick="openModal('contact')">Contact Us</a></div>
+  <div>
+    <a onclick="openModal('letter')">Our Story</a> | 
+    <a onclick="openModal('privacy')">Privacy Policy</a> | 
+    <a onclick="openModal('terms')">Terms of Service</a> | 
+    <a onclick="openModal('contact')">Contact Us</a>
+  </div>
   <div style="margin-top: 12px; font-size: 11px;">&copy; 2026 Calculate2Build. All rights reserved. Estimates are for planning purposes only.</div>
 </footer>
 
 <div class="modal-overlay" id="legalModal" role="dialog" aria-modal="true" aria-labelledby="legalModalTitle">
   <div class="modal-box">
     <button class="modal-close" onclick="closeModal()" aria-label="Close dialog">&times;</button>
+
+    <!-- 1. OUR STORY -->
+    <div id="content-letter" style="display:none;">
+      <h2>Our Story</h2>
+      <p class="last-updated">A Letter from the Graduate Architect behind Calculate2Build</p>
+      
+      <p>I am a Graduate Architect (Class of 2021). In my years of practice, I have learned one painful truth: getting accurate estimates for building materials is a nightmare for many architects, and even worse for beginners.</p>
+      
+      <p>I built Calculate2Build to solve that problem. The idea was simple: create a tool that takes you one step higher, giving you the courage to build that house or start that project by offering a quick, reliable way to check quantities and plan costs.</p>
+      
+      <p>Whether you are a seasoned professional preparing a tender document, or a builder trying to see exactly where your construction money is going, this tool is designed for you. It acts as a reference handbook. Builders can estimate quantities, input their local market prices, and generate a PDF document that is understood and accepted by clients and professionals alike.</p>
+
+      <h3>Why I built this</h3>
+      <p>I want to unite a family of like-minded people willing to help our communities gain insight into the built environment. We want to fight back against material theft and overquoting—situations where materials are overpriced and the money simply vanishes. By checking quantities and costs upfront, your project is halfway done. That is the beauty of this tool.</p>
+
+      <h3>Our Promise to You</h3>
+      <p>The on-screen calculator will always remain free. We believe in dignity for labor, which is why accessing the downloadable PDF requires a small fee ($2.99). This helps us update our team, maintain the servers, and keep improving the tool. In return, you get a comprehensive document that is handy throughout your entire project until it is completed.</p>
+
+      <p>Slide the toggle buttons to your required measurements, input a current market guess, and let the tool calculate your quantities. We are growing by connecting to real-time local market prices.</p>
+
+      <p>It is currently open for testing and improvement. We welcome calls for improvement, calls for partnership, and even criticisms that will give value to our industry.</p>
+
+      <p>If you like our work and want to encourage us, we are honored to align, serve, and fellowship with you in the progress of C2B. You can count on our team—both human and AI (majorly ChatGPT, DeepSeek, Claude AI, Google AI)—to keep improving this tool for all.</p>
+    </div>
+
+    <!-- 2. PRIVACY POLICY -->
     <div id="content-privacy" style="display:none;">
-      <h2 id="legalModalTitle">Privacy Policy</h2><p class="last-updated">Last Updated: October 2026</p>
-      <h3>1. Introduction</h3><p>Calculate2Build ("C2B", "we", "us", or "our") operates the calculate2build.com website. This page informs you of our policies regarding the collection, use, and disclosure of personal data when you use our Service.</p>
-      <h3>2. Information We Collect</h3><p>All calculations, dimensions, and project data you enter are processed locally in your browser and are <strong>not transmitted to our servers</strong>. You do not need an account to use the tool.</p>
-      <h3>3. Referral and Analytics Data</h3><p>If you use the "refer a friend" feature, a referral code is generated in your browser and sent to our backend (Supabase) when a friend opens your link, so we can verify the referral. We use Google Tag Manager to understand how the tool is used (page views and PDF download events). These services may receive cookies, IP address, and usage events. We do not receive your calculation inputs.</p>
-      <h3>4. Third-Party Payment Processors</h3><p>When you purchase a PDF report, your payment is processed by PayPal. We do not store your payment details. PayPal's privacy policy governs the data you provide during checkout.</p>
-      <h3>5. Contact Us</h3><p>If you have any questions about this Privacy Policy, please contact us at <a href="mailto:support@calculate2build.com">support@calculate2build.com</a>.</p>
+      <h2 id="legalModalTitle">Privacy Policy</h2>
+      <p class="last-updated">Last Updated: October 2026</p>
+      <h3>1. Introduction</h3>
+      <p>Calculate2Build ("C2B", "we", "us", or "our") operates the calculate2build.com website. This page informs you of our policies regarding the collection, use, and disclosure of personal data when you use our Service.</p>
+      <h3>2. Information We Collect</h3>
+      <p>All calculations, dimensions, and project data you enter are processed locally in your browser and are <strong>not transmitted to our servers</strong>. You do not need an account to use the tool.</p>
+      <h3>3. Referral and Analytics Data</h3>
+      <p>If you use the "refer a friend" feature, a referral code is generated in your browser and sent to our backend (Supabase) when a friend opens your link, so we can verify the referral. We use Google Tag Manager to understand how the tool is used (page views and PDF download events). These services may receive cookies, IP address, and usage events. We do not receive your calculation inputs.</p>
+      <h3>4. Third-Party Payment Processors</h3>
+      <p>When you purchase a PDF report ($2.99), your payment is processed by PayPal. We do not store your payment details. PayPal's privacy policy governs the data you provide during checkout.</p>
+      <h3>5. Contact Us</h3>
+      <p>If you have any questions about this Privacy Policy, please contact us at <a href="mailto:support@calculate2build.com">support@calculate2build.com</a>.</p>
     </div>
+
+    <!-- 3. TERMS OF SERVICE -->
     <div id="content-terms" style="display:none;">
-      <h2>Terms of Service</h2><p class="last-updated">Last Updated: October 2026</p>
-      <h3>1. Acceptance of Terms</h3><p>By accessing and using Calculate2Build, you accept and agree to be bound by the terms and provisions of this agreement.</p>
-      <h3>2. Nature of the Service</h3><p>Calculate2Build provides preliminary construction quantity and cost estimation tools. <strong>These tools are for planning and budgeting purposes only.</strong> All quantities are visible without payment. The PDF report is a paid deliverable.</p>
-      <h3>3. Limitation of Liability</h3><p>We do not guarantee the accuracy of the estimates generated. You are solely responsible for verifying all quantities with a qualified local professional before purchasing materials.</p>
-      <h3>4. Payments & Refunds</h3><p>PDF reports are digital goods delivered instantly upon payment. Because of the instantaneous nature of digital delivery, <strong>all sales are final</strong>.</p>
-      <h3>5. Governing Law</h3><p>These Terms shall be governed and construed in accordance with the laws of the Republic of Ghana.</p>
-      <h3>6. Contact Information</h3><p>Questions about the Terms of Service should be sent to us at <a href="mailto:support@calculate2build.com">support@calculate2build.com</a>.</p>
+      <h2>Terms of Service</h2>
+      <p class="last-updated">Last Updated: October 2026</p>
+      <h3>1. Acceptance of Terms</h3>
+      <p>By accessing and using Calculate2Build, you accept and agree to be bound by the terms and provisions of this agreement.</p>
+      <h3>2. Nature of the Service</h3>
+      <p>Calculate2Build provides preliminary construction quantity and cost estimation tools. <strong>These tools are for planning and budgeting purposes only.</strong> All quantities are visible without payment. The PDF report is a paid deliverable.</p>
+      <h3>3. Limitation of Liability</h3>
+      <p>We do not guarantee the accuracy of the estimates generated. You are solely responsible for verifying all quantities with a qualified local professional before purchasing materials.</p>
+      <h3>4. Payments & Refunds</h3>
+      <p>PDF reports are digital goods delivered instantly upon payment. Because of the instantaneous nature of digital delivery, <strong>all sales are final</strong>.</p>
+      <h3>5. Governing Law</h3>
+      <p>These Terms shall be governed and construed in accordance with the laws of the Republic of Ghana.</p>
+      <h3>6. Contact Information</h3>
+      <p>Questions about the Terms of Service should be sent to us at <a href="mailto:support@calculate2build.com">support@calculate2build.com</a>.</p>
     </div>
+
+    <!-- 4. CONTACT US -->
     <div id="content-contact" style="display:none;">
-      <h2>Contact Us</h2><p class="last-updated">We typically respond within 24-48 hours.</p>
-      <h3>Support & Inquiries</h3><p>If you have a question about an estimate or need support with a PDF download, please reach out to us directly.</p>
+      <h2>Contact Us</h2>
+      <p class="last-updated">We typically respond within 24-48 hours.</p>
+      <h3>Support & Inquiries</h3>
+      <p>If you have a question about an estimate or need support with a PDF download, please reach out to us directly.</p>
       <p><strong>Email:</strong> <a href="mailto:support@calculate2build.com">support@calculate2build.com</a></p>
-      <h3>Business Hours</h3><p>Monday - Friday: 9:00 AM - 5:00 PM (GMT)</p>
+      <h3>Business Hours</h3>
+      <p>Monday - Friday: 9:00 AM - 5:00 PM (GMT)</p>
     </div>
+    
   </div>
 </div>
 
