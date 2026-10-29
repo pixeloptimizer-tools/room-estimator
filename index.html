@@ -1282,30 +1282,49 @@ let referralPollTimer = null;
 
 window.openReferralModal = async (app) => {
   document.getElementById('referralModal').classList.add('active');
+  
+  // 1. Reset the status text and styling every time the modal opens
+  const statusEl = document.getElementById('refStatus');
+  statusEl.innerHTML = '⏳ Waiting for a friend to use your link...';
+  statusEl.style.background = '#fef3c7';
+  statusEl.style.color = '#92400e';
+
   if (!myReferralId) {
     myReferralId = 'C2B-' + Math.random().toString(36).substring(2, 8).toUpperCase();
     localStorage.setItem('myReferralId', myReferralId);
   }
   
-  // Register the code on the server so a friend's visit can find it
-  try {
-    await fetch(`${SUPABASE_URL}/functions/v1/create-referral`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${SUPABASE_KEY}`,
-      },
-      body: JSON.stringify({ code: myReferralId, app }),
-    });
-  } catch (e) { /* silent — modal still works */ }
+  // Register the code on the server (only if we haven't unlocked yet)
+  if (!isPdfUnlocked(app)) {
+    try {
+      await fetch(`${SUPABASE_URL}/functions/v1/create-referral`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${SUPABASE_KEY}`,
+        },
+        body: JSON.stringify({ code: myReferralId, app }),
+      });
+    } catch (e) { /* silent */ }
+  }
 
   const fullLink = window.location.origin + window.location.pathname + '?ref=' + myReferralId;
   document.getElementById('refLinkInput').value = fullLink;
+  
   const shareMsg = encodeURIComponent("I just used Calculate2Build to estimate my building materials — it's free and saves money! Check it out: ");
   document.getElementById('refShareWhatsapp').href = `https://wa.me/?text=${shareMsg}${encodeURIComponent(fullLink)}`;
   document.getElementById('refShareTwitter').href = `https://twitter.com/intent/tweet?text=${shareMsg}&url=${encodeURIComponent(fullLink)}`;
   document.getElementById('referralModal').querySelector('.modal-close')?.focus();
-  startPollingReferral(myReferralId, app);
+  
+  // 2. ONLY start polling if the PDF is NOT unlocked yet
+  if (!isPdfUnlocked(app)) {
+    startPollingReferral(myReferralId, app);
+  } else {
+    // If they already unlocked it, show a message that they are good to go
+    statusEl.innerHTML = '✅ Your PDF is already unlocked for this session!';
+    statusEl.style.background = '#d1fae5';
+    statusEl.style.color = '#059669';
+  }
 };
 
 function startPollingReferral(code, app) {
@@ -1319,7 +1338,7 @@ function startPollingReferral(code, app) {
         const status = document.getElementById('refStatus');
         status.innerHTML = '✅ Success! Your PDF has been unlocked.';
         status.style.background = '#d1fae5';
-        setTimeout(() => closeModal(), 2000);
+        setTimeout(() => closeModal(), 1000); // Changed to 1 second for faster UX
       }
     } catch(e) {}
   }, 3000);
