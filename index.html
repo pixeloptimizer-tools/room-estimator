@@ -1319,9 +1319,9 @@ window.openReferralModal = async (app) => {
   // 2. ONLY start polling if the PDF is NOT unlocked yet
   if (!isPdfUnlocked(app)) {
     startPollingReferral(myReferralId, app);
-  } else {
+} else {
     // If they already unlocked it, show a message that they are good to go
-    statusEl.innerHTML = '✅ Your PDF is already unlocked for this session!';
+    statusEl.innerHTML = '✅ You have already unlocked this PDF for your current session!';
     statusEl.style.background = '#d1fae5';
     statusEl.style.color = '#059669';
   }
