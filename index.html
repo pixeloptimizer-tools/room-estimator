@@ -1286,6 +1286,19 @@ window.openReferralModal = async (app) => {
     myReferralId = 'C2B-' + Math.random().toString(36).substring(2, 8).toUpperCase();
     localStorage.setItem('myReferralId', myReferralId);
   }
+  
+  // Register the code on the server so a friend's visit can find it
+  try {
+    await fetch(`${SUPABASE_URL}/functions/v1/create-referral`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+      },
+      body: JSON.stringify({ code: myReferralId, app }),
+    });
+  } catch (e) { /* silent — modal still works */ }
+
   const fullLink = window.location.origin + window.location.pathname + '?ref=' + myReferralId;
   document.getElementById('refLinkInput').value = fullLink;
   const shareMsg = encodeURIComponent("I just used Calculate2Build to estimate my building materials — it's free and saves money! Check it out: ");
@@ -1331,7 +1344,6 @@ async function notifyReferralVisit() {
     });
   } catch (e) { /* silent — does not affect main flow */ }
 }
-
 // ==================== WHATSAPP SHARE ====================
 window.shareToWhatsApp = (app) => {
   let text = "";
