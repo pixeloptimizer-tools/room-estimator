@@ -775,13 +775,14 @@ window.submitFreeEmail = async (event, app) => {
       body: JSON.stringify({
         access_key: 'ebd1edcf-5551-4c0b-8c3e-eb4a31c8132d',
         email: email,
-        subject: `Calculate2Build: Free Material List Request (${app})`,
-        message: `A user requested the free Shopping List & Project Tracker for the ${app} estimator.`
+        subject: `Calculate2Build: Free Tracker Request (${app})`,
+        message: `A user requested the free Shopping List & Project Tracker for the ${app} estimator. Please reply to them manually with the document.`
       })
     });
 
     if (response.ok) {
       form.style.display = 'none';
+      successDiv.innerHTML = '✅ Request received! A human (not a robot) will email your Tracker shortly.';
       successDiv.style.display = 'block';
     } else {
       alert('Something went wrong. Please try again.');
