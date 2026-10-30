@@ -71,9 +71,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   input[type=range]:focus-visible::-webkit-slider-thumb { background: var(--brand); box-shadow: 0 0 0 3px rgba(245,158,11,0.4); }
   input[type=range]::-moz-range-track { height: 8px; background: #e2e8f0; border-radius: 4px; }
   input[type=range]::-moz-range-thumb { height: 24px; width: 24px; border-radius: 50%; background: var(--text-main); cursor: pointer; border: none; }
-  input[type=number], input[type=text], select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; background: var(--bg); outline: none; transition: border-color 0.15s, background 0.15s; }
-  input[type=number]:hover, input[type=text]:hover, select:hover { border-color: #cbd5e1; background: #fff; }
-  input[type=number]:focus, input[type=text]:focus, select:focus { border-color: var(--text-main); background: white; }
+  input[type=number], input[type=text], input[type=email], select { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; background: var(--bg); outline: none; transition: border-color 0.15s, background 0.15s; }
+  input[type=number]:hover, input[type=text]:hover, input[type=email]:hover, select:hover { border-color: #cbd5e1; background: #fff; }
+  input[type=number]:focus, input[type=text]:focus, input[type=email]:focus, select:focus { border-color: var(--text-main); background: white; }
   .shared-walls { margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--border); }
   .shared-walls p { font-size: 12px; font-weight: 600; margin-bottom: 8px; color: var(--text-muted); }
   .wall-toggles { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -314,6 +314,16 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
                 <span>🔗</span> Free via referral
               </button>
             </div>
+
+            <!-- FREE EMAIL CAPTURE -->
+            <div style="margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--border);">
+              <p style="font-size: 12px; font-weight: 600; margin-bottom: 8px;">Or, get the free Shopping List & Project Tracker emailed to you:</p>
+              <form id="email-form-room" onsubmit="submitFreeEmail(event, 'room')" style="display: flex; gap: 8px;">
+                <input type="email" name="email" placeholder="Enter your email" required style="flex: 1; padding: 10px; border: 1px solid var(--border); border-radius: 6px;" />
+                <button type="submit" class="btn-primary" style="padding: 10px 16px; font-size: 12px;">Email Me</button>
+              </form>
+              <div id="email-success-room" style="display:none; color: var(--green); font-size: 12px; font-weight: 600; margin-top: 8px;">✅ Check your inbox! Your free tracker is on the way.</div>
+            </div>
           </div>
 
           <div class="pricing-block">
@@ -404,6 +414,16 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
               <button class="btn-secondary" onclick="openReferralModal('roof')">
                 <span>🔗</span> Free via referral
               </button>
+            </div>
+
+            <!-- FREE EMAIL CAPTURE -->
+            <div style="margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--border);">
+              <p style="font-size: 12px; font-weight: 600; margin-bottom: 8px;">Or, get the free Shopping List & Project Tracker emailed to you:</p>
+              <form id="email-form-roof" onsubmit="submitFreeEmail(event, 'roof')" style="display: flex; gap: 8px;">
+                <input type="email" name="email" placeholder="Enter your email" required style="flex: 1; padding: 10px; border: 1px solid var(--border); border-radius: 6px;" />
+                <button type="submit" class="btn-primary" style="padding: 10px 16px; font-size: 12px;">Email Me</button>
+              </form>
+              <div id="email-success-roof" style="display:none; color: var(--green); font-size: 12px; font-weight: 600; margin-top: 8px;">✅ Check your inbox! Your free tracker is on the way.</div>
             </div>
           </div>
 
@@ -505,6 +525,16 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
               <button class="btn-secondary" onclick="openReferralModal('tiles')">
                 <span>🔗</span> Free via referral
               </button>
+            </div>
+
+            <!-- FREE EMAIL CAPTURE -->
+            <div style="margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--border);">
+              <p style="font-size: 12px; font-weight: 600; margin-bottom: 8px;">Or, get the free Shopping List & Project Tracker emailed to you:</p>
+              <form id="email-form-tiles" onsubmit="submitFreeEmail(event, 'tiles')" style="display: flex; gap: 8px;">
+                <input type="email" name="email" placeholder="Enter your email" required style="flex: 1; padding: 10px; border: 1px solid var(--border); border-radius: 6px;" />
+                <button type="submit" class="btn-primary" style="padding: 10px 16px; font-size: 12px;">Email Me</button>
+              </form>
+              <div id="email-success-tiles" style="display:none; color: var(--green); font-size: 12px; font-weight: 600; margin-top: 8px;">✅ Check your inbox! Your free tracker is on the way.</div>
             </div>
           </div>
 
@@ -722,6 +752,49 @@ function isPdfUnlocked(app) {
 function unlockPdf(app) {
   try { sessionStorage.setItem(`c2b_pdf_unlocked_${app}`, '1'); } catch (e) {}
 }
+
+// ==================== FREE EMAIL CAPTURE ====================
+window.submitFreeEmail = async (event, app) => {
+  event.preventDefault();
+  const form = event.target;
+  const email = form.querySelector('input[type="email"]').value;
+  const successDiv = document.getElementById(`email-success-${app}`);
+  const submitBtn = form.querySelector('button');
+  
+  const originalText = submitBtn.textContent;
+  submitBtn.textContent = 'Sending...';
+  submitBtn.disabled = true;
+
+  try {
+    const response = await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        access_key: 'ebd1edcf-5551-4c0b-8c3e-eb4a31c8132d',
+        email: email,
+        subject: `Calculate2Build: Free Material List Request (${app})`,
+        message: `A user requested the free Shopping List & Project Tracker for the ${app} estimator.`
+      })
+    });
+
+    if (response.ok) {
+      form.style.display = 'none';
+      successDiv.style.display = 'block';
+    } else {
+      alert('Something went wrong. Please try again.');
+      submitBtn.textContent = originalText;
+      submitBtn.disabled = false;
+    }
+  } catch (error) {
+    console.error(error);
+    alert('Network error. Please try again.');
+    submitBtn.textContent = originalText;
+    submitBtn.disabled = false;
+  }
+};
 
 // ==================== Stage background & shadow textures ====================
 function makeStageBackground() {
