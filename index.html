@@ -287,6 +287,12 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           <div class="pdf-cta">
             <div class="pdf-cta-title">Printable PDF for your contractor</div>
             <div class="pdf-cta-desc">Room schedule, material list, wastage notes, and a tick-box shopping list. Yours for $2.99 — or free if you refer a friend.</div>
+            
+            <div class="input-group" style="margin-top: 12px; margin-bottom: 12px;">
+              <label for="logo-room" style="font-size: 11px;">Add your company logo (Optional)</label>
+              <input type="file" id="logo-room" accept="image/png, image/jpeg" style="padding: 8px; background: white; font-size: 12px;" />
+            </div>
+
             <div class="pdf-cta-preview">
               <svg width="36" height="46" viewBox="0 0 36 46" fill="none" aria-hidden="true">
                 <rect x="1" y="1" width="34" height="44" rx="2" fill="#fff" stroke="#e2e8f0"/>
@@ -372,6 +378,12 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           <div class="pdf-cta">
             <div class="pdf-cta-title">Printable PDF for your contractor</div>
             <div class="pdf-cta-desc">Roof dimensions, material list, wastage notes, and a shopping checklist. Yours for $2.99 — or free if you refer a friend.</div>
+            
+            <div class="input-group" style="margin-top: 12px; margin-bottom: 12px;">
+              <label for="logo-roof" style="font-size: 11px;">Add your company logo (Optional)</label>
+              <input type="file" id="logo-roof" accept="image/png, image/jpeg" style="padding: 8px; background: white; font-size: 12px;" />
+            </div>
+
             <div class="pdf-cta-preview">
               <svg width="36" height="46" viewBox="0 0 36 46" fill="none" aria-hidden="true">
                 <rect x="1" y="1" width="34" height="44" rx="2" fill="#fff" stroke="#e2e8f0"/>
@@ -467,6 +479,12 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           <div class="pdf-cta">
             <div class="pdf-cta-title">Printable PDF for your contractor</div>
             <div class="pdf-cta-desc">Room schedule, tile counts, adhesive/grout, and a shopping checklist. Yours for $2.99 — or free if you refer a friend.</div>
+            
+            <div class="input-group" style="margin-top: 12px; margin-bottom: 12px;">
+              <label for="logo-tiles" style="font-size: 11px;">Add your company logo (Optional)</label>
+              <input type="file" id="logo-tiles" accept="image/png, image/jpeg" style="padding: 8px; background: white; font-size: 12px;" />
+            </div>
+
             <div class="pdf-cta-preview">
               <svg width="36" height="46" viewBox="0 0 36 46" fill="none" aria-hidden="true">
                 <rect x="1" y="1" width="34" height="44" rx="2" fill="#fff" stroke="#e2e8f0"/>
@@ -1371,7 +1389,7 @@ window.openReferralModal = async (app) => {
   // 2. ONLY start polling if the PDF is NOT unlocked yet
   if (!isPdfUnlocked(app)) {
     startPollingReferral(myReferralId, app);
-} else {
+  } else {
     // If they already unlocked it, show a message that they are good to go
     statusEl.innerHTML = '✅ You have already unlocked this PDF for your current session!';
     statusEl.style.background = '#d1fae5';
@@ -1640,8 +1658,39 @@ window.downloadRoomPDF = () => {
       "• Figures are planning estimates only. Verify with a quantity surveyor or contractor before purchase."
     ]);
 
+    // --- NEW: PROJECT TIMELINE ---
+    const totalBlocks = parseQty(document.getElementById('r-outBlocks').textContent);
+    const blocksPerDay = 500; // Conservative estimate for a small crew
+    const estimatedDays = Math.ceil(totalBlocks / blocksPerDay);
+    
+    y = drawSectionTitle(doc, y, "7. Estimated Project Timeline");
+    y = drawMetaBlock(doc, y, [
+      ["Total Blocks to Lay", totalBlocks.toLocaleString() + " pcs"],
+      ["Estimated Mason Days", estimatedDays + " days (based on a 2-person crew laying 500 blocks/day)"],
+      ["Foundation & Setting", "3 - 5 days (allowance)"]
+    ]);
+    // ------------------------------
+
     drawShoppingList(doc, projectName, materials);
-    doc.save(`C2B_Room_${Date.now()}.pdf`);
+
+    // --- NEW: LOGO HANDLING ---
+    const logoInput = document.getElementById('logo-room');
+    const logoFile = logoInput.files[0];
+    
+    if (logoFile) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const imgData = e.target.result;
+        // Add image to top right corner of page 1
+        doc.setPage(1);
+        doc.addImage(imgData, 'PNG', 150, 5, 40, 15); 
+        doc.save(`C2B_Room_${Date.now()}.pdf`);
+      };
+      reader.readAsDataURL(logoFile);
+    } else {
+      doc.save(`C2B_Room_${Date.now()}.pdf`);
+    }
+    // --------------------------
 
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({ 'event': 'pdf_download', 'pdf_type': 'room_estimator' });
@@ -1713,7 +1762,24 @@ window.downloadRoofPDF = () => {
       "• Verify with your roofing contractor before ordering."
     ]);
     drawShoppingList(doc, projectName, materials);
-    doc.save(`C2B_Roof_${Date.now()}.pdf`);
+
+    // --- NEW: LOGO HANDLING ---
+    const logoInput = document.getElementById('logo-roof');
+    const logoFile = logoInput.files[0];
+    
+    if (logoFile) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const imgData = e.target.result;
+        doc.setPage(1);
+        doc.addImage(imgData, 'PNG', 150, 5, 40, 15); 
+        doc.save(`C2B_Roof_${Date.now()}.pdf`);
+      };
+      reader.readAsDataURL(logoFile);
+    } else {
+      doc.save(`C2B_Roof_${Date.now()}.pdf`);
+    }
+    // --------------------------
 
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({ 'event': 'pdf_download', 'pdf_type': 'roof_wizard' });
@@ -1819,7 +1885,23 @@ window.downloadTilesPDF = () => {
     shoppingItems.push(...materials);
     drawShoppingList(doc, projectName, shoppingItems);
 
-    doc.save(`C2B_Tiles_${Date.now()}.pdf`);
+    // --- NEW: LOGO HANDLING ---
+    const logoInput = document.getElementById('logo-tiles');
+    const logoFile = logoInput.files[0];
+    
+    if (logoFile) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const imgData = e.target.result;
+        doc.setPage(1);
+        doc.addImage(imgData, 'PNG', 150, 5, 40, 15); 
+        doc.save(`C2B_Tiles_${Date.now()}.pdf`);
+      };
+      reader.readAsDataURL(logoFile);
+    } else {
+      doc.save(`C2B_Tiles_${Date.now()}.pdf`);
+    }
+    // --------------------------
 
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({ 'event': 'pdf_download', 'pdf_type': 'floor_tiles' });
